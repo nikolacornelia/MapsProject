@@ -1,5 +1,7 @@
 //node app.js
 //https://mongoosejs.com/docs/index.html
+
+//Anzeigen der Webseite
 var express = require('express');
 var app = express();
 
@@ -10,7 +12,7 @@ app.listen(8080, function(){
     console.log((new Date()) + " Server is listening on port 8080");
 });
 
-
+//Verbindung zur Datenbank
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/maps', { useNewUrlParser: true });
 
