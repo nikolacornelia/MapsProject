@@ -25,6 +25,10 @@ var kittySchema = new mongoose.Schema({
   fluffy.save(function (err, fluffy) {
     if (err) return console.error(err);
   });
+
+
+
+
 /* app.use('/', express.static(`${__dirname}/public`));
 
 // Binding express app to port 3000
