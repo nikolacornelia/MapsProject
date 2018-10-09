@@ -1,0 +1,26 @@
+{
+  "name": "mapsproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "console.log('test');"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikolacornelia/MapsProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikolacornelia/MapsProject/issues"
+  },
+  "homepage": "https://github.com/nikolacornelia/MapsProject#readme",
+  "dependencies": {
+    "eslint": "^5.6.1",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.6",
+    "mongoose": "^5.3.1",
+    "moongoose": "0.0.5"
+  }
+}
