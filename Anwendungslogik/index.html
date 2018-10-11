@@ -1,34 +1,81 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de-de">
 <head>
-  <title>Eine Karte</title>
-  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-  <style>
-    #map{ width: 900px; height: 500px; }
-  </style>
-</head>
-<body>
+<title>Map | Testanwendung</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-language" content="de" />
+<meta name="author" content="Thomas Heiles" />
+<link rel="stylesheet" type="text/css" href="map.css"></link>
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="ie_map.css"></link>
+<![endif]-->
+<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript" src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
+<script type="text/javascript" src="tom.js"></script>
 
+<script type="text/javascript">
+//<![CDATA[
 
-<div id="mapid"></div>
+var map;
+var layer_mapnik;
+var layer_tah;
+var layer_markers;
 
+function drawmap() {
+    // Popup und Popuptext mit evtl. Grafik
+    var popuptext="<font color=\"black\"><b>Thomas Heiles<br>Stra&szlig;e 123<br>54290 Trier</b><p><img src=\"test.jpg\" width=\"180\" height=\"113\"></p></font>";
 
-  <script>
+    OpenLayers.Lang.setCode('de');
 
-  // check Location test
-  navigator.geolocation.getCurrentPosition(function(location) {
-  var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+    // Position und Zoomstufe der Karte
+    var lon = 6.641389;
+    var lat = 49.756667;
+    var zoom = 7;
 
-  var mymap = L.map('mapid').setView(latlng, 13)
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiYmJyb29rMTU0IiwiYSI6ImNpcXN3dnJrdDAwMGNmd250bjhvZXpnbWsifQ.Nf9Zkfchos577IanoKMoYQ'
-  }).addTo(mymap);
+    map = new OpenLayers.Map('map', {
+        projection: new OpenLayers.Projection("EPSG:900913"),
+        displayProjection: new OpenLayers.Projection("EPSG:4326"),
+        controls: [
+            new OpenLayers.Control.Navigation(),
+            new OpenLayers.Control.LayerSwitcher(),
+            new OpenLayers.Control.PanZoomBar()],
+        maxExtent:
+            new OpenLayers.Bounds(-20037508.34,-20037508.34,
+                                    20037508.34, 20037508.34),
+        numZoomLevels: 18,
+        maxResolution: 156543,
+        units: 'meters'
+    });
 
-  var marker = L.marker(latlng).addTo(mymap);
-});
+    layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
+    layer_markers = new OpenLayers.Layer.Markers("Address", { projection: new OpenLayers.Projection("EPSG:4326"),
+    	                                          visibility: true, displayInLayerSwitcher: false });
 
-  </script>
+    map.addLayers([layer_mapnik, layer_markers]);
+    jumpTo(lon, lat, zoom);
+
+    // Position des Markers
+    addMarker(layer_markers, 6.641389, 49.756667, popuptext);
+
+}
+
+//]]>
+    </script>
+
+  </head>
+  <body onload="drawmap();">
+
+  <div id="header">
+   <div id="content">Karte (Testversion)</div>
+   <div id="osm">© <a href="http://www.openstreetmap.org">OpenStreetMap</a>
+     und <a href="http://www.openstreetmap.org/copyright">Mitwirkende</a>,
+     <a href="http://creativecommons.org/licenses/by-sa/2.0/deed.de">CC-BY-SA</a>
+   </div>
+  </div>
+  <div id="map">
+  </div>
+
 </body>
 </html>
