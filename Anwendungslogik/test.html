@@ -13,7 +13,7 @@
   function render(pos) {
       var lat = pos.coords.latitude;
       var lon = pos.coords.longitude;
-      var map = L.mapbox.map('map', 'examples.map-20v6611k')
+      var map = L.mapbox.map('map', 'http://openstreetmap.org')
           .setView([lat, lon], 8);
       L.mapbox.markerLayer({
           // this feature is in the GeoJSON format: see geojson.org
