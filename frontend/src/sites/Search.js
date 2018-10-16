@@ -33,7 +33,9 @@ class Search extends Component {
             lng: -0.09,
             zoom: 13,
             value1: 5,
-            value: 0
+            value: 0,
+            searchText: '',
+            searched: false
         }
     }
 
@@ -49,6 +51,19 @@ class Search extends Component {
         })
     }
 
+    //onSearchChanged
+    onSearchChanged = (e, d) => {
+        this.setState({searchText: d.value});
+    };
+
+
+    //onSearch
+    onSearch = (e, d) => {
+        // todo: Suchanfrage ans Backend
+        this.setState({searched: true});
+
+    };
+
     render() {
 
         const position = [this.state.lat, this.state.lng];
@@ -57,6 +72,20 @@ class Search extends Component {
             min: 0,
             max: 25,
             step: 1,
+        };
+
+        const mockData = [
+            {title: 'Wanderweg 1', address: 'Speyer, RLP, Deutschland', rating: 4, image: ''},
+            {title: 'Wanderweg 2', address: 'Speyer, RLP, Deutschland', rating: 2, image: ''}
+        ];
+        var searchResults = [];
+        if (this.state.searched){
+            mockData.forEach( (result) => {
+               searchResults.push(<div>
+                   {result.title}
+                    <p>{result.address}</p>
+               </div>)
+            });
         }
 
         return (
@@ -83,8 +112,8 @@ class Search extends Component {
                                 <Header as='h2'>
                                     Find a trail / Search for a route
                                 </Header>
-                                <Form.Input fluid placeholder='Enter area, city or landmark'
-                                            icon={<Icon name='search' link/>}/>
+                                <Form.Input fluid placeholder='Enter area, city or landmark' onChange={this.onSearchChanged}
+                                            action={{ icon: 'search', onClick: this.onSearch}} />
                                 <Header as='h4'>
                                     <Icon name='filter'/>
                                     <Header.Content> Filter </Header.Content>
@@ -133,6 +162,8 @@ class Search extends Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+
+                {searchResults}
             </Container>
 
 

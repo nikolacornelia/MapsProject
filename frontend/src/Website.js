@@ -29,21 +29,20 @@ class Website extends Component {
                 content = <Search/>;
                 break;
             case 'user':
-                content = <LogIn/>
+                content = <LogIn/>;
                 break;
             case 'help':
-                content = <FAQ/>
+                content = <FAQ/>;
                 break;
             default:
                 content = <Home/>;
         }
 
-
         // Layout der Seite:
         return (
             <div className="App">
-                <Grid.Row>
-                    <Menu icon='labeled'>
+
+                    <Menu icon='labeled' style={{marginBottom: "0"}}>
                         <Menu.Item
                             name='home'
                             active={this.state.activeItem === 'home'}
@@ -94,8 +93,7 @@ class Website extends Component {
                         </Menu.Item>
                     </Menu>
 
-                </Grid.Row>
-                <Segment vertical style={{padding: 0}}>
+                <Segment vertical className="content" style={{padding: 0}}>
                     {content}
                 </Segment>
 

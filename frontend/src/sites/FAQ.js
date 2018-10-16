@@ -20,23 +20,25 @@ import {
     Message
 } from 'semantic-ui-react'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
+import {Slider} from 'react-semantic-ui-range';
 
 
 class FAQ extends Component {
     render() {
 
-        return (
-            <Container fluid>
-                <Grid columns='three'>
-                    <Segment.Group>
-                        <Segment>Q1</Segment>
-                        <Segment>Q2</Segment>
-                        <Segment>Q3</Segment>
+        return(
 
-                    </Segment.Group>
-                </Grid>
-            </Container>
-        )
+        <Container fluid>
+            <Grid columns='three'>
+                <Segment.Group>
+                    <Segment>Q1</Segment>
+                    <Segment>Q2</Segment>
+                    <Segment>Q3</Segment>
+
+                </Segment.Group>
+            </Grid>
+        </Container>
+    )
     }
 }
 

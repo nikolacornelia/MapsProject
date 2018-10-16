@@ -1,5 +1,5 @@
 {
-  "name": "testproject",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,7 +7,7 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-leaflet": "^2.1.0",
-    "react-scripts": "2.0.4",
+    "react-scripts": "2.0.5",
     "react-semantic-ui-range": "^0.6.2",
     "semantic-ui-react": "^0.82.5"
   },
