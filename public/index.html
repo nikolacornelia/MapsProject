@@ -2,7 +2,25 @@
 <head>
     <title>MAPS</title>
 </head>
+<script src="main.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
 <body>
-    <h1>Test</h1>
-</body>
+    <form>
+   <!--   <input type="file" name="userPhoto" /><br/> -->
+      <p></p>
+  <label for="name">Name: </label>
+   <input type="text" name = "name" id="sName"/><br/>
+  <label for="description">Description:</label>
+   <input type = "text" name = "description" id="sDescription"/><br/>
+  <label for="category">Category:</label>
+   <input type = "text" name = "category" id="sCategory"/><br/>
+  <label for="latitude">Latitude:</label>
+   <input type = "text" name = "latitude" id="nLatitude" /><br/>
+<label for="longitude">Longitude:</label>
+   <input type = "text" name = "longitude" id="nLongitude"/><br/>
+    </form>
+   <button onclick="newPointOfInterest()">add point of interest to database</button>
+   
+  </body>
 </html>
