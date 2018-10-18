@@ -51,23 +51,17 @@ app.post('/test',function(req,res){
 
     });
 
-    
+ app.get('/getData', function(req,res){
+    Point.find({}, function(err, data){
+        console.log("success in app.get of server.js");
+        res.send(data);
+    });
+ })   
 
-   /**  let oNewPoint = new mSchema({
-             name: aResult.sName,
-             description: aResult.sDescription,
-             category: aResult.sCategory, latitude: aResult.nLatitude, longitude: aResult.nLongitude
-           });
-    console.log(oNewPoint);
-    mSchema.save(function(err,doc){
-              if(err) res.send('Error while inserting');
-              else    res.send('Successfully inserted!');
-           });
-    }); **/
+   
 
 
-
-
+/** 
 app.post('/new',function(req,res){
     console.log(req.body);
     upload(req,res,function(err) {
@@ -94,7 +88,8 @@ let storage =   multer.diskStorage({
     callback(null, file.originalname);
   }
 });
-let upload = multer({ storage : storage}).single('userPhoto');
+let upload = multer({ storage : storage}).single('userPhoto'); **/
+
 app.get('/',function(req,res){
       res.sendFile(__dirname + "/index.html");
 });

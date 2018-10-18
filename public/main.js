@@ -1,4 +1,8 @@
 
+window.onload = function() {
+    getPointsOfInterest();
+};
+
 function newPointOfInterest() {
     let oPoint = {};
     oPoint.name = document.getElementById("sName").value;
@@ -15,7 +19,59 @@ function newPointOfInterest() {
         url: '/test',						
         success: function(data) {
             alert('data inserted in database');
+            document.getElementById("sName").value = "";
+            document.getElementById("sDescription").value = "";
+            document.getElementById("sCategory").value = "";
+            document.getElementById("nLatitude").value = "";
+            document.getElementById("nLongitude").value = ""; 
+            getPointsOfInterest();
         }
     });
     }
+
+function getPointsOfInterest() {
+    $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3001/getData',						
+        success: function(data) {
+            createTable(data);
+        }
+    });
+}
+
+ function createTable(data) {   
+    var col = [];
+        for (var i = 0; i < data.length; i++) {
+            for (var key in data[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+    
+    var table = document.createElement("table");
+
+    var tr = table.insertRow(-1);                   // TABLE ROW.
+
+    for (var i = 0; i < col.length; i++) {
+        var th = document.createElement("th");      // TABLE HEADER.
+        th.innerHTML = col[i];
+        tr.appendChild(th);
+    }
+
+    for (var i = 0; i < data.length; i++) {
+
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = data[i][col[j]];
+            }
+        }
+        var divContainer = document.getElementById("showData");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+    };
+
+
 
