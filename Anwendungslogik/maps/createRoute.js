@@ -1,6 +1,6 @@
 // See post: http://asmaloney.com/2014/01/code/creating-an-interactive-map-with-leaflet-and-openstreetmap/
-var lat;
-var lng;
+var dLat;
+var dLng;
 var map = L.map( 'map', {
   center: [20.0, 5.0],
   minZoom: 2,
@@ -15,8 +15,8 @@ L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   subdomains: ['a', 'b', 'c']
 }).addTo( map )
 
-var HELSINKI = [60.1708, 24.9375];
-map.setView(HELSINKI, 15);
+
+map.setView(49.47748, 8.42216, 15);
 
 map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
 .on('locationfound', function(e){})
@@ -39,20 +39,20 @@ function onMapClick(e) {
 
 
   //Save Click Coordinates in variable;
-  lat = e.latlng.lat;
-  lng = e.latlng.lng;
+  dLat = e.latlng.lat;
+  dLng = e.latlng.lng;
 
 }
 
 map.on('click', onMapClick);
 
 function submitFunction(){
-  var name = document.getElementById("name").value;
-  var beschreibung = document.getElementById("beschreibung").value;
+  var sName = document.getElementById("name").value;
+  var sDescription = document.getElementById("beschreibung").value;
 s
   
 
-  var objHighlight = {"Name": name, "Beschreibung": beschreibung, "Latitude": lat, "Longitude": lng};
+  var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Latitude": dLat, "Longitude": dLng};
   localStorage.setItem('myStorage', JSON.stringify(objHighlight));
   var objHighlight = JSON.parse(localStorage.getItem('myStorage'));
 
