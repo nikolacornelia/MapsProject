@@ -15,7 +15,7 @@ L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   subdomains: ['a', 'b', 'c']
 }).addTo( map )
 
-map.setView(49.47748, 8.42216, 15);
+map.setView([49.47748, 8.42216], 15);
 
 map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
 .on('locationfound', function(e){})
@@ -49,7 +49,7 @@ function submitFunction(){
   var sName = document.getElementById("name").value;
   var sDescription = document.getElementById("beschreibung").value;
   var sCategory = document.getElementById("kategorie").value;
-  
+
 
   var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Kategorie": sCategory, "Latitude": dLat, "Longitude": dLng};
   localStorage.setItem('myStorage', JSON.stringify(objHighlight));
