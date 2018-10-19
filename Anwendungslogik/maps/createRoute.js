@@ -8,18 +8,24 @@ var map = L.map( 'map', {
   center: [20.0, 5.0],
   minZoom: 2,
   zoom: 2
-})
+});
+
+L.Routing.control({
+  waypoints: [
+      L.latLng(49.47748, 8.42216),
+      L.latLng(49.47648, 8.32216)
+  ],
+  routeWhileDragging: true
+}).addTo(map);
 
 
-
-
-L.tileLayer( 'http://{s}.tile.osm.org/{z}/{x}/{y}{r}.png', {
+L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   subdomains: ['a', 'b', 'c']
-}).addTo( map )
+}).addTo( map );
 
 
-map.setView([57.74, 11.94], 15);
+map.setView([49.47748, 8.42216], 15);
 
 map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
 .on('locationfound', function(e){})
@@ -28,15 +34,9 @@ map.locate({setView: true, watch: true}) /* This will return map so you can do c
     alert("Location access denied.");
 });
 
-L.Routing.control({
-  waypoints: [
-    L.latLng(57.74, 11.94),
-    L.latLng(57.6792, 11.949)
-  ],
-  routeWhileDragging: true
-}).addTo(map);
 
-var myURL = jQuery( 'script[src$="createRoute.js"]' ).attr( 'src' ).replace( 'createRoute.js', '' )
+
+var myURL = jQuery( 'script[src$="createRoute.js"]' ).attr( 'src' ).replace( 'createRoute.js', '' );
 
 //var fs = require(' fs'); //Importing filesystem package
 //var data = fs.readFileSync('highlights.json');
