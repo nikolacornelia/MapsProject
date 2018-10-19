@@ -3,9 +3,13 @@ window.onload = function() {
     getPointsOfInterest();
 };
 
-var dLat;
-var dLng;
+//Global variables
 
+var dLat;       //to save Latitude
+var dLng;       //to save Longitude
+
+
+//Functions
 function onMapClick(e) {
     popup
         .setLatLng(e.latlng)
@@ -13,7 +17,7 @@ function onMapClick(e) {
         .openOn(map);
 
 
-    //Save Click Coordinates in variable;
+    //Save Click Coordinates in variable
     dLat = e.latlng.lat;
     dLng = e.latlng.lng;
 
@@ -33,17 +37,10 @@ function newPointOfInterest() {
         data: {point: jsonPoint},
         datatype: 'json',
         url: '/test',
-        // success: function(data) {
-        //     alert('data inserted in database');
-        //     document.getElementById("sName").value = "";
-        //     document.getElementById("sDescription").value = "";
-        //     document.getElementById("sCategory").value = "";
-        //     document.getElementById("nLatitude").value = "";
-        //     document.getElementById("nLongitude").value = "";
-        //     getPointsOfInterest();
-        // }
     });
-    }
+}
+
+
 
 function getPointsOfInterest() {
     $.ajax({

@@ -16,8 +16,8 @@ L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo( map )
 
 map.setView([49.47748, 8.42216], 15);
-
-map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
+//Locate postion of user
+map.locate({setView: true, watch: true})
 .on('locationfound', function(e){})
 .on('locationerror', function(e){
     console.log(e);
@@ -25,10 +25,7 @@ map.locate({setView: true, watch: true}) /* This will return map so you can do c
 });
 
 var myURL = jQuery( 'script[src$="createHighlights.js"]' ).attr( 'src' ).replace( 'createHighlights.js', '' )
-
-//var fs = require(' fs'); //Importing filesystem package
-//var data = fs.readFileSync('highlights.json');
-//var highlights = JSON.parse(data);
+var popup = L.popup();
 
 function onMapClick(e) {
   popup
@@ -59,6 +56,6 @@ function submitFunction(){
 
 }
 
-var popup = L.popup();
+
 
 
