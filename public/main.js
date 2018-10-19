@@ -33,15 +33,15 @@ function newPointOfInterest() {
         data: {point: jsonPoint},
         datatype: 'json',
         url: '/test',
-        success: function(data) {
-            alert('data inserted in database');
-            document.getElementById("sName").value = "";
-            document.getElementById("sDescription").value = "";
-            document.getElementById("sCategory").value = "";
-            document.getElementById("nLatitude").value = "";
-            document.getElementById("nLongitude").value = "";
-            getPointsOfInterest();
-        }
+        // success: function(data) {
+        //     alert('data inserted in database');
+        //     document.getElementById("sName").value = "";
+        //     document.getElementById("sDescription").value = "";
+        //     document.getElementById("sCategory").value = "";
+        //     document.getElementById("nLatitude").value = "";
+        //     document.getElementById("nLongitude").value = "";
+        //     getPointsOfInterest();
+        // }
     });
     }
 
