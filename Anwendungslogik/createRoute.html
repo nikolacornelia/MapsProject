@@ -4,10 +4,12 @@
     <title>Wanderrouten24</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet-routing-machine-3.2.7/dist/leaflet-routing-machine.css" />
 
     <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
-    <script type='text/javascript' src='http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js'></script>
+    <script src='https://unpkg.com/leaflet@1.2.0/dist/leaflet.js'></script>
+    <script src="leaflet-routing-machine-3.2.7/dist/leaflet-routing-machine.js"></script>
   </head>
 
   <body>
@@ -17,6 +19,7 @@
 
     <div id="map" style="width: 800px; height: 440px; border: 1px solid #AAA;"></div>
 
+    <input type="button" value="Delete" onclick="deleteFunction()">
     <form >
       <p>Name:
       <p><input type="text" id="name">
@@ -33,7 +36,8 @@
 
     </div>
 
-    <script type='text/javascript' src='maps/createHighlights.js'></script>
+    <script type='text/javascript' src='maps/createRoute.js'></script>
+    
   </body>
 </html>
 
