@@ -1,6 +1,7 @@
 
 window.onload = function() {
     getPointsOfInterest();
+    displayPoints();
 };
 
 //Global variables
@@ -10,6 +11,24 @@ var dLng;       //to save Longitude
 
 
 //Functions
+
+function displayPoints() {
+
+    $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3001/getData',
+        success: function(data) {
+            for (let i in data) {
+                let mark = L.marker([
+                    parseFloat(data[i].latitude),
+                    parseFloat(data[i].longitude)], {title: data[i].name}
+                  );
+                mark.addTo(map);
+            }
+        }
+    });
+
+}
 function onMapClick(e) {
     popup
         .setLatLng(e.latlng)
