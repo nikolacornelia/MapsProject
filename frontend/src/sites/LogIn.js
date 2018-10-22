@@ -24,12 +24,20 @@ import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 
 class LogIn extends Component {
 
+    constructor(props){
+        super(props);
+        this.state = {
+            loggedIn: false
+        }
+    }
+
+    onSubmitForm = () => {
+      //  todo: login routine
+
+    };
+
     render() {
-
-
         return (
-
-
             <Grid textAlign='center' style={{height: '100%'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
 
@@ -37,7 +45,7 @@ class LogIn extends Component {
                     <Header as='h2' color='blue' textAlign='center'>
                         Login to your account
                     </Header>
-                    <Form size='large'>
+                    <Form size='large' onSubmit={this.onSubmitForm}>
                         <Segment stacked>
                             <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address'/>
                             <Form.Input
