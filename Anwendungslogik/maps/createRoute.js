@@ -10,13 +10,13 @@ var map = L.map( 'map', {
   zoom: 2
 });
 
-L.Routing.control({
-  waypoints: [
-      L.latLng(49.47748, 8.42216),
-      L.latLng(49.47648, 8.32216)
-  ],
-  routeWhileDragging: true
-}).addTo(map);
+//L.Routing.control({
+//  waypoints: [
+//      L.latLng(49.47748, 8.42216),
+//      L.latLng(49.47648, 8.32216)
+//  ],
+//  routeWhileDragging: true
+//}).addTo(map);
 
 
 L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -47,7 +47,7 @@ function onMapClick(e) {
 
   aPoints.push(e.latlng);
   aMarker[aMarker.length] = L.marker(aPoints[aPoints.length - 1]).addTo(map);
- 
+
 
 }
 map.on('click', onMapClick);
@@ -60,7 +60,7 @@ function submitFunction(){
   var sName = document.getElementById("name").value;
   var sDescription = document.getElementById("beschreibung").value;
 s
-  
+
 
   var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Latitude": dLat, "Longitude": dLng};
   localStorage.setItem('myStorage', JSON.stringify(objHighlight));
