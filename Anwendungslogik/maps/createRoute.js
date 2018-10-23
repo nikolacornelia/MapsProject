@@ -10,29 +10,28 @@ var map = L.map( 'map', {
   zoom: 2
 });
 
-//L.Routing.control({
-//  waypoints: [
-//      L.latLng(49.47748, 8.42216),
-//      L.latLng(49.47648, 8.32216)
-//  ],
-//  routeWhileDragging: true
-//}).addTo(map);
+L.tileLayer( 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-
-L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  subdomains: ['a', 'b', 'c']
-}).addTo( map );
+L.Routing.control({
+  waypoints: [
+      L.latLng(49.47748, 8.42216),
+      L.latLng(49.47648, 8.32216)
+  ],
+  routeWhileDragging: true
+})
+.addTo(map);
 
 
 map.setView([49.47748, 8.42216], 15);
 
-map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
+/* map.locate({setView: true, watch: true}) /* This will return map so you can do chaining
 .on('locationfound', function(e){})
 .on('locationerror', function(e){
     console.log(e);
     alert("Location access denied.");
-});
+}); */
 
 
 
