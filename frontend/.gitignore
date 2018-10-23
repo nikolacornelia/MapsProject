@@ -6,9 +6,6 @@
 # testing
 /coverage
 
-# production
-/build
-
 # IntelliJ specifcs
 /.idea
 

@@ -4,100 +4,60 @@ import Home from "./sites/Home";
 import Search from "./sites/Search";
 import LogIn from "./sites/LogIn";
 import FAQ from "./sites/FAQ";
+import LandingPage from "./sites/LandingPage"
 import {Button, Container, Menu, Grid, Icon, Responsive, Segment} from "semantic-ui-react";
-
+import {Route, HashRouter as Router, NavLink} from "react-router-dom";
 
 class Website extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            activeItem: 'home'
         }
     }
-
-    // Menü Methoden:
-    handleItemClick = (e, {name}) => this.setState({activeItem: name});
-
     render() {
-        var content;
-        switch (this.state.activeItem) {
-            case 'create':
-                content = <Create/>;
-                break;
-            case 'search':
-                content = <Search/>;
-                break;
-            case 'user':
-                content = <LogIn/>;
-                break;
-            case 'help':
-                content = <FAQ/>;
-                break;
-            default:
-                content = <Home/>;
-        }
-
         // Layout der Seite:
         return (
-            <div className="App">
-
+            <Router>
+                <div>
                     <Menu icon='labeled' style={{marginBottom: "0"}}>
-                        <Menu.Item
-                            name='home'
-                            active={this.state.activeItem === 'home'}
-                            onClick={this.handleItemClick}
-                        >
+                        <Menu.Item name='home' as={NavLink} exact to='/'>
                             <Icon name='home'/>
                             Home
                         </Menu.Item>
-                        <Menu.Item
-                            name='search'
-                            active={this.state.activeItem === 'search'}
-                            onClick={this.handleItemClick}
-                        >
+                        <Menu.Item name='search' as={NavLink} exact to='/search'>
                             <Icon name='search'/>
                             Search
                         </Menu.Item>
-                        <Menu.Item
-                            name='create'
-                            active={this.state.activeItem === 'create'}
-                            onClick={this.handleItemClick}
-                        >
+                        <Menu.Item name='create' as={NavLink} exact to='/create'>
                             <Icon name='pencil'/>
                             Create
                         </Menu.Item>
-                        <Menu.Item
-                            name='tree'
-                            active={this.state.activeItem === 'tree'}
-                            onClick={this.handleItemClick}
+                        <Menu.Item name='logo'
+                            // as={NavLink} exact to='/name'
                         >
                             <Icon name='tree'/>
                             Name
                         </Menu.Item>
-                        <Menu.Item position='right'
-                                   name='user'
-                                   active={this.state.activeItem === 'user'}
-                                   onClick={this.handleItemClick}
-                        >
+                        <Menu.Item position='right' name='user' as={NavLink} exact to='/user'>
                             <Icon name='user'/>
                             LogIn
                         </Menu.Item>
-                        <Menu.Item
-                            name='help'
-                            active={this.state.activeItem === 'help'}
-                            onClick={this.handleItemClick}
-                        >
+                        <Menu.Item name='help' as={NavLink} exact to='/help'>
                             <Icon name='help'/>
                             FAQ
                         </Menu.Item>
                     </Menu>
 
-                <Segment vertical className="content" style={{padding: 0}}>
-                    {content}
-                </Segment>
-
-            </div>
+                    <Segment vertical className="content" style={{padding: 0}}>
+                        <Route exact path="/" component={LandingPage}/>
+                        <Route path="/search" component={Search}/>
+                        <Route path="/create" component={Create}/>
+                        <Route path="/user" component={LogIn}/>
+                        <Route path="/help" component={FAQ}/>
+                    </Segment>
+                </div>
+            </Router>
         )
 
     }

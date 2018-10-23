@@ -15,27 +15,31 @@ import {
     Icon,
     Label,
     Input,
+    Rating,
     Checkbox,
     Accordion,
     Form,
-    Radio
+    Radio,
+    Dropdown,
+    Item
 } from 'semantic-ui-react'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import {Slider} from 'react-semantic-ui-range';
 
 
 class Search extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             lat: 51.505,
             lng: -0.09,
             zoom: 13,
-            value1: 5,
-            value: 0,
+
+            difficulty: 0,
+            routeLength: 5,
             searchText: '',
-            searched: false
+            searched: false,
+            showDetail: -1
         }
     }
 
@@ -45,17 +49,14 @@ class Search extends Component {
     };
 
     //Range
-    handleValueChange(e, {value}) {
-        this.setState({
-            value: value
-        })
-    }
+    handleValueChange = (e, {value}) => {
+        this.setState({ value: value });
+    };
 
     //onSearchChanged
     onSearchChanged = (e, d) => {
         this.setState({searchText: d.value});
     };
-
 
     //onSearch
     onSearch = (e, d) => {
@@ -64,29 +65,57 @@ class Search extends Component {
 
     };
 
+    onSearchResultClick = (id) => {
+        this.setState({showDetail: id})
+    };
+
     render() {
-
         const position = [this.state.lat, this.state.lng];
-        const settings = {
-            start: 5,
-            min: 0,
-            max: 25,
-            step: 1,
-        };
-
         const mockData = [
-            {title: 'Wanderweg 1', address: 'Speyer, RLP, Deutschland', rating: 4, image: ''},
-            {title: 'Wanderweg 2', address: 'Speyer, RLP, Deutschland', rating: 2, image: ''}
+            {
+                id: 1,
+                title: 'Wanderweg 1',
+                address: 'Speyer, RLP, Deutschland',
+                distance: 4,
+                difficulty: 'moderate',
+                rating: 4,
+                image: './static/media/RiceTerraces.JPG'
+            },
+            {
+                id: 2,
+                title: 'Wanderweg 2',
+                address: 'Speyer, RLP, Deutschland',
+                distance: 8,
+                difficulty: 'easy',
+                rating: 2,
+                image: './static/media/RiceTerraces.JPG'
+            }
         ];
         var searchResults = [];
-        if (this.state.searched){
-            mockData.forEach( (result) => {
-               searchResults.push(<div>
-                   {result.title}
-                    <p>{result.address}</p>
-               </div>)
+        if (this.state.searched) {
+            mockData.forEach((result) => {
+                searchResults.push(
+                    <Item onClick={() => this.onSearchResultClick(result.id)}>
+                        <Item.Image size='small' src={result.image}/>
+                        <Item.Content>
+                            <Item.Header as='h4'> {result.title} </Item.Header>
+                            <Item.Description>
+                                {result.address}
+                                <p/>
+                                Distance:{result.distance} km
+                                <p/>
+                                Difficulty: {result.difficulty}
+                                <Item.Extra>
+                                    <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
+                                </Item.Extra>
+                            </Item.Description>
+                        </Item.Content>
+                    </Item>
+                )
             });
         }
+        var detailRoute = mockData.find( (route) => route.id === this.state.showDetail );
+
 
         return (
             <Container fluid>
@@ -105,65 +134,82 @@ class Search extends Component {
                                     </Popup>
                                 </Marker>
                             </Map>
+
                         </Grid.Column>
 
                         <Grid.Column width={5} style={{padding: "5em 3em"}}>
-                            <Form size='large'>
-                                <Header as='h2'>
-                                    Find a trail / Search for a route
-                                </Header>
-                                <Form.Input fluid placeholder='Enter area, city or landmark' onChange={this.onSearchChanged}
-                                            action={{ icon: 'search', onClick: this.onSearch}} />
-                                <Header as='h4'>
-                                    <Icon name='filter'/>
-                                    <Header.Content> Filter </Header.Content>
-                                </Header>
-                                <Header.Subheader as='h5'> Difficulty
-                                </Header.Subheader>
-                                <Form.Group inline>
-                                    <Form.Radio
-                                        label='easy'
-                                        name='radioGroup'
-                                        value='easy'
-                                        checked={this.state.value === 'easy'}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Radio
-                                        label='moderate'
-                                        name='radioGroup'
-                                        value='moderate'
-                                        checked={this.state.value === 'moderate'}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Radio
-                                        label='difficult'
-                                        name='radioGroup'
-                                        value='difficult'
-                                        checked={this.state.value === 'difficult'}
-                                        onChange={this.handleChange}
-                                    />
-                                </Form.Group>
-                                <Header as='h4'> Route length in km: Routes up to {this.state.value1} km </Header>
-                                <Slider color='blue' inverted={false}
-                                        settings={{
-                                            start: this.state.value1,
-                                            min: 0,
-                                            max: 25,
-                                            step: 1,
-                                            onChange: (value) => {
-                                                this.setState({
-                                                    value1: value
-                                                })
-                                            }
-                                        }}/>
-                                <Label color='blue'>{this.state.value1}</Label>
 
-                            </Form>
+                            {this.state.showDetail <= -1 ?
+                                /* Search form */
+                                <div>
+                                    <Form size='large'>
+                                        <Header as='h2'>Find a trail / Search for a route</Header>
+                                        <Form.Input fluid placeholder='Enter area, city or landmark'
+                                                    onChange={this.onSearchChanged}
+                                                    action={{icon: 'search', onClick: this.onSearch}}/>
+                                        <Header as='h4'>
+                                            <Icon name='filter'/>
+                                            <Header.Content> Filter </Header.Content>
+                                        </Header>
+                                        <Header.Subheader as='h5'> Difficulty</Header.Subheader>
+                                        <Form.Group inline>
+                                            <Form.Radio
+                                                label='easy' name='radioGroup' value='easy'
+                                                checked={this.state.difficulty === 'easy'}
+                                                onChange={this.handleChange}
+                                            />
+                                            <Form.Radio
+                                                label='moderate' name='radioGroup' value='moderate'
+                                                checked={this.state.difficulty === 'moderate'}
+                                                onChange={this.handleChange}
+                                            />
+                                            <Form.Radio
+                                                label='difficult' name='radioGroup' value='difficult'
+                                                checked={this.state.difficulty === 'difficult'}
+                                                onChange={this.handleChange}
+                                            />
+                                        </Form.Group>
+                                        <Header as='h4'> Route length in km: Routes up to<Label
+                                            color='blue'>{this.state.routeLength}</Label> km </Header>
+                                        <Slider color='blue' inverted={false}
+                                                settings={{
+                                                    start: this.state.routeLength,
+                                                    min: 0, max: 25, step: 1,
+                                                    onChange: (value) => this.setState({routeLength: value})
+                                                }}/>
+                                    </Form>
+
+                                    {this.state.searched && <div>
+                                        <Grid columns='equal'>
+                                            <Grid.Column textAlign='left'>
+                                                <Icon name='list'/> {mockData.length} results
+                                            </Grid.Column>
+                                            <Grid.Column textAlign='right'>
+                                                <Dropdown text='Sort By' direction='left'>
+                                                    <Dropdown.Menu>
+                                                        <Dropdown.Item text='Relevance'/>
+                                                        <Dropdown.Item text='Most popular'/>
+                                                        <Dropdown.Item text='Most recently updated'/>
+                                                    </Dropdown.Menu>
+                                                </Dropdown>
+                                            </Grid.Column>
+                                        </Grid>
+
+                                        <Item.Group divided link>
+                                            {searchResults}
+                                        </Item.Group>
+                                    </div>}
+                                </div>
+                                /* End of search form */
+                                :
+                                /* Details form */
+                                <Form>
+                                    {detailRoute.title}
+                                </Form>}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
 
-                {searchResults}
             </Container>
 
 
