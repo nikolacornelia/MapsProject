@@ -11,9 +11,29 @@ var dLng;       //to save Longitude
 
 
 //Functions
+function getLocalPointsOfInterest() {
+    //only get points that are in the bounds of the map
+    oBorder = {}
+    oBorder.dMaxLong = map.getBounds().getEast();
+    oBorder.dMinLong = map.getBounds().getWest();
+    oBorder.dMaxLat = map.getBounds().getNorth();
+    oBorder. dMinLat = map.getBounds().getSouth();
+  
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3001/getLocalPoints',
+        datayype: "json",
+        data: {border: oBorder},
+        success: function(data) {
+            console.log("received");
+        },
+        error: function(err) {
+           console.log(err);
+        }
+    });
+}
 
 function displayPoints() {
-
     $.ajax({
         type: 'GET',
         url: 'http://localhost:3001/getData',
@@ -42,6 +62,15 @@ function onMapClick(e) {
 
   }
 
+function saveRoute() {
+    $.ajax({
+        type: 'POST',
+        data: {route: {name: 'test'}},
+        datatype: 'json',
+        url: '/saveRoute',
+    });
+
+}  
 function newPointOfInterest() {
     let oPoint = {};
     oPoint.name = document.getElementById("sName").value;
@@ -55,7 +84,7 @@ function newPointOfInterest() {
         type: 'POST',
         data: {point: jsonPoint},
         datatype: 'json',
-        url: '/test',
+        url: '/savePoint',
     });
 }
 

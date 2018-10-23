@@ -9,12 +9,22 @@ let methodOverride = require('method-override');
 let Schema = require('./schema_model');
 let oSchema = Schema.sPointOfInterest();
 let jQuery = require('jQuery');
+let assert = require('assert');
 const {ObjectID} = require("mongodb");
+
+let schemaPoint = new mongoose.Schema({
+    name: String, description: String, category: String, latitude: Number, longitude: Number
+     }); 
+let Point = mongoose.model("Point", schemaPoint);
+let schemaRoute = new mongoose.Schema({
+    name: String, description:String, structure: [{ point: Object, order: Number}]
+});
+let Route = mongoose.model("Route", schemaRoute);
 
 
 app.use(bodyParser());
 app.use(methodOverride());
-//app.use(app.router);
+
 app.use('/', express.static(`${__dirname}/public`));
 
 app.use(function(req, res, next) {
@@ -28,14 +38,9 @@ mongoose.connection.once('open', function() {
     console.log("connected");
 });
 
-var defineSchema = new mongoose.Schema({
-   name: String, description: String, category: String, latitude: Number, longitude: Number
-    });
 
-var Point = mongoose.model("Point", defineSchema);
 
-app.post('/test',function(req,res){
-    console.log('Node function started');
+app.post('/savePoint',function(req,res){
     let aResult = req.body.point;
     aResult = JSON.parse(aResult);
     let myData = new Point(aResult);
@@ -51,12 +56,51 @@ app.post('/test',function(req,res){
 
     });
 
+app.post('/saveRoute',function(req,res){
+    //let aResult = req.body.route;
+    //aResult = JSON.parse(aResult);
+    //let oData = new Route(aResult);
+    let oData =new Route({ name: "Wein und Berg", description:"vorsicht bei Regen", structure: [{ point: '5bce180d2203630b1066887e', order: 1}, {point: {lat: 49.49669, long: 8.41267}, order : 2}, {point: '5bce18392203630b1066887f', order: 3}]});   
+    oData.save()
+        .then(item => {
+            res.send("item saved to database");
+        })
+        .catch(err=> {
+            res.status(400).send("unable to save to database");
+        });
+
+    });
+
  app.get('/getData', function(req,res){
     Point.find({}, function(err, data){
-        console.log("success in app.get of server.js");
         res.send(data);
     });
  })   
+
+ app.post('/getLocalPoints', function(req,res) {
+    let oBorder = req.body.border;
+    /** oBorder.dMinLat = parseFloat(oBorder.dMinLat);
+    oBorder.dMaxLat = parseFloat(oBorder.dMaxLat);
+    oBorder.dMinLong = parseFloat(oBorder.dMinLong);
+    oBorder.dMaxLong = parseFloat(oBorder.dMaxLong); **/
+
+    let dMinLat = Number(oBorder.dMinLat);
+    let dMaxLat = Number(oBorder.dMaxLat);
+    let dMinLong = Number(oBorder.dMinLong);
+    let dMaxLong = Number(oBorder.dMaxLong);
+
+   let query = Point.find({latitude:{$gt:dMinLat, $lt:dMaxLat}});
+
+    var promise = query.exec();
+    assert.ok(promise instanceof Promise);
+
+    promise.then(function (doc) {
+       res.send(doc);
+    });
+    
+    
+    
+ })
 
    
 
