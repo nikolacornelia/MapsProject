@@ -1,54 +1,10 @@
 
-window.onload = function() {
-    getPointsOfInterest();
-    displayPoints();
-};
 
 //Global variables
 
 var dLat;       //to save Latitude
 var dLng;       //to save Longitude
 
-
-//Functions
-function getLocalPointsOfInterest() {
-    //only get points that are in the bounds of the map
-    oBorder = {}
-    oBorder.dMaxLong = map.getBounds().getEast();
-    oBorder.dMinLong = map.getBounds().getWest();
-    oBorder.dMaxLat = map.getBounds().getNorth();
-    oBorder. dMinLat = map.getBounds().getSouth();
-  
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3001/getLocalPoints',
-        datayype: "json",
-        data: {border: oBorder},
-        success: function(data) {
-            console.log("received");
-        },
-        error: function(err) {
-           console.log(err);
-        }
-    });
-}
-
-function displayPoints() {
-    $.ajax({
-        type: 'GET',
-        url: 'http://localhost:3001/getData',
-        success: function(data) {
-            for (let i in data) {
-                let mark = L.marker([
-                    parseFloat(data[i].latitude),
-                    parseFloat(data[i].longitude)], {title: data[i].name}
-                  );
-                mark.addTo(map);
-            }
-        }
-    });
-
-}
 function onMapClick(e) {
     popup
         .setLatLng(e.latlng)

@@ -77,8 +77,8 @@ app.post('/saveRoute',function(req,res){
     });
  })   
 
- app.post('/getLocalPoints', function(req,res) {
-    let oBorder = req.body.border;
+ app.get('/getLocalPoints', function(req,res) {
+    let oBorder = req.query.border;
     /** oBorder.dMinLat = parseFloat(oBorder.dMinLat);
     oBorder.dMaxLat = parseFloat(oBorder.dMaxLat);
     oBorder.dMinLong = parseFloat(oBorder.dMinLong);
@@ -89,17 +89,11 @@ app.post('/saveRoute',function(req,res){
     let dMinLong = Number(oBorder.dMinLong);
     let dMaxLong = Number(oBorder.dMaxLong);
 
-   let query = Point.find({latitude:{$gt:dMinLat, $lt:dMaxLat}});
-
-    var promise = query.exec();
-    assert.ok(promise instanceof Promise);
-
-    promise.then(function (doc) {
-       res.send(doc);
+    Point.find({latitude:{$gt:dMinLat, $lt:dMaxLat}}, function(err, data){
+        if(err) {throw err;}
+        res.send(data);
     });
-    
-    
-    
+        
  })
 
    
