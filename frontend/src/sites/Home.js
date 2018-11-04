@@ -1,55 +1,36 @@
 import React, {Component} from "react";
 import {Grid, Header, Image, Icon, Sidebar, Container, Segment} from "semantic-ui-react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import ReactDOM from 'react-dom';
 
 class Home extends Component {
 
     render() {
-        //                          <Image src='/RiceTerraces.JPG' fluid/>
+        //
         return (
-            <div style={{
-                backgroundImage: "url('RiceTerraces.JPG')",
-                height: "100%",
-                width: "100%",
-                paddingTop: "1rem"
-            }}>
-                <Container>
 
-                </Container>
-                <Grid centered>
-                    <Grid.Row>
-                        <Grid.Column width={16}>
+            <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows>
 
-                        </Grid.Column>
-                        <Grid.Column width={6}>
+                <div>
+                    <img src='./static/media/RiceTerraces.JPG' />
+                </div>
+                <div>
+                    <img src='./static/media/EndChineseWall.JPG' />
+                    <p className="legend">Legend 2</p>
+                </div>
+                <div>
+                    <img src='./static/media/RiceTerraces.JPG' />
+                    <p className="legend">Legend 3</p>
+                </div>
+                <div>
+                    <img src='./static/media/EndChineseWall.JPG' />
+                    <p className="legend">Legend 4</p>
+                </div>
 
-                            <Header
-                                as='header1'
-                                center
-                                content='Find your trail'
-                                style={{
-                                    fontsize: '4em',
-                                    fontWeight: 'big',
-                                    padding: '20em 0em',
-
-                                }}>
-                            </Header>
-                            <p style={{fontsize: '1.5em'}}>
-                                Browse through the 1000+ existing trails to find the one route matching your
-                                desires
-                            </p>
-
-                        </Grid.Column>
-                        <Grid.Column width={4}>
-                            <Icon name='caret right'/>
-                        </Grid.Column>
-
-                    </Grid.Row>
-                </Grid>
-            </div>
-        );
+            </Carousel>
+        )
     }
 
-
 }
-
 export default Home;

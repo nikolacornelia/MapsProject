@@ -27,12 +27,17 @@ class LogIn extends Component {
     constructor(props){
         super(props);
         this.state = {
-            loggedIn: false
+            loggedIn: false,
+            hasError: false
         }
     }
 
     onSubmitForm = () => {
-      //  todo: login routine
+        //  todo: login routine
+        this.props.updateLoginStatus(true);
+
+        // im Fehlerfall:
+        // this.setState({hasError: true})
 
     };
 
@@ -45,16 +50,13 @@ class LogIn extends Component {
                     <Header as='h2' color='blue' textAlign='center'>
                         Login to your account
                     </Header>
+                    {this.state.hasError &&
+                        <Message attached error header='Invalid login data!' content='Fehler message bla bla bla ....'/>
+                    }
                     <Form size='large' onSubmit={this.onSubmitForm}>
                         <Segment stacked>
-                            <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address'/>
-                            <Form.Input
-                                fluid
-                                icon='lock'
-                                iconPosition='left'
-                                placeholder='Password'
-                                type='password'
-                            />
+                            <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' required/>
+                            <Form.Input fluid icon='lock' iconPosition='left' placeholder='Password' type='password' required/>
                             <Form.Field>
                                 <a href='#'>Forgot your password?</a>
                             </Form.Field>

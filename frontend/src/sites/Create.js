@@ -42,8 +42,8 @@ class Create extends Component {
     };
 
     // RadioButton Logik
-    handleChange = (e, value) => {
-        this.setState(value);
+    handleChange = (e, {value}) => {
+        this.setState({value});
     };
 
     //wofuer ist die konstante 'value'?
@@ -53,98 +53,92 @@ class Create extends Component {
 
         // Seitenaufbau
         return (
-            <Container fluid>
-                <Grid columns='two'>
-                    <Grid.Row>
-                        <Grid.Column width={11} style={{padding: 0}}>
+            <Sidebar.Pushable>
+                {/* Sidebar = Right Column */}
+                <Sidebar as={Segment} animation='push' direction='right' visible width='very wide'>
+                    <Form size='large'>
+                        <Header as='h2'>
+                            Create new route
+                            <Header.Subheader>Enter route information</Header.Subheader>
+                        </Header>
 
-                            <Map center={position} zoom={this.state.zoom} style={{height: "100%"}}>
-                                <TileLayer
-                                    attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                <Marker position={position}>
-                                    <Popup>
-                                        A pretty CSS3 popup. <br/> Easily customizable
-                                    </Popup>
-                                </Marker>
-                            </Map>
-                        </Grid.Column>
+                        <Form.Input fluid label='Title' placeholder='Title of the route' required/>
+                        <Form.Input fluid label='Description' placeholder='Description of the route'
+                                    required/>
 
-                        <Grid.Column width={5} style={{padding: "5em 3em"}}>
-                            <Form size='large'>
-                                <Header as='h2'>
-                                    Create new route
-                                    <Header.Subheader>Enter route information</Header.Subheader>
-                                </Header>
+                        <Form.Input fluid label='Image' placeholder='Upload image file'
+                                    iconPosition='left'
+                                    icon={<Icon name='add' link inverted color='black'/>}/>
 
-                                <Form.Input fluid label='Title' placeholder='Title of the route' required/>
-                                <Form.Input fluid label='Description' placeholder='Description of the route'
-                                            required/>
-
-                                <Form.Input fluid label='Image' placeholder='Upload image file'
-                                            iconPosition='left'
-                                            icon={<Icon name='add' link inverted color='black'/>}/>
-
-                                <Header as='h4'>Difficulty</Header>
-                                <Form.Group inline>
-                                    <Form.Radio
-                                        label='easy'
-                                        name='radioGroup'
-                                        value='easy'
-                                        checked={this.state.value === 'easy'}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Radio
-                                        label='moderate'
-                                        name='radioGroup'
-                                        value='moderate'
-                                        checked={this.state.value === 'moderate'}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Radio
-                                        label='difficult'
-                                        name='radioGroup'
-                                        value='difficult'
-                                        checked={this.state.value === 'difficult'}
-                                        onChange={this.handleChange}
-                                    />
-                                </Form.Group>
-                                <Header size='small'>Features</Header>
-                                <Form.Group widths='equal'>
-                                    <Form.Checkbox label='Kid-Friendly'/>
-                                    <Form.Checkbox label='Dogs Allowed'/>
-                                </Form.Group>
-                                <Form.Group widths='equal'>
-                                    <Form.Checkbox label='Forest'/>
-                                    <Form.Checkbox label='Lake'/>
-                                </Form.Group>
-                                <Form.Group widths='equal'>
-                                    <Form.Checkbox label='River'/>
-                                    <Form.Checkbox label='Wineyard'/>
-                                </Form.Group>
-                                <Accordion>
-                                    <Accordion.Title active={this.state.showMoreFeatures} index={0}
-                                                     onClick={this.handleClick}>
-                                        <Icon name='dropdown'/>
-                                        More
-                                    </Accordion.Title>
-                                    <Accordion.Content active={this.state.showMoreFeatures}>
-                                        <p>
-                                            More features as you click. This will also be in a grid I assume
-                                        </p>
-                                    </Accordion.Content>
-                                </Accordion>
+                        <Header as='h4'>Difficulty</Header>
+                        <Form.Group>
+                            <Form.Radio
+                                label='easy'
+                                value='easy'
+                                checked={this.state.value === 'easy'}
+                                onChange={this.handleChange}
+                            />
+                            <Form.Radio
+                                label='moderate'
+                                value='moderate'
+                                checked={this.state.value === 'moderate'}
+                                onChange={this.handleChange}
+                            />
+                            <Form.Radio
+                                label='difficult'
+                                value='difficult'
+                                checked={this.state.value === 'difficult'}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Group>
+                        <Header size='small'>Features</Header>
+                        <Form.Group widths='equal'>
+                            <Form.Checkbox label='Kid-Friendly'/>
+                            <Form.Checkbox label='Dogs Allowed'/>
+                        </Form.Group>
+                        <Form.Group widths='equal'>
+                            <Form.Checkbox label='Forest'/>
+                            <Form.Checkbox label='Lake'/>
+                        </Form.Group>
+                        <Form.Group widths='equal'>
+                            <Form.Checkbox label='River'/>
+                            <Form.Checkbox label='Wineyard'/>
+                        </Form.Group>
+                        <Accordion>
+                            <Accordion.Title active={this.state.showMoreFeatures} index={0}
+                                             onClick={this.handleClick}>
+                                <Icon name='dropdown'/>
+                                More
+                            </Accordion.Title>
+                            <Accordion.Content active={this.state.showMoreFeatures}>
                                 <p>
+                                    More features as you click. This will also be in a grid I assume
                                 </p>
+                            </Accordion.Content>
+                        </Accordion>
+                        <p>
+                        </p>
 
-                                <Button color='blue'>Save</Button>
-                            </Form>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Container>
+                        <Button color='blue'>Save</Button>
+                    </Form>
 
+                </Sidebar>
+
+                {/* Sidebar.Pusher = Left Column */}
+                <Sidebar.Pusher style={{height: '100%'}}>
+                    <Map center={position} zoom={this.state.zoom} style={{height: "100%"}}>
+                        <TileLayer
+                            attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={position}>
+                            <Popup>
+                                A pretty CSS3 popup. <br/> Easily customizable
+                            </Popup>
+                        </Marker>
+                    </Map>
+                </Sidebar.Pusher>
+            </Sidebar.Pushable>
         )
     }
 }

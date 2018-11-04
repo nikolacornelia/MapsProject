@@ -1,8 +1,7 @@
-#root, .App {
+html, #root, .App {
     height: 100%;
 }
 
 .content {
     height: 100%;
-    padding: 0;
 }
