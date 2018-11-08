@@ -26,7 +26,8 @@ function saveRoute() {
         url: '/saveRoute',
     });
 
-}  
+} 
+
 function newPointOfInterest() {
     let oPoint = {};
     oPoint.name = document.getElementById("sName").value;
@@ -43,8 +44,6 @@ function newPointOfInterest() {
         url: '/savePoint',
     });
 }
-
-
 
 function getPointsOfInterest() {
     $.ajax({
@@ -90,6 +89,28 @@ function getPointsOfInterest() {
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
     };
+
+    function saveDocument() {
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3001/saveDocument',
+            success: function(data) {
+                console.log('saved document');
+            }
+        });
+    }
+
+    function getDocument() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:3001/getDocument',
+            success: function(data) {
+                let divContainer = document.getElementById("showImage");
+                divContainer.innerHTML = ('<img src="' + data + '">');
+            }
+        });
+    }
+
 
 
 

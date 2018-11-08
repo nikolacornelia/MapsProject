@@ -93,7 +93,16 @@ function displayPoints(arrayPoints) {
       console.log(arrayPoints[i]);
   }}
 
+function saveImage() {
+  
+  $.ajax({
+    type: 'POST',
+    //data: {route: {name: 'test'}},
+    //datatype: 'json',
+    url: '/saveDocument',
+});
 
+}
 
 
 

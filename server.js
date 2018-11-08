@@ -3,6 +3,7 @@ let express = require('express');
 let http = require('http');
 let path = require('path');
 let mongoose = require('mongoose');
+let fs = require('fs');
 let app = express();
 let bodyParser = require('body-parser');
 let methodOverride = require('method-override');
@@ -10,7 +11,12 @@ let Schema = require('./schema_model');
 let oSchema = Schema.sPointOfInterest();
 let jQuery = require('jQuery');
 let assert = require('assert');
+let dbMongo;
 const {ObjectID} = require("mongodb");
+let mongodb = require("mongodb");
+let Grid = require('gridfs-stream');
+Grid.mongo = mongoose.mongo;
+let gfs;
 
 let schemaPoint = new mongoose.Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
@@ -33,12 +39,11 @@ app.use(function(req, res, next) {
     next();
   });
 
-mongoose.connect('mongodb://localhost:27017/maps');
-mongoose.connection.once('open', function() {
+let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
+conn.once('open', function() {
     console.log("connected");
-});
-
-
+    gfs = Grid(conn.db);
+})
 
 app.post('/savePoint',function(req,res){
     let aResult = req.body.point;
@@ -96,7 +101,37 @@ app.post('/saveRoute',function(req,res){
         
  })
 
-   
+app.post('/saveDocument', function(req,res) {
+    let source = fs.createReadStream('test.jpg');
+    let target = gfs.createWriteStream({
+        filename: 'test.jpg'
+    });
+    source.pipe(target);
+});
+
+app.get('/getDocument', function(req,res) {
+    //important: there must be only one file with this filename, otherwise no photo gets displayed
+    let filename = 'test.jpg';
+    gfs.exist({ filename: filename }, (err,file) => {
+        if (err || !file) {
+            res.status(404).send('File not Found');
+            return
+        }
+        let data = [];
+        let readstream = gfs.createReadStream( {filename:filename});
+        readstream.on('data', function(result){
+           data.push(result);
+        });
+        readstream.on('end', function () {
+            data = Buffer.concat(data);
+            let img = 'data:image/jpg;base64,' + Buffer(data).toString('base64');
+            res.send(img);
+        });
+        readstream.on('err', function(err) {
+            throw err;
+        })
+    })
+})
 
 
 /** 
