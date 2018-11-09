@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <title>MAPS</title>
 </head>
@@ -8,28 +9,37 @@
 
 <body>
     <form>
-   <!--   <input type="file" name="userPhoto" /><br/> -->
-      <p></p>
-  <label for="name">Name: </label>
-   <input type="text" name = "name" id="sName"/><br/>
-  <label for="description">Description:</label>
-   <input type = "text" name = "description" id="sDescription"/><br/>
-  <label for="category">Category:</label>
-   <input type = "text" name = "category" id="sCategory"/><br/>
-  <label for="latitude">Latitude:</label>
-   <input type = "text" name = "latitude" id="nLatitude" /><br/>
-<label for="longitude">Longitude:</label>
-   <input type = "text" name = "longitude" id="nLongitude"/><br/>
+        <!--   <input type="file" name="userPhoto" /><br/> -->
+        <p></p>
+        <label for="name">Name: </label>
+        <input type="text" name="name" id="sName" /><br />
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="sDescription" /><br />
+        <label for="category">Category:</label>
+        <input type="text" name="category" id="sCategory" /><br />
+        <label for="latitude">Latitude:</label>
+        <input type="text" name="latitude" id="nLatitude" /><br />
+        <label for="longitude">Longitude:</label>
+        <input type="text" name="longitude" id="nLongitude" /><br />
     </form>
-   <button onclick="newPointOfInterest()">add point of interest to database</button>
-   <button onclick="getPointsOfInterest()">get points of interest</button>
-   <button onclick="saveDocument()">save Document</button>
-   <button onclick="getDocument()">get Document</button>
-<div id="showImage"></div>
-   <p id="showData">
+    <button onclick="newPointOfInterest()">add point of interest to database</button>
+    <button onclick="getPointsOfInterest()">get points of interest</button>
+    <button onclick="saveDocument()">save Document</button>
+    <button onclick="getDocument()">get Document</button>
+    <div id="showImage"></div>
+    <p id="showData">
 
-   </p>
-   <input type="button" onclick="location.href='createHighlights.html';" value="NextPage" />
+    </p>
+    <input type="button" onclick="location.href='createHighlights.html';" value="NextPage" />
+    <form>
+        <p></p>
+        <label for="login_email">Email:</label>
+        <input type="text" name="login_email" id="lemail" /><br />
+        <label for="login_passwort">Passwort:</label>
+        <input type="text" name="login_passwort" id="lPasswort" /><br />
+    </form>
+    <button onclick="Login()">Login</button>
+    <button onclick="Registrieren()">Registrieren</button>
+</body>
 
-  </body>
 </html>
