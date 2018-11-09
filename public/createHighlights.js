@@ -41,18 +41,24 @@ function onMapClick(e) {
 
 }
 
-function submitFunction(){
-  var sName = document.getElementById("name").value;
-  var sDescription = document.getElementById("beschreibung").value;
-  var sCategory = document.getElementById("kategorie").value;
-
-
-  var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Kategorie": sCategory, "Latitude": dLat, "Longitude": dLng};
-  localStorage.setItem('myStorage', JSON.stringify(objHighlight));
-  var objHighlight = JSON.parse(localStorage.getItem('myStorage'));
-
-  //data.writeFile('highlights.json', newHighlight, finished);
-
+function newPointOfInterestMap(){
+  let oPoint = {};
+    oPoint.name = document.getElementById("sName").value;
+    oPoint.description = document.getElementById("sDescription").value;
+    oPoint.category = document.getElementById("sCategory").value;
+    oPoint.latitude = dLat;
+    oPoint.longitude = dLng;
+    jsonPoint = JSON.stringify(oPoint);
+    //console.log(jsonPoint);
+    $.ajax({
+        type: 'POST',
+        data: { point: jsonPoint },
+        datatype: 'json',
+        url: 'http://localhost:3001/savePoint',
+        success: function(data) {
+            console.log('saved document');
+        }
+    });
 }
 
 async function onMapLoad(e) {

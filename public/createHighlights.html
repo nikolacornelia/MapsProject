@@ -23,7 +23,7 @@
       <p>Beschreibung:
       <p><textarea id="sDescription" name="beschreibung" rows="10" cols="30"></textarea>
       <p>Kategorie:
-      <p><select id="iCategory">
+      <p><select id="sCategory">
         <option value="restaurant">Restaurant</option>
         <option value="viewpoint">Viewpoint</option>
         <option value="denkmal">Denkmal</option>
@@ -31,13 +31,12 @@
       </select>
       <p>
         <a href="createHighlights.html"><button>Cancel</button></a>
-        <input type="button" value="Submit" onclick="submitFunction()">
+        <button onclick="newPointOfInterestMap()">add point of interest to database</button>
     </form>
-    <button onclick="newPointOfInterest()">add point of interest to database</button>
     <button onclick="saveRoute()">save Route</button>
     <button onclick="getLocalPointsOfInterest()">get local Points of interest</button>
-    <button onclick="saveImage()">save Image</button>
-    <p id="demo"></p>
+   <!-- <button onclick="saveImage()">save Image</button>!-->
+      <p id="demo"></p>
     <p id="showData">
 
     </p>
