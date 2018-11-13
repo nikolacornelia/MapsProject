@@ -26,8 +26,11 @@ map.locate({setView: true, watch: true}) /* This will return map so you can do c
 .on('locationerror', function(e){
     console.log(e);
     alert("Location access denied.");
-}); 
+});
 
+var yellowWaypoint = L.icon({
+  iconUrl: 'maps/images/pin48Waypoint.png'
+});
 
 
 //var myURL = jQuery( 'script[src$="createRoute.js"]' ).attr( 'src' ).replace( 'createRoute.js', '' );
@@ -39,7 +42,7 @@ map.locate({setView: true, watch: true}) /* This will return map so you can do c
 function onMapClick(e) {
   //Save Click Coordinates in variable;
   aPoints.push(e.latlng);
-  aMarker[aMarker.length] = L.marker(aPoints[aPoints.length - 1]).addTo(map);
+  aMarker[aMarker.length] = L.marker(aPoints[aPoints.length - 1],{icon: yellowWaypoint}).addTo(map);
   aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
 }
 map.on('click', onMapClick);
@@ -55,7 +58,7 @@ function submitFunction(){
   var sName = document.getElementById("name").value;
   var sDescription = document.getElementById("beschreibung").value;
 
-  
+
 
   var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Latitude": dLat, "Longitude": dLng};
   localStorage.setItem('myStorage', JSON.stringify(objHighlight));
@@ -65,7 +68,7 @@ function submitFunction(){
 
 }
 async function onMapLoad(e) {
-  await getLocalPointsOfInterest();  
+  await getLocalPointsOfInterest();
 }
 
 function getLocalPointsOfInterest() {
