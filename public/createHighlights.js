@@ -25,7 +25,7 @@ map.locate({setView: true, watch: true})
     alert("Location access denied.");
 });
 
-var myURL = jQuery( 'script[src$="createHighlights.js"]' ).attr( 'src' ).replace( 'createHighlights.js', '' )
+//var myURL = jQuery( 'script[src$="createHighlights.js"]' ).attr( 'src' ).replace( 'createHighlights.js', '' )
 var popup = L.popup();
 
 function onMapClick(e) {

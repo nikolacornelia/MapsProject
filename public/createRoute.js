@@ -9,7 +9,10 @@ var map = L.map( 'map', {
   center: [20.0, 5.0],
   minZoom: 2,
   zoom: 2
-});
+})
+map.on('load', onMapLoad);
+map.on('click', onMapClick);
+map.on('moveend', onMapLoad);
 
 L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -61,6 +64,41 @@ function submitFunction(){
   //data.writeFile('highlights.json', newHighlight, finished);
 
 }
+async function onMapLoad(e) {
+  await getLocalPointsOfInterest();  
+}
+
+function getLocalPointsOfInterest() {
+  //only get points that are in the bounds of the map
+  oBorder = {}
+  oBorder.dMaxLong = map.getBounds().getEast();
+  oBorder.dMinLong = map.getBounds().getWest();
+  oBorder.dMaxLat = map.getBounds().getNorth();
+  oBorder. dMinLat = map.getBounds().getSouth();
+  $.ajax({
+     type: 'GET',
+      url: 'http://localhost:3001/getLocalPoints',
+      dataType: "json",
+      data: {border: oBorder},
+      success: function(data) {
+          console.log("success");
+          displayPoints(data);
+      },
+      error: function(err) {
+         console.log(err);
+      }
+  });
+}
+
+function displayPoints(arrayPoints) {
+  for (let i in arrayPoints) {
+      let mark = L.marker([
+          parseFloat(arrayPoints[i].latitude),
+          parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
+        );
+      mark.addTo(map);
+      console.log(arrayPoints[i]);
+  }}
 
 var popup = L.popup();
 
