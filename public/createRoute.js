@@ -94,14 +94,17 @@ function getLocalPointsOfInterest() {
       }
   });
 }
-
+function highlightClicked (){
+  alert('test');
+}
 function displayPoints(arrayPoints) {
   for (let i in arrayPoints) {
       let mark = L.marker([
           parseFloat(arrayPoints[i].latitude),
           parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
-      mark.addTo(map);
+      aMarker.push(mark);
+      aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
       console.log(arrayPoints[i]);
   }}
 
