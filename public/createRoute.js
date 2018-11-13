@@ -29,7 +29,9 @@ map.locate({setView: true, watch: true}) /* This will return map so you can do c
 });
 
 var yellowWaypoint = L.icon({
-  iconUrl: 'maps/images/pin48Waypoint.png'
+  iconUrl: 'pin48Waypoint.png',
+    iconSize:     [29, 24],
+    iconAnchor:   [15, 23]
 });
 
 
