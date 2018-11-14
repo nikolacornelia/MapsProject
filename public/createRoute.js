@@ -97,7 +97,7 @@ function getLocalPointsOfInterest() {
 function highlightClicked (e){
   console.log("click");
 }
-var cities = null;
+var cities = L.layerGroup();
 
 function displayPoints(arrayPoints) {
   for (let i in arrayPoints) {
@@ -105,13 +105,11 @@ function displayPoints(arrayPoints) {
           parseFloat(arrayPoints[i].latitude),
           parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
-      aMarker.push(mark);
-      //aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
-      //aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
-      cities = L.layerGroup(aMarker);
-      cities.addTo(map);
+      cities.addLayer(mark);
       console.log(arrayPoints[i]);
   }
+  cities.addTo(map);
+  //cities.on('click', alert('es geht'));
 }
 
 var popup = L.popup();
