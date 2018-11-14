@@ -116,6 +116,7 @@ function displayPoints(arrayPoints) {
           parseFloat(arrayPoints[i].latitude),
           parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
+      mark.bindPopup("Test");//Hier würden wir gerne den Namen darstellen
       cities.addLayer(mark);
       console.log(arrayPoints[i]);
   }
