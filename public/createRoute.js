@@ -49,6 +49,13 @@ function onMapClick(e) {
 }
 map.on('click', onMapClick);
 
+function connectPoint(koordinaten){
+  aPoints.push(koordinaten);
+  aMarker[aMarker.length] = null;
+  aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
+}
+
+
 function deleteFunction(){
   map.removeLayer(aMarker[aMarker.length -1 ]);
   map.removeLayer(aPoly[aPoly.length - 1]);
@@ -109,7 +116,7 @@ function displayPoints(arrayPoints) {
 
   cities.eachLayer(function(layer) {
     layer.on('click', function(){
-      alert(this.getLatLng());
+      connectPoint(this.getLatLng());
   });
 });
 }
