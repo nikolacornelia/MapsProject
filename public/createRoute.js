@@ -130,4 +130,25 @@ function displayPoints(arrayPoints) {
 
 var popup = L.popup();
 
+//@Nikola please check
+function newEntry(){
+  let oRoute = {};
+    oRoute.name = document.getElementById("sName").value;
+    oRoute.description = document.getElementById("sDescription").value;
+    oRoute.points = aPoints; // min aPoints & aHighlight muss gespeichert werden, die anderen beiden würden es vereinfachen.
+    oRoute.marker = aMarker;
+    oRoute.poly = aPoly;
+    oRoute.highlight = aHighlight;
+    jsonRoute = JSON.stringify(oRoute);
+    //console.log(jsonPoint);
+    $.ajax({
+        type: 'POST',
+        data: { route: jsonRoute },
+        datatype: 'json',
+        url: 'http://localhost:3001/saveRoute',
+        success: function(data) {
+            console.log('saved document');
+        }
+    });
+}
 
