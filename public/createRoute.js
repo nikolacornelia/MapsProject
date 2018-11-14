@@ -94,9 +94,11 @@ function getLocalPointsOfInterest() {
       }
   });
 }
-function highlightClicked (){
-  alert('test');
+function highlightClicked (e){
+  console.log("click");
 }
+var cities = null;
+
 function displayPoints(arrayPoints) {
   for (let i in arrayPoints) {
       let mark = L.marker([
@@ -104,9 +106,13 @@ function displayPoints(arrayPoints) {
           parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
       aMarker.push(mark);
-      aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
+      //aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
+      //aMarker[aMarker.length-1].addTo(map).on('mouseover', highlightClicked());
+      cities = L.layerGroup(aMarker);
+      cities.addTo(map);
       console.log(arrayPoints[i]);
-  }}
+  }
+}
 
 var popup = L.popup();
 
