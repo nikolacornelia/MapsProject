@@ -94,9 +94,6 @@ function getLocalPointsOfInterest() {
       }
   });
 }
-function highlightClicked (e){
-  console.log("click");
-}
 var cities = L.layerGroup();
 
 function displayPoints(arrayPoints) {
@@ -109,7 +106,12 @@ function displayPoints(arrayPoints) {
       console.log(arrayPoints[i]);
   }
   cities.addTo(map);
-  //cities.on('click', alert('es geht'));
+
+  cities.eachLayer(function(layer) {
+    layer.on('click', function(){
+      alert('Funzt')
+  });
+});
 }
 
 var popup = L.popup();
