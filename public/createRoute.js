@@ -125,6 +125,11 @@ function displayPoints(arrayPoints) {
     layer.on('click', function(){
       connectPoint(this.getLatLng());
   });
+  cities.eachLayer(function(layer){
+    layer.on('mouseover'), function(){
+      layer.openPopup();
+    }
+  });
 });
 }
 
