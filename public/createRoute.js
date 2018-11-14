@@ -4,6 +4,7 @@ var dLng;
 var aPoints = [];
 var aMarker = new Array();
 var aPoly = new Array();
+var aHighlight = new Array(); // Boolean
 
 var map = L.map( 'map', {
   center: [20.0, 5.0],
@@ -43,6 +44,7 @@ var yellowWaypoint = L.icon({
 
 function onMapClick(e) {
   //Save Click Coordinates in variable;
+  aHighlight.push(0);
   aPoints.push(e.latlng);
   aMarker[aMarker.length] = L.marker(aPoints[aPoints.length - 1],{icon: yellowWaypoint}).addTo(map);
   aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
@@ -50,6 +52,7 @@ function onMapClick(e) {
 map.on('click', onMapClick);
 
 function connectPoint(koordinaten){
+  aHighlight.push(1);
   aPoints.push(koordinaten);
   aMarker[aMarker.length] = null;
   aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
@@ -57,11 +60,15 @@ function connectPoint(koordinaten){
 
 
 function deleteFunction(){
+ if(aHighlight[aHighlight.length-1]==0){
   map.removeLayer(aMarker[aMarker.length -1 ]);
+ }
   map.removeLayer(aPoly[aPoly.length - 1]);
   aMarker.splice(aMarker.length - 1,1);
   aPoints.splice(aPoints.length - 1,1);
   aPoly.splice(aPoly.length -1,1);
+  aHighlight.splice(aHighlight.length -1);
+
 }
 function submitFunction(){
   var sName = document.getElementById("name").value;
