@@ -109,7 +109,7 @@ function displayPoints(arrayPoints) {
 
   cities.eachLayer(function(layer) {
     layer.on('click', function(){
-      alert('Funzt')
+      alert(this.getLatLng());
   });
 });
 }
