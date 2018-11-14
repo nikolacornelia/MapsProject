@@ -1,0 +1,442 @@
+[33mcommit a6191537cb0454edb1bc15718c52699e8dd72285[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Fri Nov 9 14:33:45 2018 +0100
+
+    correction, points get displayed
+
+[33mcommit f0c884a0b660cb897963c801ac7d31d4cb32f488[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Thu Nov 8 22:19:45 2018 +0100
+
+    save specific photo from folder in db and return
+
+[33mcommit 450a8a5cdfab563e7640d9db46ec3b1f53bad92c[m
+Author: lenafriedrich <lena.friedrich5@web.de>
+Date:   Sun Nov 4 21:34:08 2018 +0100
+
+    Add further features / functions frontend
+
+[33mcommit 0a92a20f2a5dd527cae1247ad1b597dc6b2ecdba[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Thu Nov 1 14:01:52 2018 +0100
+
+    load only points of interest that are in area
+
+[33mcommit 2e2d956eeb50984ee684db3ae7cbcb2b13559859[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Tue Oct 23 10:33:56 2018 +0200
+
+    get local points in area (better performance), tbd
+
+[33mcommit 75767a9263b941fb9b9a89f6ddf24d12c0ccf18f[m
+Merge: c3125c6 054246f
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 23 12:51:41 2018 +0200
+
+    Strecken
+
+[33mcommit c3125c6fdcd72f9336e4a967fd96bc79e263d70c[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 23 12:48:08 2018 +0200
+
+    Streckenzeichnung
+
+[33mcommit 054246f7c5673e4325461facf05dc943260ab0b9[m
+Merge: 4aad729 1120b79
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 23 12:13:39 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit 4aad729561cdf5dc036d07a2c28ba5495e3f2806[m
+Merge: f9b1e96 5ce461c
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 23 12:13:19 2018 +0200
+
+    Commit
+
+[33mcommit 1120b798817f6e0d9c8084fd20286626b044acd0[m
+Author: lenafriedrich <lena.friedrich5@web.de>
+Date:   Mon Oct 22 20:52:09 2018 +0200
+
+    Add further features / functions frontend
+
+[33mcommit f9b1e966afdf8bdafa8d5fb4fad9f1409b6121b2[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Mon Oct 22 15:32:26 2018 +0200
+
+    Commit damit ich updaten kann
+
+[33mcommit 5ce461c1a8eaabc4277b12eb662a2f936ae184f0[m
+Author: PhilippKleemann <philipp.kleemann@yahoo.de>
+Date:   Mon Oct 22 14:53:38 2018 +0200
+
+    Source für leaflet.css angepasst
+
+[33mcommit e4b589347fdf82af6a58112d61d69fecc07cb0b7[m
+Author: PhilippKleemann <philipp.kleemann@yahoo.de>
+Date:   Mon Oct 22 13:33:01 2018 +0200
+
+    Route wird angezeigt
+
+[33mcommit 22ec93c4880b7fcc4f972ed2519db8fe9d7ac39c[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Sun Oct 21 19:46:44 2018 +0200
+
+    all points from database get displayed including name as tooltip
+
+[33mcommit 8f21a8c8a02c790046828ab485c9888f4c491163[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Fri Oct 19 14:13:08 2018 +0200
+
+    implementing routing plugin
+
+[33mcommit 551aa70cd4586c8efcc9635a1dad8dbbc4f881ca[m
+Merge: e436f24 441bc07
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Fri Oct 19 12:54:36 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit e436f24a2b6f6e7807b207b484a22ba4b23af8ef[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Fri Oct 19 12:54:32 2018 +0200
+
+    einbinden der routing machine
+
+[33mcommit 441bc07dfd6fc8b448a4ca6aab4f63747eb792cc[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Fri Oct 19 12:48:32 2018 +0200
+
+    Speicherung Funktioniert, Lokation des USERS fehlerhaft
+
+[33mcommit b03656504dcd0dc8913db53f571fe4819623868a[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Fri Oct 19 12:33:16 2018 +0200
+
+    Working lokale Speicherung in DB --> code noch unübersichtlich und nicht formatiert
+
+[33mcommit de3d9a285a0998e8c2380b814a787036b0e443bb[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Fri Oct 19 12:07:28 2018 +0200
+
+    Speicher in DB funktioniert, Fehlermeldung nohc bearbeiten bei Anzeigen
+
+[33mcommit 73ad0f35279c4f3d337b3fe5565903ba17a196da[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Fri Oct 19 11:15:22 2018 +0200
+
+    Website Link
+
+[33mcommit ec384a4177e308cf4c5f276151cbd54811c73629[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Fri Oct 19 11:14:24 2018 +0200
+
+    Renaming
+
+[33mcommit 4a5612c9a3347ec9d336258da60f384ce67eec40[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Thu Oct 18 20:13:25 2018 +0200
+
+    see all documents of collection points of interest
+
+[33mcommit c96a4efc0a7ea2d87749e3e80ded9dad1962fdc9[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Thu Oct 18 19:39:03 2018 +0200
+
+    save point of interests - logic and UI
+
+[33mcommit 8e0ef61cdfa1cba2eec9690bb2549ab03c9c4762[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Tue Oct 16 14:21:21 2018 +0200
+
+    changes in app.js
+
+[33mcommit 2de1e26c399b5581f62bdd150e2d4494dce98ef0[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Wed Oct 17 09:40:26 2018 +0200
+
+    test commit
+
+[33mcommit a7902e713a484799c0f43c8f10aec2dd171d7f42[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Wed Oct 17 09:38:37 2018 +0200
+
+    Test Commit
+
+[33mcommit 29d7d8ee52493f0ab978310b772dd38f57d327df[m
+Merge: d12d11f 7172123
+Author: Jan <janb.uni16@gmail.com>
+Date:   Wed Oct 17 09:23:31 2018 +0200
+
+    Jans second push
+
+[33mcommit d12d11f5ffccd833e6f00232afcb8deeb9588865[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Wed Oct 17 09:20:33 2018 +0200
+
+    Jans commit
+
+[33mcommit 71721234b767d1887c0403085c04ff9a1f10562a[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Wed Oct 17 09:18:19 2018 +0200
+
+    Upload
+
+[33mcommit 40cae3c5ab109e0e850cace28639054072955d00[m
+Merge: 45e69cd 46d45d3
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Wed Oct 17 09:13:45 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit 45e69cd72c8688200ab53d0613a6411aa9190f75[m
+Merge: b80f59b 9bebd37
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Wed Oct 17 09:13:42 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit 46d45d32c8fcd907d7df8786104e457a2238a017[m
+Author: lenafriedrich <lena.friedrich5@web.de>
+Date:   Tue Oct 16 22:26:39 2018 +0200
+
+    Add further features / functions frontend
+
+[33mcommit 1a80f7c4b4ede1751e0c1f3f3b2618c89206d248[m
+Author: lenafriedrich <lena.friedrich5@web.de>
+Date:   Mon Oct 15 21:38:21 2018 +0200
+
+    Add IntelliJ files to gitignore
+
+[33mcommit a938bfe5cf319cbc1ff728c6822abfd3bfea383c[m
+Author: lenafriedrich <lena.friedrich5@web.de>
+Date:   Mon Oct 15 21:26:48 2018 +0200
+
+    ADD: frontend project
+
+[33mcommit b80f59b0cd17e9452d2d58a7cbe5d4c291f89138[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Mon Oct 15 13:57:56 2018 +0200
+
+    Update Anwendungslogik/index.html
+
+[33mcommit 9bebd37467aa678dff3d449195561fec0d56558e[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 15:37:52 2018 +0200
+
+    Revert "Merge branch 'master' of https://github.com/nikolacornelia/MapsProject"
+    
+    This reverts commit 1b5127eb68867ce14a4f52967656d9725246fe8b, reversing
+    changes made to cc3246f03f706d3ec58227b352f7f4f2483c3c35.
+
+[33mcommit 5165b0d0f489ae593fb61b45d9caf9b955db82fc[m
+Merge: b7fea48 1b5127e
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 15:37:10 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit b7fea48f9ccc5765942c968959d6591ad879c521[m
+Merge: be55889 18b9f60
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 15:36:28 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit 1b5127eb68867ce14a4f52967656d9725246fe8b[m
+Merge: cc3246f 009b5b8
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Thu Oct 11 15:35:18 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit cc3246f03f706d3ec58227b352f7f4f2483c3c35[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Thu Oct 11 15:33:24 2018 +0200
+
+    Map beta
+
+[33mcommit 009b5b8813f7786d3c134ab7e9df4cd436f96b6b[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 15:32:28 2018 +0200
+
+    Tests
+
+[33mcommit 421ed43f7ce66f12156bc381383c73a221821fc9[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:35:30 2018 +0200
+
+    Location4
+
+[33mcommit 58a8cdfd0880112883a6e4de36cb43ac8cabf8ce[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:28:26 2018 +0200
+
+    Location 3
+
+[33mcommit c70f8fd48aa91e0ce33a0de68b87ae3a54ae7403[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:23:49 2018 +0200
+
+    Location Test 2
+
+[33mcommit a7712c9faf5f9b4206cc69c0b3e39df56e902a0f[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:23:05 2018 +0200
+
+    Location Test
+
+[33mcommit a07fedad5a9fac12c6fa46accf0f42395cff72d3[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:13:50 2018 +0200
+
+    Wilkommen in Lu
+
+[33mcommit a324eb6984ee90b8df4033e388e4ff2dadf01d03[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:10:36 2018 +0200
+
+    Update Größe
+
+[33mcommit 39094da15680e767ae82e1bcbdee384f85040336[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:07:13 2018 +0200
+
+    WebPage
+
+[33mcommit 5510b88458b20a161e99b89565b7835bca747a39[m
+Merge: f53ad48 18b9f60
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Thu Oct 11 14:06:20 2018 +0200
+
+    Merge branch 'master' of https://github.com/nikolacornelia/MapsProject
+
+[33mcommit f53ad489a36b17e660b0bb05add001157d5c7aca[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Thu Oct 11 14:06:04 2018 +0200
+
+    Update README.md
+
+[33mcommit be55889ae288f3af27b0d76245fde4899439f8c7[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Thu Oct 11 14:05:21 2018 +0200
+
+    Update README.md
+
+[33mcommit 18b9f60986d43196762170af6341a4799f4fb9f2[m
+Merge: 2604b33 f0366e7
+Author: PhilippKleemann <philipp.kleemann@yahoo.de>
+Date:   Tue Oct 9 12:29:29 2018 +0200
+
+    Philipp Test
+
+[33mcommit f0366e7b21d902b38b0c753eb441316c62d371e8[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 9 12:15:13 2018 +0200
+
+    Geil!!!!
+
+[33mcommit 2604b3380fb2b19ede3036d3ac5387fac8c64c39[m
+Author: PhilippKleemann <philipp.kleemann@yahoo.de>
+Date:   Tue Oct 9 12:13:16 2018 +0200
+
+    Philipp Test
+
+[33mcommit df36781a62f228d0e652027fc82a5f8c5e6104e7[m
+Author: PhilippKleemann <philipp.kleemann@yahoo.de>
+Date:   Tue Oct 9 12:12:30 2018 +0200
+
+    Philipp Test
+
+[33mcommit 3063fdbc4520e11f07b076a7e9eeb6a3953ee03c[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 9 12:11:06 2018 +0200
+
+    Toll
+
+[33mcommit 8a1e1b17b877d8e5248f327050c4cbf296a6cd2c[m
+Merge: c8f010f ae6d32b
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 9 12:06:17 2018 +0200
+
+    Test
+
+[33mcommit c8f010f4cbef7ad3e0cf84a47244f1fdfc885b93[m
+Merge: 0bd8981 a1be2f0
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 9 12:02:36 2018 +0200
+
+    Bal
+
+[33mcommit ae6d32bb74c861b2ddcfe8e05ce5ebfec9da133b[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Tue Oct 9 11:49:19 2018 +0200
+
+    new comments
+
+[33mcommit a97863784e2400ffd9350b8133e9d623252d676c[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 11:47:29 2018 +0200
+
+    Gehts?
+
+[33mcommit c1f196df81c86a0abfc725cc0dfb0d75aeeed35e[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 11:44:10 2018 +0200
+
+    test
+
+[33mcommit cad754499b87ccbfb6bd599a144cf7d2d16b30f4[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 11:35:00 2018 +0200
+
+    Commit
+
+[33mcommit 0bd89810c7d3c3aae0b9e00e577ff9f53ee7dc7f[m
+Author: Jan <janb.uni16@gmail.com>
+Date:   Tue Oct 9 11:32:56 2018 +0200
+
+    Ich bin geil
+
+[33mcommit a1be2f03e34544ee0f6bc31cba99803cab1141a2[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 11:27:11 2018 +0200
+
+    Update README.md
+
+[33mcommit 39dade75e565f970abb52ab4397d86d4616c55ad[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 11:26:32 2018 +0200
+
+    Update README.md
+
+[33mcommit 48b76b5a928dfa5626491a334077e0085b596177[m
+Author: nikola_cobra <nikola@braukmueller.de>
+Date:   Tue Oct 9 10:53:22 2018 +0200
+
+    Add server with database connection
+
+[33mcommit 51165a44ae17ab326767cb13f78793ceb00bb226[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 10:52:01 2018 +0200
+
+    Update README.md
+
+[33mcommit ec567c59f0b6b60669c7d462f405f5aff81e95cc[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 10:51:46 2018 +0200
+
+    Update README.md
+
+[33mcommit 6afec7bac49f4bef9551385e6d921a2438e4a72f[m
+Author: Tim Ritzheimer <tim@Tims-MacBook-Pro-2.local>
+Date:   Tue Oct 9 10:49:02 2018 +0200
+
+    Update README.md
+
+[33mcommit 5603142280a702ebd8177980d6ded70ab31be40d[m
+Author: nikolacornelia <31590788+nikolacornelia@users.noreply.github.com>
+Date:   Tue Oct 9 10:33:30 2018 +0200
+
+    Create README.md

@@ -38,17 +38,27 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-/**let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
+ //connect for image upload (Grid creation)
+let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
 conn.once('open', function () {
-    console.log("connected");
-    gfs = Grid(conn.db);
-})**/
+    console.log("connected and created Grid for image upload");
+    gfs = new Grid(conn.db);
+}); 
 
-mongoose.connect('mongodb://localhost:27017/maps');
+
+
+ mongoose.connect('mongodb://localhost:27017/maps', function(err,db) {
+    if (err) {
+    console.log('Unable to connect to the mongoDB server. Error:', err);
+  } else {
+    console.log('Connection established');
+  }}
+);
 mongoose.connection.once('open', function() {
     console.log("connected"); 
-});
+}); 
+
+
 
 app.post('/savePoint', function (req, res) {
     let aResult = req.body.point;
@@ -106,7 +116,8 @@ app.post('/saveDocument', function (req, res) {
     oObject = 'test.jpg';
     let source = fs.createReadStream(oObject);
     let target = gfs.createWriteStream({
-        filename: 'test.jpg'
+        filename: 'test.jpg',
+        reference: '12345'
     });
     source.pipe(target);
 });
