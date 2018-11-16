@@ -4,6 +4,7 @@
   "homepage": "./",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "leaflet": "^1.3.4",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
@@ -14,10 +15,14 @@
     "react-semantic-ui-range": "^0.6.2",
     "semantic-ui-react": "^0.82.5"
   },
+  "devDependencies": {
+    "react-testing-library": "^5.2.3"
+  },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "build": "react-scripts build && npm run clean-after-build",
+    "clean-after-build": "cd build && del /f manifest.json && del /f service-worker.js && del /f precache-manifest* && del /f asset-manifest.json",
+    "test": "react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

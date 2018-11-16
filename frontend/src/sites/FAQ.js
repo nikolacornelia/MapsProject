@@ -40,10 +40,9 @@ class FAQ extends Component {
         const {activeIndex} = this.state
 
         return (
-
-            <Container>
+            <Container as={Segment} basic padded>
                 <Header as='h2'>FAQ</Header>
-                <Accordion block fluid styled>
+                <Accordion block fluid styled data-testid='faqAccordion'>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                         Most frequently asked quesion 1
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>

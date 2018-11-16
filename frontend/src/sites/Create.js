@@ -1,28 +1,18 @@
 import React, {Component} from 'react';
-import logo from '../logo.svg';
 import {
-    Container,
-    Header,
-    Button,
-    Divider,
-    Grid,
-    Image,
-    Sidebar,
-    Visibility,
-    Responsive,
-    Segment,
-    Menu,
-    Icon,
-    Input,
-    Checkbox,
-    Accordion,
-    Form,
-    Radio
+    Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility,
+    Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio
 } from 'semantic-ui-react'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
+import * as createRoute from './maps/createRoute';
 
 class Create extends Component {
 
+    /**
+     * Represents the Create component for creating routes.
+     * @constructor
+     * @param {Object} props - Properties passed to this component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -38,22 +28,34 @@ class Create extends Component {
     // Accordion Logik
     handleClick = (e, {index}) => {
         this.setState({showMoreFeatures: !this.state.showMoreFeatures});
-      
     };
 
-    // RadioButton Logik
+    /**
+     * Handles the radio button change.
+     * @param {Object} e - Event parameter that is passed with the change
+     * @param {String} value - Value of the changed control
+     */
     handleChange = (e, {value}) => {
         this.setState({value});
     };
 
-    //wofuer ist die konstante 'value'?
+    /**
+     * Injects the map functionality after the React component has rendered.
+     */
+    componentDidMount = () => {
+        createRoute.onInit();
+    };
+
+    /**
+     * Function that is being called when the component is rendered.
+     */
     render() {
         const {value} = this.state;
         const position = [this.state.lat, this.state.lng];
 
         // Seitenaufbau
         return (
-            <Sidebar.Pushable>
+            <Sidebar.Pushable data-testid='siteCreate'>
                 {/* Sidebar = Right Column */}
                 <Sidebar as={Segment} animation='push' direction='right' visible width='very wide'>
                     <Form size='large'>
@@ -66,7 +68,7 @@ class Create extends Component {
                         <Form.Input fluid label='Description' placeholder='Description of the route'
                                     required/>
 
-                        <Form.Input fluid label='Image' placeholder='Upload image file'
+                        <Form.Input type='file' fluid label='Image' placeholder='Upload image file'
                                     iconPosition='left'
                                     icon={<Icon name='add' link inverted color='black'/>}/>
 
@@ -104,29 +106,15 @@ class Create extends Component {
                             <Form.Checkbox label='River'/>
                             <Form.Checkbox label='Wineyard'/>
                         </Form.Group>
-                        <Accordion>
-                            <Accordion.Title active={this.state.showMoreFeatures} index={0}
-                                             onClick={this.handleClick}>
-                                <Icon name='dropdown'/>
-                                More
-                            </Accordion.Title>
-                            <Accordion.Content active={this.state.showMoreFeatures}>
-                                <p>
-                                    More features as you click. This will also be in a grid I assume
-                                </p>
-                            </Accordion.Content>
-                        </Accordion>
-                        <p>
-                        </p>
 
-                        <Button color='blue'>Save</Button>
+                        <Form.Button type='submit' color='blue'>Save</Form.Button>
                     </Form>
 
                 </Sidebar>
 
                 {/* Sidebar.Pusher = Left Column */}
                 <Sidebar.Pusher style={{height: '100%'}}>
-                    <Map center={position} zoom={this.state.zoom} style={{height: "100%"}}>
+                    {/* <Map center={position} zoom={this.state.zoom} style={{height: "100%"}}>
                         <TileLayer
                             attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -137,6 +125,8 @@ class Create extends Component {
                             </Popup>
                         </Marker>
                     </Map>
+                    */}
+                    <div id='map' style={{height: "100%"}} />
                 </Sidebar.Pusher>
             </Sidebar.Pushable>
         )
