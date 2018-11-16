@@ -142,20 +142,31 @@ function newEntry(){
   let oRoute = {};
     oRoute.name = document.getElementById("sName").value;
     oRoute.description = document.getElementById("sDescription").value;
-    oRoute.points = aPoints; // min aPoints & aHighlight muss gespeichert werden, die anderen beiden würden es vereinfachen.
-    oRoute.marker = aMarker;
-    oRoute.poly = aPoly;
-    oRoute.highlight = aHighlight;
-    jsonRoute = JSON.stringify(oRoute);
-    //console.log(jsonPoint);
+    oRoute.points = aPoints;  
+    //oRoute.marker = aMarker;
+    //oRoute.poly = aPoly;
+    oRoute.highlights = aHighlight;
+    let jsonRoute = JSON.stringify(oRoute);
     $.ajax({
         type: 'POST',
         data: { route: jsonRoute },
         datatype: 'json',
         url: 'http://localhost:3001/saveRoute',
         success: function(data) {
-            console.log('saved document');
+            alert('savedRoute');
         }
     });
 }
 
+function getRoutes() {
+  $.ajax({
+    type: 'GET',
+     url: 'http://localhost:3001/getRoutes',
+     success: function(data) {
+         console.log("success");
+     },
+     error: function(err) {
+        console.log(err);
+     }
+ });
+}

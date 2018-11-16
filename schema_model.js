@@ -12,9 +12,9 @@ module.exports = {
     },
     sRoute: () => {
         let schema = new Schema({
-        img: { data: Buffer, contentType: String }
-        });
-            let mSchema = mongoose.model('imageNew', schema);
+        Route: { name: String, description: String, points: Object, marker: Object, poly: Object, highlight: Object}
+         });
+            let mSchema = mongoose.model('Route', schema);
             return mSchema;
     }
 } 
