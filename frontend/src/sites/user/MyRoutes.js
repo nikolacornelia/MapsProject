@@ -21,39 +21,10 @@ class MyRoutes extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            searched: true
-        }
+        this.state = {}
     }
 
-    /* {detailRoute.features.map((feature) => <Label>{feature}</Label>)}*/
     render() {
-
-        var searchResults = [];
-        if (this.state.searched) {
-            mockData.forEach((result) => {
-                searchResults.push(
-                    <Item>
-                        <Item.Image size='small' src={result.image}/>
-
-                        <Item.Content>
-                            <Item.Header as='h4'> {result.title} </Item.Header>
-                            <Item.Meta>{result.address}</Item.Meta>
-                            <Item.Description>
-                                <div>Distance:{result.distance} km</div>
-                                <div>Difficulty: {result.difficulty}</div>
-                            </Item.Description>
-                            <Item.Extra>
-                                <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
-                                <Button floated='right' compact content='Delete'/>
-                            </Item.Extra>
-
-                        </Item.Content>
-
-                    </Item>
-                )
-            });
-        }
 
         return (
             <Container as={Segment} basic padded>
@@ -78,7 +49,24 @@ class MyRoutes extends Component {
                     </Grid.Column>
                 </Grid>
                 <Item.Group divided link>
-                    {searchResults}
+                    {mockData.map((result) =>
+                        <Item>
+                            <Item.Image size='small' src={result.image}/>
+
+                            <Item.Content>
+                                <Item.Header as='h4'> {result.title} </Item.Header>
+                                <Item.Meta>{result.address}</Item.Meta>
+                                <Item.Description>
+                                    <div>Distance:{result.distance} km</div>
+                                    <div>Difficulty: {result.difficulty}</div>
+                                </Item.Description>
+                                <Item.Extra>
+                                    <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
+                                    <Button floated='right' compact content='Delete'/>
+                                </Item.Extra>
+                            </Item.Content>
+                        </Item>
+                    )}
                 </Item.Group>
             </Container>
 

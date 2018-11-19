@@ -94,9 +94,9 @@ class Website extends Component {
                                render={props => (<LogIn  {...props} updateLoginStatus={this.updateLoginStatus}/>)}/>
                         <Route path="/help" component={FAQ}/>
 
-                        <Route path="/myroutes" component={MyRoutes}/>
-                        <Route path="/myreviews" component={MyReviews}/>
-                        <Route path="/settings" component={Settings}/>
+                        <PrivateRoute path="/myroutes" component={MyRoutes}/>
+                        <PrivateRoute path="/myreviews" component={MyReviews}/>
+                        <PrivateRoute path="/settings" component={Settings}/>
                     </Segment>
                 </div>
             </Router>

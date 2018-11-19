@@ -29,7 +29,7 @@ import {
 } from 'semantic-ui-react'
 import {Map, TileLayer, Marker} from 'react-leaflet';
 import {Slider} from 'react-semantic-ui-range';
-import {mockData} from '../mockData';
+import {mockData, mockFeatures} from '../mockData';
 
 class Search extends Component {
     constructor(props) {
@@ -44,13 +44,14 @@ class Search extends Component {
             searchText: '',
             searched: false,
             showDetail: -1,
-            reviewIsOpen: false
+            reviewIsOpen: false,
+            isFavorised: false
         }
     }
 
     // RadioButton Logik
     handleChange = (e, {name, value}) => {
-        this.setState( { [name]: value}) ;
+        this.setState({[name]: value});
     };
 
     //Range
@@ -75,20 +76,28 @@ class Search extends Component {
      * @param {int} id - the id of the route to be displayed (or -1 if back)
      */
     onShowDetail = (id) => {
-        this.setState({showDetail: id})
-    };
+        let isFavorised = id >= 0 ? mockData[id].isFavorised : false;
 
-    // Accordion Logik
-    handleClick = (e, {index}) => {
-        this.setState({showMoreFeatures: !this.state.showMoreFeatures});
+        // navigate internally
+        this.setState({
+            showDetail: id,
+            isFavorised: isFavorised
+        });
     };
 
     onSubmitReview = () => {
-        // routine for send new review
+        // todo: routine for send new review
     };
 
     toggleReviewDialog = () => {
         this.setState({reviewIsOpen: !this.state.reviewIsOpen});
+    };
+    toggleFavorite = () => {
+        // todo: send request to toggle favorite
+
+        // toggle on UI
+        let isFavorised = !this.state.isFavorised;
+        this.setState({isFavorised: isFavorised});
     };
 
     render() {
@@ -99,7 +108,7 @@ class Search extends Component {
             mockData.forEach((result) => {
                 searchResults.push(
                     <Item onClick={() => this.onShowDetail(result.id)}>
-                        <Item.Image size='small' src={result.image}/>
+                        <Item.Image size='small' rounded src={result.image}/>
                         <Item.Content>
                             <Item.Header as='h4'> {result.title} </Item.Header>
                             <Item.Meta>{result.address}</Item.Meta>
@@ -131,12 +140,9 @@ class Search extends Component {
                                 <Form.Input fluid placeholder='Enter area, city or landmark'
                                             onChange={this.onSearchChanged}
                                             action={{icon: 'search', onClick: this.onSearch}}/>
-                                <Header as='h4'>
-                                    <Icon name='filter'/>
-                                    <Header.Content> Filter </Header.Content>
-                                </Header>
-                                <Header.Subheader as='h5'> Difficulty</Header.Subheader>
-                                <Form.Group>
+                                <Header as='h4' dividing icon='filter' content='Filter'/>
+                                <Form.Group inline>
+                                    <label>Difficulty</label>
                                     <Form.Radio label='easy' value='easy' name='difficulty'
                                                 checked={this.state.difficulty === 'easy'}
                                                 onChange={this.handleChange}/>
@@ -147,47 +153,38 @@ class Search extends Component {
                                                 checked={this.state.difficulty === 'difficult'}
                                                 onChange={this.handleChange}/>
                                 </Form.Group>
-                                <Header as='h4'> Route length in km: Routes up to<Label
-                                    color='blue'>{this.state.routeLength}</Label> km </Header>
-                                <Slider name='routeLength' color='blue' inverted={false}
-                                        settings={{
-                                            start: this.state.routeLength,
-                                            min: 0, max: 25, step: 1,
-                                            onChange: (value) => this.setState({routeLength: value})
-                                        }}/>
-                                <Accordion>
-                                    <Accordion.Title active={this.state.showMoreFeatures} index={0} content='more'
-                                                     onClick={this.handleClick}>
-                                        <Icon name='dropdown'/>
-                                    </Accordion.Title>
-                                    <Accordion.Content active={this.state.showMoreFeatures}>
-                                        <Header size='small'>Features</Header>
-                                        <Form.Group widths='equal'>
-                                            <Form.Checkbox label='Kid-Friendly'/>
-                                            <Form.Checkbox label='Dogs Allowed'/>
-                                        </Form.Group>
-                                        <Form.Group widths='equal'>
-                                            <Form.Checkbox label='Forest'/>
-                                            <Form.Checkbox label='Lake'/>
-                                        </Form.Group>
-                                        <Form.Group widths='equal'>
-                                            <Form.Checkbox label='River'/>
-                                            <Form.Checkbox label='Wineyard'/>
-                                        </Form.Group>
-                                    </Accordion.Content>
-                                </Accordion>
+                                <Form.Field>
+                                    <label>
+                                        Route length in km: Routes up to <Label
+                                        color='blue'>{this.state.routeLength}</Label> km
+                                    </label>
+                                    <Slider name='routeLength' color='blue' inverted={false}
+                                            settings={{
+                                                start: this.state.routeLength,
+                                                min: 0, max: 25, step: 1,
+                                                onChange: (value) => this.setState({routeLength: value})
+                                            }}/>
+                                </Form.Field>
+
+                                <Form.Dropdown name='features' label='Features' placeholder='Route features'
+                                               multiple search selection options={mockFeatures}
+                                               style={{fontSize: '0.85em'}}/>
                             </Form>
 
                             {this.state.searched && <div>
                                 {/* */}
+
+                                <Divider/>
                                 <Grid columns='equal'>
                                     <Grid.Column textAlign='left'>
                                         <Icon name='list'/> {mockData.length} results
                                     </Grid.Column>
                                     <Grid.Column textAlign='right'>
-                                        <Dropdown text='Sort By' direction='left'>
+                                        <Dropdown icon='sort' text='Sort By' direction='left'>
                                             <Dropdown.Menu>
-                                                <Dropdown.Item text='Relevance'/>
+                                                <Dropdown.Header icon='sort' content='Sort by'/>
+                                                <Dropdown.Divider/>
+                                                <Dropdown.Item active text='Relevance'/>
                                                 <Dropdown.Item text='Most popular'/>
                                                 <Dropdown.Item text='Most recently updated'/>
                                             </Dropdown.Menu>
@@ -202,28 +199,37 @@ class Search extends Component {
                         </div>
                         : /*else display detail form*/
                         <Form size='large'>
-                            <Grid columns={2}>
-                                <Grid.Row>
-                                    <Grid.Column width={1}>
-                                        <Icon verticalAlignment='bottom' link name='arrow left'
-                                              onClick={() => this.onShowDetail(-1)}/>
-                                    </Grid.Column>
-                                    <Grid.Column width={15}>
-                                        <Header as='h2'>
-                                            {detailRoute.title}
-                                            <Header.Subheader as='h4'>{detailRoute.address}</Header.Subheader>
-                                        </Header>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
+
+                            <Header as='h2' style={{width: "100%"}}>
+                                <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
+                                      onClick={() => this.onShowDetail(-1)}/>
+                                <Header.Content style={{width: "100%"}}>
+                                    {detailRoute.title}
+                                    <span style={{float: 'right'}}>
+                                        <Popup
+                                            trigger={<Icon name={this.state.isFavorised ? 'heart' : 'heart outline'}
+                                                           link color='red' onClick={this.toggleFavorite}/>}
+                                            content={this.state.isFavorised
+                                                ? 'Remove this route from your favorites.'
+                                                : 'Add this route to your favorites.'}
+                                            size='tiny' position='bottom right'/>
+                                    </span>
+                                    <Header.Subheader as='h4'>{detailRoute.address}</Header.Subheader>
+                                </Header.Content>
+                            </Header>
+
                             <Segment.Group className='basic'>
                                 <Segment basic>
-                                    <Image centered fluid src={detailRoute.image}/>
+                                    <Image centered fluid rounded src={detailRoute.image}/>
                                 </Segment>
 
                                 <Segment.Group className='basic' horizontal textAlign='center'>
                                     <Segment basic>
-                                        <Statistic horizontal size='mini' value={detailRoute.distance} label='km'/>
+                                        <Statistic horizontal size='mini' label='km'>
+                                            <Statistic.Value>
+                                                <Icon name='map'/> {detailRoute.distance} km
+                                            </Statistic.Value>
+                                        </Statistic>
                                     </Segment>
                                     <Segment basic>
                                         <Statistic horizontal size='mini' label={detailRoute.difficulty}/>
@@ -237,6 +243,9 @@ class Search extends Component {
                                 <Segment basic textAlign='center'>
                                     {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
                                 </Segment>
+                                <Segment basic>
+                                    {detailRoute.description}
+                                </Segment>
 
                                 <Comment.Group minimal>
 
@@ -249,25 +258,27 @@ class Search extends Component {
                                             <Modal.Header>New Review for {detailRoute.title}</Modal.Header>
                                             <Modal.Content scrolling>
                                                 <Form>
-                                                    <Header as='h4'>
-                                                        Review {detailRoute.title}
-                                                    </Header>
-                                                    <Form.Field>
+                                                    <Comment.Group>
                                                         <Comment>
-                                                            <Comment.Avatar src='/images/avatar/small/elliot.jpg'/>
+                                                            <Comment.Avatar src='./static/media/avatar-1.png'/>
                                                             <Comment.Content>
                                                                 <Comment.Author as='a'>Max Mustermann</Comment.Author>
                                                                 <Comment.Text>
-                                                                    <Form.TextArea autoHeight placeholder='Enter your review'/>
+
+                                                                    <Form.Field><Rating icon='star' size='huge'
+                                                                                        maxRating={5}/></Form.Field>
+                                                                    <Form.TextArea autoHeight
+                                                                                   name='commentText'
+                                                                                   placeholder='Enter your review'/>
+                                                                    <Form.Input type='file' fluid label='Image'
+                                                                                placeholder='Upload image file'
+                                                                                iconPosition='left'
+                                                                                icon={<Icon name='add' link inverted
+                                                                                            color='black'/>}/>
                                                                 </Comment.Text>
                                                             </Comment.Content>
                                                         </Comment>
-                                                    </Form.Field>
-                                                    <Form.Input type='file' fluid label='Image'
-                                                                placeholder='Upload image file'
-                                                                iconPosition='left'
-                                                                icon={<Icon name='add' link inverted color='black'/>}/>
-                                                    <Rating icon='star' maxRating={5}/>
+                                                    </Comment.Group>
                                                 </Form>
                                             </Modal.Content>
                                             <Modal.Actions>
@@ -276,9 +287,13 @@ class Search extends Component {
                                             </Modal.Actions>
                                         </Modal>
                                     </Header>
-
+                                    {detailRoute.comments.length === 0 &&
+                                    <Container textAlign='center'>
+                                        <i>No comments available. Be the first one to comment!</i>
+                                    </Container>}
                                     {detailRoute.comments.map((comment) =>
                                         <Comment>
+                                            <Comment.Avatar src='./static/media/avatar-1.png'/>
                                             <Comment.Content>
                                                 <Comment.Author as='b'>{comment.author}</Comment.Author>
                                                 <Comment.Metadata>
@@ -286,13 +301,15 @@ class Search extends Component {
                                                 </Comment.Metadata>
                                                 <Comment.Text><p>{comment.text}</p></Comment.Text>
                                                 <Comment.Actions>
-                                                    <Rating as='a' icon='star' defaultRating={comment.stars}
+                                                    <Rating as='a' icon='star'
+                                                            defaultRating={comment.stars}
                                                             maxRating={5} disabled/>
                                                 </Comment.Actions>
                                             </Comment.Content>
                                         </Comment>)}
                                 </Comment.Group>
                             </Segment.Group>
+
                         </Form>
                     }
                 </Sidebar>

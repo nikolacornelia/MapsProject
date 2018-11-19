@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {
-    Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility,
-    Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio
+    Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
+    Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
 } from 'semantic-ui-react'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import * as createRoute from './maps/createRoute';
+import {mockFeatures} from "../mockData";
 
 class Create extends Component {
 
@@ -18,6 +19,7 @@ class Create extends Component {
         this.state = {
             activeIndex: -1,
             showMoreFeatures: false,
+            routeCreated: false,
 
             lat: 51.505,
             lng: -0.09,
@@ -39,8 +41,15 @@ class Create extends Component {
         this.setState({value});
     };
 
+    onSubmitRoute = (e) => {
+        // todo: get current leaflet route information
+
+        // todo: submit routine
+        this.setState({routeCreated: true});
+    };
+
     /**
-     * Injects the map functionality after the React component has rendered.
+     * Injects the leaflet map functionality after the React component has rendered.
      */
     componentDidMount = () => {
         createRoute.onInit();
@@ -58,22 +67,24 @@ class Create extends Component {
             <Sidebar.Pushable data-testid='siteCreate'>
                 {/* Sidebar = Right Column */}
                 <Sidebar as={Segment} animation='push' direction='right' visible width='very wide'>
-                    <Form size='large'>
+                    {this.state.routeCreated &&
+                    <Message success header='The route has successfully been created!'/>}
+                    <Form size='large' onSubmit={this.onSubmitRoute}>
                         <Header as='h2'>
                             Create new route
                             <Header.Subheader>Enter route information</Header.Subheader>
                         </Header>
 
                         <Form.Input fluid label='Title' placeholder='Title of the route' required/>
-                        <Form.Input fluid label='Description' placeholder='Description of the route'
-                                    required/>
+                        <Form.TextArea fluid label='Description' placeholder='Description of the route'/>
 
                         <Form.Input type='file' fluid label='Image' placeholder='Upload image file'
                                     iconPosition='left'
                                     icon={<Icon name='add' link inverted color='black'/>}/>
 
-                        <Header as='h4'>Difficulty</Header>
-                        <Form.Group>
+                        <Form.Group inline>
+                            <label>Difficulty</label>
+
                             <Form.Radio
                                 label='easy'
                                 value='easy'
@@ -93,8 +104,7 @@ class Create extends Component {
                                 onChange={this.handleChange}
                             />
                         </Form.Group>
-                        <Header size='small'>Features</Header>
-                        <Form.Group widths='equal'>
+                        {/*<Form.Group widths='equal'>
                             <Form.Checkbox label='Kid-Friendly'/>
                             <Form.Checkbox label='Dogs Allowed'/>
                         </Form.Group>
@@ -105,7 +115,9 @@ class Create extends Component {
                         <Form.Group widths='equal'>
                             <Form.Checkbox label='River'/>
                             <Form.Checkbox label='Wineyard'/>
-                        </Form.Group>
+                        </Form.Group>*/}
+                        <Form.Dropdown name='features' label='Features' placeholder='Route features'
+                                       fluid multiple search selection options={mockFeatures}/>
 
                         <Form.Button type='submit' color='blue'>Save</Form.Button>
                     </Form>
@@ -126,7 +138,7 @@ class Create extends Component {
                         </Marker>
                     </Map>
                     */}
-                    <div id='map' style={{height: "100%"}} />
+                    <div id='map' style={{height: "100%"}}/>
                 </Sidebar.Pusher>
             </Sidebar.Pushable>
         )

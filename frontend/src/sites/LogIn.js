@@ -74,8 +74,11 @@ class LogIn extends Component {
                     {this.state.hasError &&
                         <Message attached error header='Invalid login data!' content='Fehler message bla bla bla ....'/>
                     }
-                    <Form size='large' onSubmit={this.onSubmitForm}>
-                        <Segment stacked>
+                    {this.props.location.state &&
+                        <Message attached warning header='You must login to access this page!' content='Please login first. You will then be redirected.'/>
+                    }
+                    <Form size='large' onSubmit={this.onSubmitForm} className='attached fluid segment'>
+
                             <Form.Input fluid icon='user' name='user' iconPosition='left'
                                         placeholder='E-mail address' onChange={this.onChangeInput} required />
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
@@ -87,11 +90,10 @@ class LogIn extends Component {
                             <Button color='blue' fluid size='large'>
                                 Login
                             </Button>
-                        </Segment>
                     </Form>
-                    <Form.Field>
+                    <Message attached='bottom'>
                         Don't have an account? <a href='#'>Sign Up</a>
-                    </Form.Field>
+                    </Message>
 
                 </Grid.Column>
             </Grid>

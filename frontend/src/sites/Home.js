@@ -9,9 +9,8 @@ class Home extends Component {
     render() {
         //
         return (
-            <div data-testid='siteHome'>
-                <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows>
-
+            <Container fluid data-testid='siteHome'>
+                <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows showThumbs={false}>
                     <div>
                         <img src='./static/media/RiceTerraces.JPG'/>
                     </div>
@@ -29,7 +28,8 @@ class Home extends Component {
                     </div>
 
                 </Carousel>
-            </div>
+                <Container as={Segment} basic padded>Test</Container>
+            </Container>
         )
     }
 
