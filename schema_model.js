@@ -26,23 +26,19 @@ module.exports = {
                     required: true,
                     trim: true
                 },
-                username: {
+               /*  username: {
                     type: String,
                     unique: true,
                     required: true,
                     trim: true
-                },
+                }, */
                 password: {
-                    type: String,
-                    required: true,
-                },
-                passwordConf: {
                     type: String,
                     required: true,
                 }
             }
         });
-        let mSchema = mongoose.model(user, schema);
+        let mSchema = mongoose.model('user', schema);
         return mSchema;
     }
 } 

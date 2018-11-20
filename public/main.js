@@ -44,7 +44,7 @@ function newPointOfInterest() {
         data: { point: jsonPoint },
         datatype: 'json',
         url: 'http://localhost:3001/savePoint',
-        success: function(data) {
+        success: function (data) {
             console.log('saved document');
         }
     });
@@ -117,6 +117,63 @@ function getDocument() {
             divContainer.innerHTML = ('<img src="' + data + '">');
         }
     });
+}
+
+function Registrieren() {
+    var email = document.getElementById("lemail").value;
+    var passwort = document.getElementById("lPasswort").value;
+    var passwortV = document.getElementById("lPasswortV").value;
+
+    var oUser = {};
+    oUser.email = document.getElementById("lemail").value;
+    oUser.password = document.getElementById("lPasswort").value;
+    jsonUser = JSON.stringify(oUser);
+
+    if (passwort === passwortV) {
+        $.ajax({
+            type: 'POST',
+            data: { user: jsonUser },
+            url: 'http://localhost:3001/saveUser',
+            success: function (data) {
+                alert("Sie haben sich erfolgreich registriert!");
+            },
+            error: function (jqXHR, textStatus, errorThrown, data) {
+                alert("E-Mail existiert bereits!");
+            }
+
+        });
+    } else {
+        alert("Passwörter stimmen nicht überein.");
+    }
+
+}
+
+function Login() {
+    $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3001/getUser',
+        success: function (data) {
+            validationUser(data);
+        }
+    });
+}
+
+function validationUser(data) {
+    var email = document.getElementById("lemail").value;
+    var password = document.getElementById("lPasswort").value;
+
+    var bLogin = false;
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].email === email && data[i].password === password) {
+            location.href = 'createHighlights.html';
+            bLogin = true;
+        }
+    }
+    if (bLogin === false) {
+        alert("Falsches Passwort");
+
+    }
+
 }
 
 

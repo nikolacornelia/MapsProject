@@ -26,7 +26,11 @@ let schemaRoute = new mongoose.Schema({
     name: String, description: String, structure: [{ point: Object, order: Number }]
 });
 let Route = mongoose.model("Route", schemaRoute);
-
+//User 
+let schemaUser = new mongoose.Schema({
+    email:{type: String, unique: true}, password: String
+});
+let User = mongoose.model("User", schemaUser);
 
 app.use(bodyParser());
 app.use(methodOverride());
@@ -51,6 +55,7 @@ mongoose.connection.once('open', function() {
 });
 
 app.post('/savePoint', function (req, res) {
+    console.log(req.body.point);
     let aResult = req.body.point;
     aResult = JSON.parse(aResult);
     let myData = new Point(aResult);
@@ -135,7 +140,24 @@ app.get('/getDocument', function (req, res) {
     })
 })
 
+app.post('/saveUser', function (req, res) {
+    let aResult = req.body.user;
+    aResult = JSON.parse(aResult);
+    let myData = new User(aResult);
+    myData.save()
+        .then(item => {
+            res.send("user saved to database");
+        })
+        .catch(err => {
+            res.status(400).send("unable to save to database");
+        });
+})
 
+app.get('/getUser', function (req, res) {
+    User.find({}, function (err, data) {
+        res.send(data);
+    });
+})
 /** 
 app.post('/new',function(req,res){
     console.log(req.body);
