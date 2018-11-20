@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-  
+  <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
 
 </head>
 
@@ -23,19 +23,20 @@
     <input type="button" value="Delete" onclick="deleteFunction()">
     <form>
       <p>Name:
-        <p><input type="text" id="name">
+        <p><input type="text" id="sName">
           <p>Beschreibung:
-            <p><textarea id="beschreibung" name="beschreibung" rows="10" cols="30"></textarea>
+            <p><textarea id="sDescription" name="beschreibung" rows="10" cols="30"></textarea>
               <p>
                 <a href="/createRoute.html"><button>Cancel</button></a>
-                <input type="button" value="Submit" onclick="submitFunction()">
+                <input type="button" value="Submit" onclick="newEntry()">
     </form>
+    <button onclick="getRoutes()">Get Routes</button>
 
     <p id="demo"></p>
     <!-- <script type='text/javascript' src='http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js'></script> -->
     <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
     <script src='https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js'></script>
-    <script type='text/javascript' src='maps/createRoute.js'></script>
+    <script type='text/javascript' src='createRoute.js'></script>
 
 </body>
 

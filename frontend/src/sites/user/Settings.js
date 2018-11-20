@@ -5,7 +5,9 @@ class Settings extends Component {
 
     render() {
         return (
-            <Container>Test</Container>
+            <Container as={Segment} basic padded>
+                Test
+            </Container>
         );
     }
 }

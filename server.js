@@ -22,9 +22,9 @@ let schemaPoint = new mongoose.Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
 });
 let Point = mongoose.model("Point", schemaPoint);
-let schemaRoute = new mongoose.Schema({
-    name: String, description: String, structure: [{ point: Object, order: Number }]
-});
+
+
+let schemaRoute = new mongoose.Schema( { name: String, description: String, points: [{lat: Number, lng: Number}], highlights: [Number]});
 let Route = mongoose.model("Route", schemaRoute);
 //User 
 let schemaUser = new mongoose.Schema({
@@ -42,17 +42,28 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-/**let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
+//connect for image upload (Grid creation)
+let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
 conn.once('open', function () {
-    console.log("connected");
-    gfs = Grid(conn.db);
-})**/
-
-mongoose.connect('mongodb://localhost:27017/maps');
-mongoose.connection.once('open', function() {
-    console.log("connected"); 
+    console.log("connected and created Grid for image upload");
+    gfs = new Grid(conn.db);
 });
+
+
+
+mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
+    if (err) {
+        console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+        console.log('Connection established');
+    }
+}
+);
+mongoose.connection.once('open', function () {
+    console.log("connected");
+});
+
+
 
 app.post('/savePoint', function (req, res) {
     console.log(req.body.point);
@@ -70,10 +81,14 @@ app.post('/savePoint', function (req, res) {
 });
 
 app.post('/saveRoute', function (req, res) {
-    //let aResult = req.body.route;
-    //aResult = JSON.parse(aResult);
-    //let oData = new Route(aResult);
-    let oData = new Route({ name: "Wein und Berg", description: "vorsicht bei Regen", structure: [{ point: '5bce180d2203630b1066887e', order: 1 }, { point: { lat: 49.49669, long: 8.41267 }, order: 2 }, { point: '5bce18392203630b1066887f', order: 3 }] });
+    let aResult = req.body.route;
+    aResult = JSON.parse(aResult);
+    let oRoute = {};
+    oRoute.name = aResult.name;
+    oRoute.description = aResult.description;
+    oRoute.points = aResult.points;
+    oRoute.highlights = aResult.highlights;
+    let oData = new Route(oRoute);
     oData.save()
         .then(item => {
             res.send("item saved to database");
@@ -89,6 +104,13 @@ app.get('/getData', function (req, res) {
         res.send(data);
     });
 })
+
+app.get('/getRoutes', function (req, res) {
+    Route.find({}, function (err, data) {
+        res.send(data);
+    });
+})
+
 
 app.get('/getLocalPoints', function (req, res) {
     let oBorder = req.query.border;
@@ -111,7 +133,8 @@ app.post('/saveDocument', function (req, res) {
     oObject = 'test.jpg';
     let source = fs.createReadStream(oObject);
     let target = gfs.createWriteStream({
-        filename: 'test.jpg'
+        filename: 'test.jpg',
+        reference: '12345'
     });
     source.pipe(target);
 });

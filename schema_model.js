@@ -12,11 +12,18 @@ module.exports = {
     },
     sRoute: () => {
         let schema = new Schema({
+            Route: { name: String, description: String, points: Object, marker: Object, poly: Object, highlight: Object }
+        });
+        let mSchema = mongoose.model('Route', schema);
+        return mSchema;
+    },
+    /* sImage: () => {
+        let schema = new Schema({
             img: { data: Buffer, contentType: String }
         });
         let mSchema = mongoose.model('imageNew', schema);
         return mSchema;
-    },
+    }, */
     sUser: () => {
         var schema = new Schema({
             user: {
@@ -26,12 +33,12 @@ module.exports = {
                     required: true,
                     trim: true
                 },
-               /*  username: {
-                    type: String,
-                    unique: true,
-                    required: true,
-                    trim: true
-                }, */
+                /*  username: {
+                     type: String,
+                     unique: true,
+                     required: true,
+                     trim: true
+                 }, */
                 password: {
                     type: String,
                     required: true,
