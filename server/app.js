@@ -35,7 +35,7 @@ let User = mongoose.model("User", schemaUser);
 app.use(bodyParser());
 app.use(methodOverride());
 
-app.use('/', express.static(`${__dirname}/public`));
+app.use('/', express.static(`${__dirname}/public/html`));
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -182,7 +182,7 @@ app.get('/getUser', function (req, res) {
     });
 })
 
-app.listen(3002, function () {
-    console.log("Working on port 3002");
+app.listen(3001, function () {
+    console.log("Working on port 3001");
 });
 
