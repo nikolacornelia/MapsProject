@@ -1,0 +1,43 @@
+{
+  "name": "mapsproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikolacornelia/MapsProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikolacornelia/MapsProject/issues"
+  },
+  "homepage": "https://github.com/nikolacornelia/MapsProject#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "eslint": "^5.6.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "gridfs": "^1.0.0",
+    "gridfs-stream": "^1.1.1",
+    "jquery": "^3.3.1",
+    "jsdom": "^12.2.0",
+    "leaflet-routing-machine": "^3.2.12",
+    "method-override": "^3.0.0",
+    "mongodb": "^3.1.6",
+    "mongoose": "^5.3.1",
+    "moongoose": "0.0.5",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "npm": "^6.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0"
+  }
+}
