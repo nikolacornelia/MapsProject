@@ -37,31 +37,29 @@ class LogIn extends Component {
 
     onSubmitForm = () => {
         //  todo: login routine, such as:
-        /*
+
         // see documentation: https://github.com/axios/axios#request-config
-        axios.post('/user/login', {
+        // axios.get (für HTTP GET-Anfragen)
+
+        axios.post('http://localhost:3001/getUser/', {
             user: this.state.user,
             password: this.state.password
         }).then((response) => {
             // success routine (see below)
-
-        }).error((error) => {
-            // error routine
+            sessionStorage.setItem("loggedIn", "userObjectFromBackend");
+            var referrTo;
+            if(this.props.location.state){
+                referrTo = this.props.location.state.from;
+                this.props.location.state.updateLoginStatus();
+            } else {
+                referrTo = { pathname: "/" };
+                this.props.updateLoginStatus();
+            }
+            this.props.history.push(referrTo);
+        }).catch((error) => {
+            // error routine (http reponsestatus 4xx)
             this.setState({hasError: true});
         });
-        */
-        sessionStorage.setItem("loggedIn", "userObjectFromBackend");
-        //console.log(this.state.user);
-        //console.log(this.state.password);
-        var referrTo;
-        if(this.props.location.state){
-            referrTo = this.props.location.state.from;
-            this.props.location.state.updateLoginStatus();
-        } else {
-            referrTo = { pathname: "/" };
-            this.props.updateLoginStatus();
-        }
-        this.props.history.push(referrTo);
     };
 
     render() {

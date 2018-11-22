@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
     Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
@@ -20,6 +21,7 @@ class Create extends Component {
             activeIndex: -1,
             showMoreFeatures: false,
             routeCreated: false,
+            files: [],
 
             lat: 51.505,
             lng: -0.09,
@@ -33,19 +35,60 @@ class Create extends Component {
     };
 
     /**
-     * Handles the radio button change.
-     * @param {Object} e - Event parameter that is passed with the change
-     * @param {String} value - Value of the changed control
+     * Handles the change of most of the input fields
+     * @param e - Change event
+     * @param name - Name of the changing field
+     * @param value - Value of the changing field
      */
-    handleChange = (e, {value}) => {
-        this.setState({value});
+    handleChange = (e, {name, value}) => {
+        this.setState({[name]: value});
+    };
+
+    /**
+     * Handles the change for file input field
+     * @param e - change event
+     */
+    handleChangeFile = (e) => {
+        const {files} = e.target;
+
+        // Check file type and size
+        for(var i = 0; i < files.length; i++){
+            if (!files[i].type.match('image.*')) {
+                // Error: file is not an image
+                // todo: error routine...
+            } else if (files[i].size >= 10*1024*1024){
+                // Error: file is too large
+                // todo: define max. file size & error routine...
+            }
+        }
+        this.setState(files);
     };
 
     onSubmitRoute = (e) => {
         // todo: get current leaflet route information
 
-        // todo: submit routine
-        this.setState({routeCreated: true});
+        // create a function that is called after image file is read
+        var createRoute = (e) => {
+            // todo: add file content (from e.target.result)
+            axios.post('http://localhost:3001/saveRoute', {
+                title: this.state.title,
+                description: this.state.description,
+                difficulty: this.state.difficulty
+            }).then((response) => {
+                this.setState({routeCreated: true});
+            }).catch((error) => {
+                // possible?
+            });
+        };
+
+        // read file if given
+        if(this.state.files.length === 1) {
+            var fileReader = new FileReader();
+            fileReader.onload = createRoute;
+            fileReader.readAsBinaryString(this.state.files[0]);
+        } else {
+            createRoute();
+        }
     };
 
     /**
@@ -75,11 +118,14 @@ class Create extends Component {
                             <Header.Subheader>Enter route information</Header.Subheader>
                         </Header>
 
-                        <Form.Input fluid label='Title' placeholder='Title of the route' required/>
-                        <Form.TextArea fluid label='Description' placeholder='Description of the route'/>
+                        <Form.Input fluid label='Title' placeholder='Title of the route' required
+                                    name='title' onChange={this.handleChange}/>
+                        <Form.TextArea fluid label='Description' placeholder='Description of the route'
+                                       name='description' onChange={this.handleChange}/>
 
                         <Form.Input type='file' fluid label='Image' placeholder='Upload image file'
-                                    iconPosition='left'
+                                    name='image' iconPosition='left' onChange={this.handleChangeFile}
+                                    accept="image/*"
                                     icon={<Icon name='add' link inverted color='black'/>}/>
 
                         <Form.Group inline>
@@ -88,36 +134,29 @@ class Create extends Component {
                             <Form.Radio
                                 label='easy'
                                 value='easy'
-                                checked={this.state.value === 'easy'}
+                                name='difficulty'
+                                checked={this.state.difficulty === 'easy'}
                                 onChange={this.handleChange}
                             />
                             <Form.Radio
                                 label='moderate'
                                 value='moderate'
-                                checked={this.state.value === 'moderate'}
+                                name='difficulty'
+                                checked={this.state.difficulty === 'moderate'}
                                 onChange={this.handleChange}
                             />
                             <Form.Radio
                                 label='difficult'
                                 value='difficult'
-                                checked={this.state.value === 'difficult'}
+                                name='difficulty'
+                                checked={this.state.difficulty === 'difficult'}
                                 onChange={this.handleChange}
                             />
                         </Form.Group>
-                        {/*<Form.Group widths='equal'>
-                            <Form.Checkbox label='Kid-Friendly'/>
-                            <Form.Checkbox label='Dogs Allowed'/>
-                        </Form.Group>
-                        <Form.Group widths='equal'>
-                            <Form.Checkbox label='Forest'/>
-                            <Form.Checkbox label='Lake'/>
-                        </Form.Group>
-                        <Form.Group widths='equal'>
-                            <Form.Checkbox label='River'/>
-                            <Form.Checkbox label='Wineyard'/>
-                        </Form.Group>*/}
                         <Form.Dropdown name='features' label='Features' placeholder='Route features'
-                                       fluid multiple search selection options={mockFeatures}/>
+                                       fluid multiple search selection options={mockFeatures}
+                                       onChange={this.handleChange}
+                        />
 
                         <Form.Button type='submit' color='blue'>Save</Form.Button>
                     </Form>
