@@ -121,16 +121,17 @@ function getDocument() {
 }
 
 function Registrieren() {
-    var email = document.getElementById("lemail").value;
     var passwort = document.getElementById("lPasswort").value;
     var passwortV = document.getElementById("lPasswortV").value;
 
-    var oUser = {};
-    oUser.email = document.getElementById("lemail").value;
-    oUser.password = document.getElementById("lPasswort").value;
-    jsonUser = JSON.stringify(oUser);
+
 
     if (passwort === passwortV) {
+        var oUser = {};
+        oUser.email = document.getElementById("lemail").value;
+        oUser.username = document.getElementById("luname").value;
+        oUser.password = document.getElementById("lPasswort").value;
+        jsonUser = JSON.stringify(oUser);
         $.ajax({
             type: 'POST',
             data: { user: jsonUser },
@@ -150,31 +151,20 @@ function Registrieren() {
 }
 
 function Login() {
+    var oUser = {};
+    oUser.email = document.getElementById("lemail").value;
+    oUser.username = document.getElementById("luname").value;
+    oUser.password = document.getElementById("lPasswort").value;
+    jsonUser = JSON.stringify(oUser);
+
     $.ajax({
-        type: 'GET',
+        type: 'POST',
+        data: { user: jsonUser },
         url: 'http://localhost:3001/getUser',
         success: function (data) {
-            validationUser(data);
+            location.href = 'createHighlights.html';
         }
     });
-}
-
-function validationUser(data) {
-    var email = document.getElementById("lemail").value;
-    var password = document.getElementById("lPasswort").value;
-
-    var bLogin = false;
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].email === email && data[i].password === password) {
-            location.href = 'createHighlights.html';
-            bLogin = true;
-        }
-    }
-    if (bLogin === false) {
-        alert("Falsches Passwort");
-
-    }
-
 }
 
 
