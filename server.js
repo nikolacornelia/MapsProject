@@ -17,6 +17,7 @@ let mongodb = require("mongodb");
 let Grid = require('gridfs-stream');
 Grid.mongo = mongoose.mongo;
 let gfs;
+let bcrypt = require('bcrypt');
 
 let schemaPoint = new mongoose.Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
@@ -24,11 +25,11 @@ let schemaPoint = new mongoose.Schema({
 let Point = mongoose.model("Point", schemaPoint);
 
 
-let schemaRoute = new mongoose.Schema( { name: String, description: String, points: [{lat: Number, lng: Number}], highlights: [Number]});
+let schemaRoute = new mongoose.Schema({ name: String, description: String, points: [{ lat: Number, lng: Number }], highlights: [Number] });
 let Route = mongoose.model("Route", schemaRoute);
 //User 
 let schemaUser = new mongoose.Schema({
-    email:{type: String, unique: true}, password: String
+    email: { type: String, unique: true }, username: String, password: String
 });
 let User = mongoose.model("User", schemaUser);
 
@@ -163,24 +164,47 @@ app.get('/getDocument', function (req, res) {
     })
 })
 
+var BCRYPT_SALT_ROUNDS = 12;
 app.post('/saveUser', function (req, res) {
+    console.log(req.body.user);
     let aResult = req.body.user;
     aResult = JSON.parse(aResult);
     let myData = new User(aResult);
-    myData.save()
-        .then(item => {
-            res.send("user saved to database");
+    bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
+        .then(function (hashedPassword) {
+            myData.password = hashedPassword;
+            return myData.save();
         })
-        .catch(err => {
-            res.status(400).send("unable to save to database");
+        .then(function () {
+            res.send();
+        })
+        .catch(function (error) {
+            console.log("Error saving user: ");
+            console.log(error);
+            next();
         });
 })
 
-app.get('/getUser', function (req, res) {
-    User.find({}, function (err, data) {
-        res.send(data);
+app.post('/getUser', function (req, res) {
+    let aResult = req.body.user;
+    aResult = JSON.parse(aResult);
+    User.findOne(
+        { $or: [{ email: aResult.email }, { username: aResult.username }] }
+    ).then(function (user) {
+        if (!user) {
+            console.log("User nicht vorhanden");
+        } else {
+            bcrypt.compare(req.body.password, user.password, function (err, result) {
+                if (result == true) {
+                    res.send("Erfolgreich!");
+                } else {
+                    res.send('Incorrect password');
+                }
+            });
+        }
     });
-})
+});
+
 /** 
 app.post('/new',function(req,res){
     console.log(req.body);

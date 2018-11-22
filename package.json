@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/nikolacornelia/MapsProject#readme",
   "dependencies": {
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "eslint": "^5.6.1",
