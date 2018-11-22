@@ -96,12 +96,13 @@ function createTable(data) {
 };
 
 function saveDocument() {
-    let oImage = document.getElementById("oDocument").value;
-    let oImage2 = document.getElementById("oDocument").files[0].name;
+   // let oImage = document.getElementById("oDocument").value;
+   // let oImage2 = document.getElementById("oDocument").files[0].name;
+    let oImage2 = {};
     $.ajax({
         type: 'POST',
-        data: { object: oImage2 },
-        url: 'http://localhost:3001/saveDocument',
+       // data: { object: oImage2 },
+        url: '/saveDocument',
         success: function (data) {
             console.log('saved document');
         }
