@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+  <head profile="http://gmpg.org/xfn/11">
+    <title>Wanderrouten24</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <script src="main.js"></script>
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
+    <script type='text/javascript' src='http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js'></script>
+  </head>
+
+  <body>
+    <h1>Sightseeing Highlights erstellen</h1>
+
+    <p>Bitte per click das Highlight lokalisieren
+
+    <div id="map" style="width: 800px; height: 440px; border: 1px solid #AAA;"></div>
+
+    <form >
+      <p>Name:
+      <p><input type="text" id="sName">
+      <p>Beschreibung:
+      <p><textarea id="sDescription" name="beschreibung" rows="10" cols="30"></textarea>
+      <p>Kategorie:
+      <p><select id="sCategory">
+        <option value="restaurant">Restaurant</option>
+        <option value="viewpoint">Viewpoint</option>
+        <option value="denkmal">Denkmal</option>
+        <option value="sonstiges">Sonstiges</option>
+      </select>
+      <p>
+        <a href="createHighlights.html"><button>Cancel</button></a>
+        <button onclick="newPointOfInterestMap()">add point of interest to database</button>
+    </form>
+    <button onclick="saveRoute()">save Route</button>
+    <button onclick="getLocalPointsOfInterest()">get local Points of interest</button>
+   <!-- <button onclick="saveImage()">save Image</button>!-->
+      <p id="demo"></p>
+    <p id="showData">
+
+    </p>
+    <div>
+
+    </div>
+
+    <script type='text/javascript' src='createHighlights.js'></script>
+  </body>
+</html>
+
+
