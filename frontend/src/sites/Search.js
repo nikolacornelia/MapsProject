@@ -30,6 +30,7 @@ import {
 import {Map, TileLayer, Marker} from 'react-leaflet';
 import {Slider} from 'react-semantic-ui-range';
 import {mockData, mockFeatures} from '../mockData';
+import axios from "axios";
 
 class Search extends Component {
     constructor(props) {
@@ -39,9 +40,10 @@ class Search extends Component {
             lng: -0.09,
             zoom: 13,
 
-            difficulty: 0,
+            difficulty: [],
             routeLength: 5,
             searchText: '',
+
             searched: false,
             showDetail: -1,
             reviewIsOpen: false,
@@ -50,24 +52,40 @@ class Search extends Component {
     }
 
     // RadioButton Logik
+    handleChangeDifficulty = (e, {name, value, checked}) => {
+        let difficulty = this.state.difficulty;
+        if(checked){
+            difficulty.push(value);
+        } else {
+            difficulty.splice(difficulty.indexOf(value), 1);
+        }
+        this.setState({difficulty: difficulty});
+    };
+
     handleChange = (e, {name, value}) => {
         this.setState({[name]: value});
     };
 
-    //Range
-    handleValueChange = (e, {value}) => {
-        this.setState({value: value});
-    };
+    /**
+     * Sends a search request after a slight delay (while typing in the search field)
+     */
+    onSearch = () => {
 
-    //onSearchChanged
-    onSearchChanged = (e, d) => {
-        this.setState({searchText: d.value});
-    };
+        if (!this.state.searchText)
+            return;
 
-    //onSearch
-    onSearch = (e, d) => {
-        // todo: Suchanfrage ans Backend
-        this.setState({searched: true});
+        // todo: add sortby to request
+        axios.get('http://localhost:3001/getRoutes', {
+            search: this.state.searchText,
+            difficulty: this.state.difficulty, // array
+            routeLength: this.state.routeLength,
+
+        }).then((response) => {
+            this.setState({
+                searched: true,
+                routes: response.data
+            });
+        });
 
     };
 
@@ -105,20 +123,20 @@ class Search extends Component {
 
         var searchResults = [];
         if (this.state.searched) {
-            mockData.forEach((result) => {
+            this.state.routes.forEach((route) => {
                 searchResults.push(
-                    <Item onClick={() => this.onShowDetail(result.id)}>
-                        <Item.Image size='small' rounded src={result.image}/>
+                    <Item onClick={() => this.onShowDetail(route.id)}>
+                        <Item.Image size='small' rounded src={route.image}/>
                         <Item.Content>
-                            <Item.Header as='h4'> {result.title} </Item.Header>
-                            <Item.Meta>{result.address}</Item.Meta>
+                            <Item.Header as='h4'> {route.title} </Item.Header>
+                            <Item.Meta>{route.address}</Item.Meta>
                             <Item.Description>
                                 <p/>
-                                Distance: {result.distance} km
+                                Distance: {route.distance} km
                                 <p/>
-                                Difficulty: {result.difficulty}
+                                Difficulty: {route.difficulty}
                                 <Item.Extra>
-                                    <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
+                                    <Rating icon='star' defaultRating={route.rating} maxRating={5} disabled/>
                                 </Item.Extra>
                             </Item.Description>
                         </Item.Content>
@@ -126,7 +144,9 @@ class Search extends Component {
                 )
             });
         }
-        var detailRoute = mockData.find((route) => route.id === this.state.showDetail);
+        var detailRoute;
+        if (this.state.showDetail >= 0)
+            this.state.routes.find((route) => route.id === this.state.showDetail);
 
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
@@ -138,20 +158,17 @@ class Search extends Component {
                             <Form size='large'>
                                 <Header as='h2'>Find a trail / Search for a route</Header>
                                 <Form.Input fluid placeholder='Enter area, city or landmark'
-                                            onChange={this.onSearchChanged}
+                                            onChange={this.handleChange}
                                             action={{icon: 'search', onClick: this.onSearch}}/>
                                 <Header as='h4' dividing icon='filter' content='Filter'/>
                                 <Form.Group inline>
                                     <label>Difficulty</label>
-                                    <Form.Radio label='easy' value='easy' name='difficulty'
-                                                checked={this.state.difficulty === 'easy'}
-                                                onChange={this.handleChange}/>
-                                    <Form.Radio label='moderate' value='moderate' name='difficulty'
-                                                checked={this.state.difficulty === 'moderate'}
-                                                onChange={this.handleChange}/>
-                                    <Form.Radio label='difficult' value='difficult' name='difficulty'
-                                                checked={this.state.difficulty === 'difficult'}
-                                                onChange={this.handleChange}/>
+                                    <Form.Checkbox label='easy' value='easy' name='difficulty'
+                                                onChange={this.handleChangeDifficulty}/>
+                                    <Form.Checkbox label='moderate' value='moderate' name='difficulty'
+                                                onChange={this.handleChangeDifficulty}/>
+                                    <Form.Checkbox label='difficult' value='difficult' name='difficulty'
+                                                onChange={this.handleChangeDifficulty}/>
                                 </Form.Group>
                                 <Form.Field>
                                     <label>
@@ -168,7 +185,7 @@ class Search extends Component {
 
                                 <Form.Dropdown name='features' label='Features' placeholder='Route features'
                                                multiple search selection options={mockFeatures}
-                                               style={{fontSize: '0.85em'}}/>
+                                               style={{fontSize: '0.85em'}} onChange={this.handleChange}/>
                             </Form>
 
                             {this.state.searched && <div>
