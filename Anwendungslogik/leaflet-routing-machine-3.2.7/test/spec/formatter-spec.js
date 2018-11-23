@@ -67,7 +67,7 @@ describe('L.Routing.Formatter', function() {
 		it('rounds whole minutes without seconds', function() {
 			var p = new L.Routing.Formatter();
 			expect(p.formatTime(240)).toBe('4 min');
-		})
+		});
 		it('rounds just under five minutes to five minutes without seconds', function() {
 			var p = new L.Routing.Formatter();
 			expect(p.formatTime(299.10000000005)).toBe('5 min');

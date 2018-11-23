@@ -26,18 +26,18 @@ import {Slider} from 'react-semantic-ui-range';
 class FAQ extends Component {
 
 
-    state = {activeIndex: -1}
+    state = {activeIndex: -1};
 
     handleClick = (e, titleProps) => {
-        const {index} = titleProps
-        const {activeIndex} = this.state
-        const newIndex = activeIndex === index ? -1 : index
+        const {index} = titleProps;
+        const {activeIndex} = this.state;
+        const newIndex = activeIndex === index ? -1 : index;
 
         this.setState({activeIndex: newIndex})
-    }
+    };
 
     render() {
-        const {activeIndex} = this.state
+        const {activeIndex} = this.state;
 
         return (
             <Container as={Segment} basic padded>

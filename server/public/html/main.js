@@ -36,7 +36,7 @@ function newPointOfInterest() {
     oPoint.description = document.getElementById("sDescription").value;
     oPoint.category = document.getElementById("sCategory").value;
     oPoint.latitude = document.getElementById("nLatitude").value;
-    oPoint.longitude = document.getElementById("nLongitude").value;;
+    oPoint.longitude = document.getElementById("nLongitude").value;
     jsonPoint = JSON.stringify(oPoint);
     //console.log(jsonPoint);
     $.ajax({
@@ -93,8 +93,7 @@ function createTable(data) {
 
     divContainer.innerHTML = "";
     divContainer.appendChild(table);
-};
-
+}
 function saveDocument() {
    // let oImage = document.getElementById("oDocument").value;
    // let oImage2 = document.getElementById("oDocument").files[0].name;

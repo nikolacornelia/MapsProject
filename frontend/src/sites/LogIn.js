@@ -24,7 +24,7 @@ import axios from 'axios';
 
 class LogIn extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             hasError: false
@@ -41,18 +41,20 @@ class LogIn extends Component {
         // see documentation: https://github.com/axios/axios#request-config
         // axios.get (für HTTP GET-Anfragen)
 
-        axios.post('http://localhost:3001/getUser/', {
-            user: this.state.user,
-            password: this.state.password
+        //todo: check if right - Nikola changed to get
+        axios.get('http://localhost:3001/getUser/', { params: {
+                user: this.state.user,
+                password: this.state.password
+            }
         }).then((response) => {
             // success routine (see below)
             sessionStorage.setItem("loggedIn", "userObjectFromBackend");
             var referrTo;
-            if(this.props.location.state){
+            if (this.props.location.state) {
                 referrTo = this.props.location.state.from;
                 this.props.location.state.updateLoginStatus();
             } else {
-                referrTo = { pathname: "/" };
+                referrTo = {pathname: "/"};
                 this.props.updateLoginStatus();
             }
             this.props.history.push(referrTo);
@@ -70,24 +72,25 @@ class LogIn extends Component {
                         Login to your account
                     </Header>
                     {this.state.hasError &&
-                        <Message attached error header='Invalid login data!' content='Fehler message bla bla bla ....'/>
+                    <Message attached error header='Invalid login data!' content='Fehler message bla bla bla ....'/>
                     }
                     {this.props.location.state &&
-                        <Message attached warning header='You must login to access this page!' content='Please login first. You will then be redirected.'/>
+                    <Message attached warning header='You must login to access this page!'
+                             content='Please login first. You will then be redirected.'/>
                     }
                     <Form size='large' onSubmit={this.onSubmitForm} className='attached fluid segment'>
 
-                            <Form.Input fluid icon='user' name='user' iconPosition='left'
-                                        placeholder='E-mail address' onChange={this.onChangeInput} required />
-                            <Form.Input fluid icon='lock' name='password' iconPosition='left'
-                                        placeholder='Password' onChange={this.onChangeInput}
-                                        type='password' required />
-                            <Form.Field>
-                                <a href='#'>Forgot your password?</a>
-                            </Form.Field>
-                            <Button color='blue' fluid size='large'>
-                                Login
-                            </Button>
+                        <Form.Input fluid icon='user' name='user' iconPosition='left'
+                                    placeholder='E-mail address' onChange={this.onChangeInput} required/>
+                        <Form.Input fluid icon='lock' name='password' iconPosition='left'
+                                    placeholder='Password' onChange={this.onChangeInput}
+                                    type='password' required/>
+                        <Form.Field>
+                            <a href='#'>Forgot your password?</a>
+                        </Form.Field>
+                        <Button color='blue' fluid size='large'>
+                            Login
+                        </Button>
                     </Form>
                     <Message attached='bottom'>
                         Don't have an account? <a href='#'>Sign Up</a>

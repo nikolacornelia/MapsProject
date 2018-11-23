@@ -104,13 +104,13 @@ app.get('/getData', function (req, res) {
     Point.find({}, function (err, data) {
         res.send(data);
     });
-})
+});
 
 app.get('/getRoutes', function (req, res) {
     Route.find({}, function (err, data) {
         res.send(data);
     });
-})
+});
 
 
 app.get('/getLocalPoints', function (req, res) {
@@ -126,7 +126,7 @@ app.get('/getLocalPoints', function (req, res) {
         res.send(data);
     });
 
-})
+});
 
 app.post('/saveDocument', function (req, res) {
 
@@ -162,7 +162,7 @@ app.get('/getDocument', function (req, res) {
             throw err;
         })
     })
-})
+});
 
 var BCRYPT_SALT_ROUNDS = 12;
 app.post('/saveUser', function (req, res) {
@@ -183,7 +183,7 @@ app.post('/saveUser', function (req, res) {
             console.log(error);
             next();
         });
-})
+});
 
 app.post('/getUser', function (req, res) {
     let aResult = req.body.user;

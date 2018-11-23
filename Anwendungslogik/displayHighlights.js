@@ -4,7 +4,7 @@ async function onMapLoad(e) {
   
   function getLocalPointsOfInterest() {
     //only get points that are in the bounds of the map
-    oBorder = {}
+    oBorder = {};
     oBorder.dMaxLong = map.getBounds().getEast();
     oBorder.dMinLong = map.getBounds().getWest();
     oBorder.dMaxLat = map.getBounds().getNorth();

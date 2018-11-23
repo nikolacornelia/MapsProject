@@ -2,15 +2,15 @@
 var dLat;
 var dLng;
 var aPoints = [];
-var aMarker = new Array();
-var aPoly = new Array();
-var aHighlight = new Array(); // Boolean
+var aMarker = [];
+var aPoly = [];
+var aHighlight = []; // Boolean
 
 var map = L.map( 'map', {
   center: [20.0, 5.0],
   minZoom: 2,
   zoom: 2
-})
+});
 map.on('load', onMapLoad);
 map.on('click', onMapClick);
 map.on('moveend', onMapLoad);
@@ -18,7 +18,7 @@ map.on('moveend', onMapLoad);
 L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   subdomains: ['a', 'b', 'c']
-}).addTo( map )
+}).addTo( map );
 
 map.setView([49.47748, 8.42216], 15);
 
@@ -89,7 +89,7 @@ async function onMapLoad(e) {
 
 function getLocalPointsOfInterest() {
   //only get points that are in the bounds of the map
-  oBorder = {}
+  oBorder = {};
   oBorder.dMaxLong = map.getBounds().getEast();
   oBorder.dMinLong = map.getBounds().getWest();
   oBorder.dMaxLat = map.getBounds().getNorth();

@@ -54,7 +54,7 @@ class Search extends Component {
     // RadioButton Logik
     handleChangeDifficulty = (e, {name, value, checked}) => {
         let difficulty = this.state.difficulty;
-        if(checked){
+        if (checked) {
             difficulty.push(value);
         } else {
             difficulty.splice(difficulty.indexOf(value), 1);
@@ -70,16 +70,16 @@ class Search extends Component {
      * Sends a search request after a slight delay (while typing in the search field)
      */
     onSearch = () => {
-
-        if (!this.state.searchText)
-            return;
+        /** auskommentiert von Nikola
+         if (!this.state.searchText)
+         return; **/
 
         // todo: add sortby to request
-        axios.get('http://localhost:3001/getRoutes', {
+        axios.get('http://localhost:3001/getRoutes', { params: {
             search: this.state.searchText,
             difficulty: this.state.difficulty, // array
             routeLength: this.state.routeLength,
-
+            }
         }).then((response) => {
             this.setState({
                 searched: true,
@@ -125,7 +125,8 @@ class Search extends Component {
         if (this.state.searched) {
             this.state.routes.forEach((route) => {
                 searchResults.push(
-                    <Item onClick={() => this.onShowDetail(route.id)}>
+                    //route._id is the right name to get id from mongo db
+                    <Item onClick={() => this.onShowDetail(route._id)}>
                         <Item.Image size='small' rounded src={route.image}/>
                         <Item.Content>
                             <Item.Header as='h4'> {route.title} </Item.Header>
@@ -146,7 +147,7 @@ class Search extends Component {
         }
         var detailRoute;
         if (this.state.showDetail >= 0)
-            this.state.routes.find((route) => route.id === this.state.showDetail);
+            this.state.routes.find((route) => route._id === this.state.showDetail);
 
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
@@ -157,18 +158,18 @@ class Search extends Component {
                         <div>
                             <Form size='large'>
                                 <Header as='h2'>Find a trail / Search for a route</Header>
-                                <Form.Input fluid placeholder='Enter area, city or landmark'
+                                <Form.Input fluid placeholder='Enter area, city or landmark' name='searchText'
                                             onChange={this.handleChange}
                                             action={{icon: 'search', onClick: this.onSearch}}/>
                                 <Header as='h4' dividing icon='filter' content='Filter'/>
                                 <Form.Group inline>
                                     <label>Difficulty</label>
                                     <Form.Checkbox label='easy' value='easy' name='difficulty'
-                                                onChange={this.handleChangeDifficulty}/>
+                                                   onChange={this.handleChangeDifficulty}/>
                                     <Form.Checkbox label='moderate' value='moderate' name='difficulty'
-                                                onChange={this.handleChangeDifficulty}/>
+                                                   onChange={this.handleChangeDifficulty}/>
                                     <Form.Checkbox label='difficult' value='difficult' name='difficulty'
-                                                onChange={this.handleChangeDifficulty}/>
+                                                   onChange={this.handleChangeDifficulty}/>
                                 </Form.Group>
                                 <Form.Field>
                                     <label>
@@ -194,7 +195,7 @@ class Search extends Component {
                                 <Divider/>
                                 <Grid columns='equal'>
                                     <Grid.Column textAlign='left'>
-                                        <Icon name='list'/> {mockData.length} results
+                                        <Icon name='list'/> {this.state.routes.length} results
                                     </Grid.Column>
                                     <Grid.Column textAlign='right'>
                                         <Dropdown icon='sort' text='Sort By' direction='left'>

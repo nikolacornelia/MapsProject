@@ -12,7 +12,7 @@ let oSchema = Schema.sPointOfInterest();
 let jQuery = require('jQuery');
 let assert = require('assert');
 let dbMongo;
-const { ObjectID } = require("mongodb");
+const {ObjectID} = require("mongodb");
 let mongodb = require("mongodb");
 let Grid = require('gridfs-stream');
 Grid.mongo = mongoose.mongo;
@@ -25,11 +25,14 @@ let schemaPoint = new mongoose.Schema({
 let Point = mongoose.model("Point", schemaPoint);
 
 
-let schemaRoute = new mongoose.Schema( { name: String, description: String, points: [{lat: Number, lng: Number}], highlights: [Number]});
+let schemaRoute = new mongoose.Schema( { title: String, description: String,difficulty: String, points: [{lat: Number, lng: Number}], highlights: [Number]});
+//let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
+
+
 //User 
 let schemaUser = new mongoose.Schema({
-    email: { type: String, unique: true }, username: String, password: String
+    email: {type: String, unique: true}, username: String, password: String
 });
 let User = mongoose.model("User", schemaUser);
 
@@ -51,19 +54,17 @@ conn.once('open', function () {
 });
 
 
-
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
-    if (err) {
-        console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-        console.log('Connection established');
+        if (err) {
+            console.log('Unable to connect to the mongoDB server. Error:', err);
+        } else {
+            console.log('Connection established');
+        }
     }
-}
 );
 mongoose.connection.once('open', function () {
     console.log('connected');
 });
-
 
 
 app.post('/savePoint', function (req, res) {
@@ -82,19 +83,17 @@ app.post('/savePoint', function (req, res) {
 });
 
 app.post('/saveRoute', function (req, res) {
-    let aResult = req.body.route;
-    aResult = JSON.parse(aResult);
-    let oRoute = {};
-    oRoute.name = aResult.name;
-    oRoute.description = aResult.description;
-    oRoute.points = aResult.points;
-    oRoute.highlights = aResult.highlights;
+    console.log(req.body);
+    let oRoute = req.body;
+
     let oData = new Route(oRoute);
     oData.save()
         .then(item => {
+            console.log('item saved to database');
             res.send("item saved to database");
         })
         .catch(err => {
+            console.log('unable to save');
             res.status(400).send("unable to save to database");
         });
 
@@ -104,13 +103,49 @@ app.get('/getData', function (req, res) {
     Point.find({}, function (err, data) {
         res.send(data);
     });
-})
+});
 
 app.get('/getRoutes', function (req, res) {
-    Route.find({}, function (err, data) {
-        res.send(data);
-    });
-})
+        console.log(req.query);
+        var paramText = req.query.search;
+        var param = {};
+        if (paramText != '') {
+            param.title = { $regex: paramText, $options: "i"};
+        }
+        //difficulty kann mehrer Filter enthalten --> Array
+        var paramDifficulty = req.query.difficulty;
+        if (paramDifficulty != null) {
+            if (paramDifficulty.length = 1) {
+                param.difficult = paramDifficulty[0];
+            } else {
+                var param = "{$or: [{difficulty:'";
+
+                for (var i = 0; i < paramDifficulty.length; i++) {
+                    if (i = 0) {
+                        param = param + paramDifficulty[i] + "'}]"
+                    } else {
+                        param = ", {difficulty:'" + paramDifficulty[i] + "'}]"
+                    }
+                    param = param + "}";
+
+                }
+
+                param.difficulty = paramDifficulty;
+            }
+        }
+
+        /** var paramLength = req.body.length;
+         if (paramLength!=''){
+        param.length = paramLength;
+    } **/
+
+        console.log(param);
+
+        Route.find(param, function (err, data) {
+            res.send(data);
+        });
+    }
+);
 
 
 app.get('/getLocalPoints', function (req, res) {
@@ -121,12 +156,14 @@ app.get('/getLocalPoints', function (req, res) {
     let dMinLong = Number(oBorder.dMinLong);
     let dMaxLong = Number(oBorder.dMaxLong);
 
-    Point.find({ latitude: { $gt: dMinLat, $lt: dMaxLat } }, function (err, data) {
-        if (err) { throw err; }
+    Point.find({latitude: {$gt: dMinLat, $lt: dMaxLat}}, function (err, data) {
+        if (err) {
+            throw err;
+        }
         res.send(data);
     });
 
-})
+});
 
 app.post('/saveDocument', function (req, res) {
 
@@ -143,13 +180,13 @@ app.post('/saveDocument', function (req, res) {
 app.get('/getDocument', function (req, res) {
     //important: there must be only one file with this filename, otherwise no photo gets displayed
     let filename = 'test.jpg';
-    gfs.exist({ filename: filename }, (err, file) => {
+    gfs.exist({filename: filename}, (err, file) => {
         if (err || !file) {
             res.status(404).send('File not Found');
             return
         }
         let data = [];
-        let readstream = gfs.createReadStream({ filename: filename });
+        let readstream = gfs.createReadStream({filename: filename});
         readstream.on('data', function (result) {
             data.push(result);
         });
@@ -162,7 +199,7 @@ app.get('/getDocument', function (req, res) {
             throw err;
         })
     })
-})
+});
 
 var BCRYPT_SALT_ROUNDS = 12;
 app.post('/saveUser', function (req, res) {
@@ -183,18 +220,19 @@ app.post('/saveUser', function (req, res) {
             console.log(error);
             next();
         });
-})
+});
 
-app.post('/getUser', function (req, res) {
-    let aResult = req.body.user;
-    aResult = JSON.parse(aResult);
+app.get('/getUser', function (req, res) {
+    console.log(req.query);
+    let aResult = req.query;
     User.findOne(
-        { $or: [{ email: aResult.email }, { username: aResult.username }] }
+   //     {$or: [{email: aResult.email}, {username: aResult.username}]}
+        {$or: [{email: aResult.user}, {username: aResult.user}]}
     ).then(function (user) {
         if (!user) {
             console.log("User nicht vorhanden");
         } else {
-            bcrypt.compare(req.body.password, user.password, function (err, result) {
+            bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
                     res.send("Erfolgreich!");
                 } else {

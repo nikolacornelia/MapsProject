@@ -48,4 +48,4 @@ module.exports = {
         let mSchema = mongoose.model('user', schema);
         return mSchema;
     }
-} 
+};

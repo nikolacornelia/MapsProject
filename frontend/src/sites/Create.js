@@ -7,6 +7,8 @@ import {
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import * as createRoute from './maps/createRoute';
 import {mockFeatures} from "../mockData";
+import {getRouteMapData} from "./maps/createRoute";
+import {resetArrays} from "./maps/createRoute";
 
 class Create extends Component {
 
@@ -52,11 +54,11 @@ class Create extends Component {
         const {files} = e.target;
 
         // Check file type and size
-        for(var i = 0; i < files.length; i++){
+        for (var i = 0; i < files.length; i++) {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
                 // todo: error routine...
-            } else if (files[i].size >= 10*1024*1024){
+            } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
             }
@@ -65,24 +67,29 @@ class Create extends Component {
     };
 
     onSubmitRoute = (e) => {
-        // todo: get current leaflet route information
-
+        //get current leaflet route information
+        var oRoute = getRouteMapData();
         // create a function that is called after image file is read
         var createRoute = (e) => {
             // todo: add file content (from e.target.result)
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.title,
                 description: this.state.description,
-                difficulty: this.state.difficulty
+                difficulty: this.state.difficulty,
+                points: oRoute.points,
+                highlights: oRoute.highlights
             }).then((response) => {
                 this.setState({routeCreated: true});
+                //reset created route points
+                //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
+                resetArrays();
             }).catch((error) => {
                 // possible?
             });
         };
 
         // read file if given
-        if(this.state.files.length === 1) {
+        if (this.state.files.length === 1) {
             var fileReader = new FileReader();
             fileReader.onload = createRoute;
             fileReader.readAsBinaryString(this.state.files[0]);
