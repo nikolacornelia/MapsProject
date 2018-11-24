@@ -93,7 +93,9 @@ class Search extends Component {
      * @param {string} id - the id of the route to be displayed (or -1 if back)
      */
     onShowDetail = (id) => {
-        let isFavorised = id !== -1 ? this.state.routes[id].isFavorised : false;
+        let isFavorised = id !== -1
+            ? this.state.routes.find((route) => route._id = id).isFavorised
+            : false;
 
         // navigate internally to details view
         this.setState({
@@ -264,7 +266,9 @@ class Search extends Component {
                                 </Segment.Group>
 
                                 <Segment basic textAlign='center'>
-                                    {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
+                                    {detailRoute.features &&
+                                        detailRoute.features.map((feature) => <Label>{feature}</Label>)
+                                    }
                                 </Segment>
                                 <Segment basic>
                                     {detailRoute.description}
@@ -310,11 +314,11 @@ class Search extends Component {
                                             </Modal.Actions>
                                         </Modal>
                                     </Header>
-                                    {detailRoute.comments.length === 0 &&
+                                    {!detailRoute.comments || detailRoute.comments.length === 0 &&
                                     <Container textAlign='center'>
                                         <i>No comments available. Be the first one to comment!</i>
                                     </Container>}
-                                    {detailRoute.comments.map((comment) =>
+                                    {detailRoute.comments && detailRoute.comments.map((comment) =>
                                         <Comment>
                                             <Comment.Avatar src='./static/media/avatar-1.png'/>
                                             <Comment.Content>
