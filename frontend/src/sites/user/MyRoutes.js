@@ -15,14 +15,42 @@ import {
     Statistic,
     Label, Rating
 } from 'semantic-ui-react'
-import {mockData} from '../../mockData'
+import {mockData} from '../../mockData';
+import axios from 'axios';
 
 class MyRoutes extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            routes: []
+        };
     }
+
+    /**
+     * read my routes after component loaded
+     */
+    componentDidMount = () => {
+        this.getMyRoutes();
+    };
+
+    getMyRoutes = () => {
+        axios.get('http://localhost:3001/getMyRoutes').then((response) => {
+            this.setState({
+                searched: true,
+                routes: response.data
+            });
+        });
+    };
+
+    handleDelete = (id) => {
+        // http verb "DELETE" (similar to get)
+        axios.delete('http://localhost:3001/myRoutes', {
+            params: {
+                _id: id
+            }
+        });
+    };
 
     render() {
 
@@ -49,12 +77,12 @@ class MyRoutes extends Component {
                     </Grid.Column>
                 </Grid>
                 <Item.Group divided link>
-                    {mockData.map((result) =>
+                    {this.state.routes.map((result) =>
                         <Item>
                             <Item.Image size='small' src={result.image}/>
 
                             <Item.Content>
-                                <Item.Header as='h4'> {result.title} </Item.Header>
+                                <Item.Header as='h4'> {result.name} </Item.Header>
                                 <Item.Meta>{result.address}</Item.Meta>
                                 <Item.Description>
                                     <div>Distance:{result.distance} km</div>
@@ -62,7 +90,9 @@ class MyRoutes extends Component {
                                 </Item.Description>
                                 <Item.Extra>
                                     <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
-                                    <Button floated='right' compact content='Delete'/>
+                                    <Button floated='right' compact onClick={() => this.handleDelete(result._id)}>
+                                        Delete
+                                    </Button>
                                 </Item.Extra>
                             </Item.Content>
                         </Item>

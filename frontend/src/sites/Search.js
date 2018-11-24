@@ -67,18 +67,17 @@ class Search extends Component {
     };
 
     /**
-     * Sends a search request after a slight delay (while typing in the search field)
+     * Sends a search for routes request
      */
     onSearch = () => {
-        /** auskommentiert von Nikola
-         if (!this.state.searchText)
-         return; **/
-
         // todo: add sortby to request
-        axios.get('http://localhost:3001/getRoutes', { params: {
-            search: this.state.searchText,
-            difficulty: this.state.difficulty, // array
-            routeLength: this.state.routeLength,
+        // todo: check if features are supposed to be sent as strings?
+        axios.get('http://localhost:3001/getRoutes', {
+            params: {
+                search: this.state.searchText,
+                difficulty: this.state.difficulty,  // array
+                routeLength: this.state.routeLength,
+                features: this.state.features       // array
             }
         }).then((response) => {
             this.setState({
@@ -91,12 +90,12 @@ class Search extends Component {
 
     /**
      * Navigates to the detail view of a route (or back)
-     * @param {int} id - the id of the route to be displayed (or -1 if back)
+     * @param {string} id - the id of the route to be displayed (or -1 if back)
      */
     onShowDetail = (id) => {
-        let isFavorised = id >= 0 ? mockData[id].isFavorised : false;
+        let isFavorised = id !== -1 ? this.state.routes[id].isFavorised : false;
 
-        // navigate internally
+        // navigate internally to details view
         this.setState({
             showDetail: id,
             isFavorised: isFavorised
@@ -111,11 +110,16 @@ class Search extends Component {
         this.setState({reviewIsOpen: !this.state.reviewIsOpen});
     };
     toggleFavorite = () => {
-        // todo: send request to toggle favorite
-
-        // toggle on UI
         let isFavorised = !this.state.isFavorised;
-        this.setState({isFavorised: isFavorised});
+
+        // send request to toggle favorite
+        axios.post('http://localhost:3001/favoriseRoute', {
+            id: this.state.showDetail,  // currently selected routeid
+            isFavorised: isFavorised
+        }).then((response) => {
+            // toggle status (or is the new status in response.data?)
+            this.setState({isFavorised: isFavorised});
+        });
     };
 
     render() {
@@ -123,13 +127,14 @@ class Search extends Component {
 
         var searchResults = [];
         if (this.state.searched) {
+            console.log(this.state.routes);
             this.state.routes.forEach((route) => {
                 searchResults.push(
                     //route._id is the right name to get id from mongo db
-                    <Item onClick={() => this.onShowDetail(route._id)}>
+                    <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
                         <Item.Image size='small' rounded src={route.image}/>
                         <Item.Content>
-                            <Item.Header as='h4'> {route.title} </Item.Header>
+                            <Item.Header as='h4'> {route.name} </Item.Header>
                             <Item.Meta>{route.address}</Item.Meta>
                             <Item.Description>
                                 <p/>
@@ -146,14 +151,14 @@ class Search extends Component {
             });
         }
         var detailRoute;
-        if (this.state.showDetail >= 0)
-            this.state.routes.find((route) => route._id === this.state.showDetail);
+        if (this.state.showDetail !== -1)
+            detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
 
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
                 {/* Sidebar = Right Column */}
                 <Sidebar as={Segment} animation='push' direction='right' visible width='very wide'>
-                    {this.state.showDetail <= -1 ?
+                    {this.state.showDetail === -1 ?
                         /* display search form*/
                         <div>
                             <Form size='large'>
@@ -190,7 +195,7 @@ class Search extends Component {
                             </Form>
 
                             {this.state.searched && <div>
-                                {/* */}
+                                {/* Search Result List */}
 
                                 <Divider/>
                                 <Grid columns='equal'>

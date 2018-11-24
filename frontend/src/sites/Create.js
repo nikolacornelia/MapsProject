@@ -4,11 +4,8 @@ import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
     Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
 } from 'semantic-ui-react'
-import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
-import * as createRoute from './maps/createRoute';
+import * as CreateMap from './maps/createRoute';
 import {mockFeatures} from "../mockData";
-import {getRouteMapData} from "./maps/createRoute";
-import {resetArrays} from "./maps/createRoute";
 
 class Create extends Component {
 
@@ -54,7 +51,7 @@ class Create extends Component {
         const {files} = e.target;
 
         // Check file type and size
-        for (var i = 0; i < files.length; i++) {
+        for (let i = 0; i < files.length; i++) {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
                 // todo: error routine...
@@ -68,21 +65,25 @@ class Create extends Component {
 
     onSubmitRoute = (e) => {
         //get current leaflet route information
-        var oRoute = getRouteMapData();
+        let oRoute = CreateMap.getRouteMapData();
+
         // create a function that is called after image file is read
-        var createRoute = (e) => {
-            // todo: add file content (from e.target.result)
+        let createRoute = (e) => {
+            let image = e && e.target.result; // sends the image as base64
+
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.title,
                 description: this.state.description,
                 difficulty: this.state.difficulty,
                 points: oRoute.points,
-                highlights: oRoute.highlights
+                highlights: oRoute.highlights,
+                image: image
             }).then((response) => {
                 this.setState({routeCreated: true});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
-                resetArrays();
+                CreateMap.resetArrays();
+
             }).catch((error) => {
                 // possible?
             });
@@ -90,9 +91,9 @@ class Create extends Component {
 
         // read file if given
         if (this.state.files.length === 1) {
-            var fileReader = new FileReader();
+            let fileReader = new FileReader();
             fileReader.onload = createRoute;
-            fileReader.readAsBinaryString(this.state.files[0]);
+            fileReader.readAsDataURL(this.state.files[0]);
         } else {
             createRoute();
         }
@@ -102,7 +103,7 @@ class Create extends Component {
      * Injects the leaflet map functionality after the React component has rendered.
      */
     componentDidMount = () => {
-        createRoute.onInit();
+        CreateMap.onInit();
     };
 
     /**

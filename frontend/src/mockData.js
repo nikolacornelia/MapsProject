@@ -8,8 +8,8 @@ export const mockFeatures = [
 ];
 export const mockData = [
     {
-        id: 1,
-        title: 'Wanderweg 1',
+        _id: 1,
+        name: 'Wanderweg 1',
         description: 'Ganz viel text...',
         address: 'Speyer, RLP, Deutschland',
         distance: 4,
@@ -25,8 +25,8 @@ export const mockData = [
         ]
     },
     {
-        id: 2,
-        title: 'Wanderweg 2',
+        _id: 2,
+        name: 'Wanderweg 2',
         description: 'Ganz viel text...',
         address: 'Speyer, RLP, Deutschland',
         distance: 8,
@@ -38,8 +38,8 @@ export const mockData = [
         comments: []
     },
     {
-        id: 3,
-        title: 'Wanderweg 2',
+        _id: 3,
+        name: 'Wanderweg 2',
         description: 'Ganz viel text...',
         address: 'Speyer, RLP, Deutschland',
         distance: 8,
