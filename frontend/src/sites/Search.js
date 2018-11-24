@@ -136,7 +136,7 @@ class Search extends Component {
                     <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
                         <Item.Image size='small' rounded src={route.image}/>
                         <Item.Content>
-                            <Item.Header as='h4'> {route.name} </Item.Header>
+                            <Item.Header as='h4'> {route.title} </Item.Header>
                             <Item.Meta>{route.address}</Item.Meta>
                             <Item.Description>
                                 <p/>
@@ -229,7 +229,7 @@ class Search extends Component {
                                 <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
                                       onClick={() => this.onShowDetail(-1)}/>
                                 <Header.Content style={{width: "100%"}}>
-                                    {detailRoute.name}
+                                    {detailRoute.title}
                                     <span style={{float: 'right'}}>
                                         <Popup
                                             trigger={<Icon name={this.state.isFavorised ? 'heart' : 'heart outline'}
