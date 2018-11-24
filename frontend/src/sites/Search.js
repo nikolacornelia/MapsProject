@@ -229,7 +229,7 @@ class Search extends Component {
                                 <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
                                       onClick={() => this.onShowDetail(-1)}/>
                                 <Header.Content style={{width: "100%"}}>
-                                    {detailRoute.title}
+                                    {detailRoute.name}
                                     <span style={{float: 'right'}}>
                                         <Popup
                                             trigger={<Icon name={this.state.isFavorised ? 'heart' : 'heart outline'}
@@ -282,7 +282,7 @@ class Search extends Component {
                                         <Header.Content>Reviews</Header.Content>
                                         <Modal open={this.state.reviewIsOpen} closeOnEscape={false}
                                                closeOnDimmerClick={false} size='small' centered>
-                                            <Modal.Header>New Review for {detailRoute.title}</Modal.Header>
+                                            <Modal.Header>New Review for {detailRoute.name}</Modal.Header>
                                             <Modal.Content scrolling>
                                                 <Form>
                                                     <Comment.Group>

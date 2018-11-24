@@ -48,19 +48,21 @@ class Create extends Component {
      * @param e - change event
      */
     handleChangeFile = (e) => {
-        const {files} = e.target;
+        let files = e.target.files;
 
         // Check file type and size
         for (let i = 0; i < files.length; i++) {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
                 // todo: error routine...
+                alert("file is not an image");
             } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
+                alert("file to big");
             }
         }
-        this.setState(files);
+        this.setState({files: files});
     };
 
     onSubmitRoute = (e) => {
@@ -70,9 +72,9 @@ class Create extends Component {
         // create a function that is called after image file is read
         let createRoute = (e) => {
             let image = e && e.target.result; // sends the image as base64
-
+            console.log(image);
             axios.post('http://localhost:3001/saveRoute', {
-                title: this.state.title,
+                name: this.state.name,
                 description: this.state.description,
                 difficulty: this.state.difficulty,
                 points: oRoute.points,
@@ -126,8 +128,8 @@ class Create extends Component {
                             <Header.Subheader>Enter route information</Header.Subheader>
                         </Header>
 
-                        <Form.Input fluid label='Title' placeholder='Title of the route' required
-                                    name='title' onChange={this.handleChange}/>
+                        <Form.Input fluid label='Name' placeholder='Name of the route' required
+                                    name='name' onChange={this.handleChange}/>
                         <Form.TextArea fluid label='Description' placeholder='Description of the route'
                                        name='description' onChange={this.handleChange}/>
 
