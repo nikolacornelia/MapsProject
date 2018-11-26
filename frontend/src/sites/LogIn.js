@@ -46,9 +46,9 @@ class LogIn extends Component {
     onSubmitLogin = () => {
         // todo: actually a login request should not be a HTTP GET-Request since the password would be transported in the URL params
         // You would rather send it in a POST, because (when using https) the http-body is securely encrypted
-        axios.get('http://localhost:3001/getUser/', {
+        axios.get('http://localhost:3001/login/', {
             params: {
-                email: this.state.email,
+                user: this.state.user,
                 password: this.state.password
             }
         }).then((response) => {
@@ -74,8 +74,8 @@ class LogIn extends Component {
             return;
 
         // send register request
-        axios.post('http://localhost:3001/saveUser/', {
-            user: this.state.user,
+        axios.post('http://localhost:3001/register/', {
+            username: this.state.username,
             email: this.state.email,
             password: this.state.password
         }).then((response) => {
@@ -123,7 +123,7 @@ class LogIn extends Component {
                         }
                         <Form size='large' onSubmit={this.onSubmitLogin} className='attached fluid segment'>
 
-                            <Form.Input fluid icon='mail' name='email' iconPosition='left'
+                            <Form.Input fluid icon='mail' name='user' iconPosition='left'
                                         placeholder='E-mail address' onChange={this.onChangeInput} required/>
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
                                         placeholder='Password' onChange={this.onChangeInput}
@@ -163,7 +163,7 @@ class LogIn extends Component {
                             <Form.Input fluid icon='mail' name='email' iconPosition='left'
                                         error={this.state.formErrors.find((error) => error.field === 'email')}
                                         placeholder='E-Mail address' onChange={this.onChangeInput} required/>
-                            <Form.Input fluid icon='user' name='user' iconPosition='left'
+                            <Form.Input fluid icon='user' name='username' iconPosition='left'
                                         placeholder='User name' onChange={this.onChangeInput} required/>
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
                                         placeholder='Password' onChange={this.onChangeInput}

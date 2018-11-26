@@ -202,7 +202,7 @@ app.get('/getDocument', function (req, res) {
 });
 
 var BCRYPT_SALT_ROUNDS = 12;
-app.post('/saveUser', function (req, res) {
+app.post('/register', function (req, res) {
     console.log(req.body.user);
     let aResult = req.body.user;
     aResult = JSON.parse(aResult);
@@ -222,8 +222,7 @@ app.post('/saveUser', function (req, res) {
         });
 });
 
-app.get('/getUser', function (req, res) {
-    console.log(req.query);
+app.get('/login', function (req, res) {
     let aResult = req.query;
     User.findOne(
    //     {$or: [{email: aResult.email}, {username: aResult.username}]}
