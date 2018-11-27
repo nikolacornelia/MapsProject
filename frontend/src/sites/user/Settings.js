@@ -6,7 +6,13 @@ class Settings extends Component {
     render() {
         return (
             <Container as={Segment} basic padded>
-                Test
+                <Header as='h2' dividing>
+                    <Icon name='settings'/>
+                    <Header.Content>Settings
+                        <Header.Subheader as='h3'>Change the settings of your account</Header.Subheader>
+                    </Header.Content>
+                </Header>
+
             </Container>
         );
     }
