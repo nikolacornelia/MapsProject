@@ -134,7 +134,7 @@ function Registrieren() {
         $.ajax({
             type: 'POST',
             data: { user: jsonUser },
-            url: 'http://localhost:3001/saveUser',
+            url: 'http://localhost:3001/register',
             success: function (data) {
                 alert("Sie haben sich erfolgreich registriert!");
             },
@@ -159,7 +159,7 @@ function Login() {
     $.ajax({
         type: 'POST',
         data: { user: jsonUser },
-        url: 'http://localhost:3001/getUser',
+        url: 'http://localhost:3001/login',
         success: function (data) {
             location.href = 'createHighlights.html';
         }

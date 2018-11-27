@@ -43,6 +43,7 @@ class Search extends Component {
             difficulty: [],
             routeLength: 5,
             searchText: '',
+            sortBy: 1,
 
             searched: false,
             showDetail: -1,
@@ -77,7 +78,8 @@ class Search extends Component {
                 search: this.state.searchText,
                 difficulty: this.state.difficulty,  // array
                 routeLength: this.state.routeLength,
-                features: this.state.features       // array
+                features: this.state.features,      // array
+                sortBy: this.state.sortBy
             }
         }).then((response) => {
             this.setState({
@@ -97,6 +99,9 @@ class Search extends Component {
             ? this.state.routes.find((route) => route._id = id).isFavorised
             : false;
 
+        // scroll to top
+        document.getElementById('sidebar').scrollTop = 0;
+
         // navigate internally to details view
         this.setState({
             showDetail: id,
@@ -104,8 +109,30 @@ class Search extends Component {
         });
     };
 
-    onSubmitReview = () => {
-        // todo: routine for send new review
+    onChangeSort = (key) => {
+        // change sort and afterwards trigger an update
+        this.setState({sortBy: key}, this.onSearch);
+    };
+
+    onSubmitReview = (id) => {
+        // todo: backend-service is not yet available
+        axios.post('http://lcoalhost:3001/route/review', {
+            routeId: this.state.showDetail,
+            review: this.state.review
+        }).then(() => {
+            // close the dialog & refresh
+            this.toggleReviewDialog();
+            this.onSearch();
+        });
+    };
+
+    onChangeReview = () => {
+        // todo
+
+    };
+
+    onChangeReviewImage = () => {
+        // todo
     };
 
     toggleReviewDialog = () => {
@@ -124,6 +151,8 @@ class Search extends Component {
         });
     };
 
+
+
     render() {
         const position = [this.state.lat, this.state.lng];
 
@@ -134,7 +163,7 @@ class Search extends Component {
                 searchResults.push(
                     //route._id is the right name to get id from mongo db
                     <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
-                        <Item.Image size='small' rounded src={route.image}/>
+                        <Item.Image size='small' rounded src={route.image || '/static/media/route-noimage.png'}/>
                         <Item.Content>
                             <Item.Header as='h4'> {route.title} </Item.Header>
                             <Item.Meta>{route.address}</Item.Meta>
@@ -158,7 +187,7 @@ class Search extends Component {
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
                 {/* Sidebar = Right Column */}
-                <Sidebar as={Segment} animation='push' direction='right' visible width='very wide'>
+                <Sidebar id='sidebar' as={Segment} animation='push' direction='right' visible width='very wide'>
                     {this.state.showDetail === -1 ?
                         /* display search form*/
                         <div>
@@ -208,9 +237,9 @@ class Search extends Component {
                                             <Dropdown.Menu>
                                                 <Dropdown.Header icon='sort' content='Sort by'/>
                                                 <Dropdown.Divider/>
-                                                <Dropdown.Item active text='Relevance'/>
-                                                <Dropdown.Item text='Most popular'/>
-                                                <Dropdown.Item text='Most recently updated'/>
+                                                <Dropdown.Item active={this.state.sortBy === 1} text='Name' onClick={()=>this.onChangeSort(1)}/>
+                                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular' onClick={()=>this.onChangeSort(2)}/>
+                                                <Dropdown.Item active={this.state.sortBy === 3} text='Most recently created' onClick={()=>this.onChangeSort(3)}/>
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </Grid.Column>
@@ -219,6 +248,7 @@ class Search extends Component {
                                 <Item.Group divided link>
                                     {searchResults}
                                 </Item.Group>
+                                <p/>
                             </div>}
                         </div>
                         : /*else display detail form*/
@@ -244,7 +274,8 @@ class Search extends Component {
 
                             <Segment.Group className='basic'>
                                 <Segment basic>
-                                    <Image centered fluid rounded src={detailRoute.image}/>
+                                    <Image centered fluid rounded
+                                           src={detailRoute.image || '/static/media/route-noimage.png'}/>
                                 </Segment>
 
                                 <Segment.Group className='basic' horizontal textAlign='center'>
@@ -264,14 +295,17 @@ class Search extends Component {
                                     </Segment>
                                 </Segment.Group>
 
+                                {detailRoute.features &&
                                 <Segment basic textAlign='center'>
-                                    {detailRoute.features &&
-                                        detailRoute.features.map((feature) => <Label>{feature}</Label>)
-                                    }
+                                    {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
                                 </Segment>
+                                }
+
+                                {detailRoute.description &&
                                 <Segment basic>
                                     {detailRoute.description}
                                 </Segment>
+                                }
 
                                 <Comment.Group minimal>
 
@@ -291,14 +325,14 @@ class Search extends Component {
                                                                 <Comment.Author as='a'>Max Mustermann</Comment.Author>
                                                                 <Comment.Text>
 
-                                                                    <Form.Field><Rating icon='star' size='huge'
+                                                                    <Form.Field><Rating icon='star' size='huge' onChange={this.onChangeReview}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
-                                                                                   name='commentText'
+                                                                                   name='commentText' onChange={this.onChangeReview}
                                                                                    placeholder='Enter your review'/>
                                                                     <Form.Input type='file' fluid label='Image'
                                                                                 placeholder='Upload image file'
-                                                                                iconPosition='left'
+                                                                                iconPosition='left' onChange={this.onChangeReviewImage}
                                                                                 icon={<Icon name='add' link inverted
                                                                                             color='black'/>}/>
                                                                 </Comment.Text>
@@ -313,12 +347,12 @@ class Search extends Component {
                                             </Modal.Actions>
                                         </Modal>
                                     </Header>
-                                    {!detailRoute.comments || detailRoute.comments.length === 0 &&
-                                    <Container textAlign='center'>
-                                        <i>No comments available. Be the first one to comment!</i>
-                                    </Container>}
-                                    {detailRoute.comments && detailRoute.comments.map((comment) =>
-                                        <Comment>
+
+                                    {(!detailRoute.comments || detailRoute.comments.length === 0)
+                                        ? <Container textAlign='center'>
+                                            <i>No comments available. Be the first one to comment!</i>
+                                        </Container>
+                                        : detailRoute.comments.map((comment) => <Comment>
                                             <Comment.Avatar src='./static/media/avatar-1.png'/>
                                             <Comment.Content>
                                                 <Comment.Author as='b'>{comment.author}</Comment.Author>
@@ -327,13 +361,13 @@ class Search extends Component {
                                                 </Comment.Metadata>
                                                 <Comment.Text><p>{comment.text}</p></Comment.Text>
                                                 <Comment.Actions>
-                                                    <Rating as='a' icon='star'
-                                                            defaultRating={comment.stars}
+                                                    <Rating as='a' icon='star' defaultRating={comment.stars}
                                                             maxRating={5} disabled/>
                                                 </Comment.Actions>
                                             </Comment.Content>
                                         </Comment>)}
                                 </Comment.Group>
+                                <p/>
                             </Segment.Group>
 
                         </Form>
