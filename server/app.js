@@ -203,23 +203,22 @@ app.get('/getDocument', function (req, res) {
 
 var BCRYPT_SALT_ROUNDS = 12;
 app.post('/register', function (req, res) {
-    console.log(req.body.user);
-    let aResult = req.body.user;
-    aResult = JSON.parse(aResult);
-    let myData = new User(aResult);
+    //let aResult = req.body;
+    //aResult = JSON.parse(aResult);
+    let myData = new User(req.body);
     bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
         .then(function (hashedPassword) {
             myData.password = hashedPassword;
             return myData.save();
         })
-        .then(function () {
+        /* .then(function () {
             res.send();
         })
         .catch(function (error) {
             console.log("Error saving user: ");
             console.log(error);
             next();
-        });
+        }); */
 });
 
 app.get('/login', function (req, res) {
