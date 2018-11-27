@@ -144,7 +144,7 @@ class Search extends Component {
                                 <p/>
                                 Difficulty: {route.difficulty}
                                 <Item.Extra>
-                                    <Rating icon='star' defaultRating={route.rating} maxRating={5} disabled/>
+                                    <Rating icon='star' defaultRating={route.avg_rating} maxRating={5} disabled/>
                                 </Item.Extra>
                             </Item.Description>
                         </Item.Content>
@@ -155,7 +155,6 @@ class Search extends Component {
         var detailRoute;
         if (this.state.showDetail !== -1)
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
-
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
                 {/* Sidebar = Right Column */}
@@ -260,7 +259,7 @@ class Search extends Component {
                                         <Statistic horizontal size='mini' label={detailRoute.difficulty}/>
                                     </Segment>
                                     <Segment basic>
-                                        <Rating basic icon='star' defaultRating={detailRoute.rating} maxRating={5}
+                                        <Rating basic icon='star' defaultRating={detailRoute.avg_rating} maxRating={5}
                                                 disabled size='huge'/>
                                     </Segment>
                                 </Segment.Group>

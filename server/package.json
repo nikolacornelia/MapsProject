@@ -34,7 +34,12 @@
     "morgan": "^1.9.1",
     "multer": "^1.4.1",
     "npm": "^6.4.1",
-    "acorn": "^6.0.4"
+    "acorn": "^6.0.4",
+    "express-async-errors": "^3.1.1",
+    "async": "^2.6.1",
+    "ajax-request": "^1.2.3",
+    "request": "^2.88.0",
+    "then-request": "^6.0.0"
   },
   "devDependencies": {
     "eslint": "^5.9.0",
