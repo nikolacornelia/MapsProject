@@ -12,9 +12,9 @@ import {
     Form,
     Item,
     Dropdown,
-    Statistic,
+    Statistic, Tab, Menu,
     Label, Rating
-} from 'semantic-ui-react'
+} from 'semantic-ui-react';
 import {mockData} from '../../mockData';
 import axios from 'axios';
 
@@ -23,7 +23,8 @@ class MyRoutes extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            routes: []
+            routes: [],
+            tab: 'created'
         };
     }
 
@@ -34,8 +35,15 @@ class MyRoutes extends Component {
         this.getMyRoutes();
     };
 
+    /**
+     * Gets my routes from the backend
+     */
     getMyRoutes = () => {
-        axios.get('http://localhost:3001/getMyRoutes').then((response) => {
+        axios.get('http://localhost:3001/getMyRoutes', {
+            params: {
+                tab: this.state.tab
+            }
+        }).then((response) => {
             this.setState({
                 searched: true,
                 routes: response.data
@@ -43,35 +51,54 @@ class MyRoutes extends Component {
         });
     };
 
+    /**
+     * Change Tab and afterwards trigger an update
+     * @param e - Change event
+     * @param name - name of the tab to be selected
+     */
+    handleTabNavigation = (e, {name}) => {
+        this.setState({tab: name}, this.getMyRoutes);
+    };
+
+    /**
+     * Deletes a route
+     * @param id - route id to be deleted
+     */
     handleDelete = (id) => {
         // http verb "DELETE" (similar to get)
         axios.delete('http://localhost:3001/myRoutes', {
             params: {
                 _id: id
             }
-        });
+        }).then(() => this.getMyRoutes());
     };
 
     render() {
-
         return (
             <Container as={Segment} basic padded>
                 <Header as='h2' dividing>
                     <Icon name='map signs'/>
                     <Header.Content>My Routes
-                        <Header.Subheader as='h3'> Routes you have created</Header.Subheader>
+                        <Header.Subheader as='h3'>Routes you have created</Header.Subheader>
                     </Header.Content>
                 </Header>
+                <Menu secondary pointing>
+                    <Menu.Item name='created' link active={this.state.tab === 'created'}
+                               onClick={this.handleTabNavigation}>Routes I created</Menu.Item>
+                    <Menu.Item name='liked' link active={this.state.tab === 'liked'} onClick={this.handleTabNavigation}>Routes
+                        I liked</Menu.Item>
+                </Menu>
+
                 <Grid columns='equal'>
                     <Grid.Column textAlign='left'>
-                        <Icon name='list'/> {mockData.length} results
+                        <Icon name='list'/> {this.state.routes.length} results
                     </Grid.Column>
                     <Grid.Column textAlign='right'>
-                        <Dropdown text='Sort By' direction='left'>
+                        <Dropdown text='Sort By' direction='left' onChange={this.onSortChange}>
                             <Dropdown.Menu>
-                                <Dropdown.Item text='Relevance'/>
+                                <Dropdown.Item text='Name'/>
                                 <Dropdown.Item text='Most popular'/>
-                                <Dropdown.Item text='Most recently updated'/>
+                                <Dropdown.Item text='Most recently created'/>
                             </Dropdown.Menu>
                         </Dropdown>
                     </Grid.Column>

@@ -1,39 +1,21 @@
 import React, {Component} from 'react';
-import {
-    Container,
-    Header,
-    Button,
-    Divider,
-    Grid,
-    Image,
-    Sidebar,
-    Visibility,
-    Responsive,
-    Segment,
-    Menu,
-    Icon,
-    Input,
-    Checkbox,
-    Accordion,
-    Form,
-    Radio,
-    Message
-} from 'semantic-ui-react'
-import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
-import {Slider} from 'react-semantic-ui-range';
-
+import {Container, Header, Segment, Icon, Accordion} from 'semantic-ui-react';
 
 class FAQ extends Component {
 
-
-    state = {activeIndex: -1};
+    constructor(props){
+        super(props);
+        this.state = {
+            activeIndex: -1
+        };
+    }
 
     handleClick = (e, titleProps) => {
         const {index} = titleProps;
         const {activeIndex} = this.state;
         const newIndex = activeIndex === index ? -1 : index;
 
-        this.setState({activeIndex: newIndex})
+        this.setState({activeIndex: newIndex});
     };
 
     render() {
@@ -41,7 +23,12 @@ class FAQ extends Component {
 
         return (
             <Container as={Segment} basic padded>
-                <Header as='h2'>FAQ</Header>
+                <Header as='h2' dividing>
+                    <Icon name='question'/>
+                    <Header.Content>FAQ
+                        <Header.Subheader as='h3'>Frequently asked Questions</Header.Subheader>
+                    </Header.Content>
+                </Header>
                 <Accordion block fluid styled data-testid='faqAccordion'>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                         Most frequently asked quesion 1

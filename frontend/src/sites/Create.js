@@ -74,7 +74,7 @@ class Create extends Component {
             let image = e && e.target.result; // sends the image as base64
             console.log(image);
             axios.post('http://localhost:3001/saveRoute', {
-                name: this.state.name,
+                title: this.state.name,
                 description: this.state.description,
                 difficulty: this.state.difficulty,
                 points: oRoute.points,

@@ -72,7 +72,7 @@ class Website extends Component {
                                     <Dropdown.Item icon='map signs' text='My Routes' as={NavLink} exact to='/myroutes'/>
                                     <Dropdown.Item icon='globe' text='My Reviews' as={NavLink} exact to='/myreviews'/>
                                     <Dropdown.Item icon='settings' text='Settings' as={NavLink} exact to='/settings'/>
-                                    <Dropdown.Item icon='logout' text='Logout' as={NavLink} exact to='/login'
+                                    <Dropdown.Item icon='logout' text='Logout' as={NavLink} exact to='/login' active={false}
                                                    onClick={() => {
                                                        sessionStorage.clear();
                                                        this.updateLoginStatus();
