@@ -22,6 +22,7 @@ let bcrypt = require('bcrypt');
 let async = require('async');
 let request = require('request');
 let thenquest = require('then-request');
+let sortJson = require('sort-json-array');
 
 
 let schemaPoint = new mongoose.Schema({
@@ -36,7 +37,8 @@ let schemaRoute = new mongoose.Schema({
     difficulty: String,
     points: [{lat: Number, lng: Number}],
     highlights: [Number],
-    location: String
+    location: String,
+    created: {type: Date, default: Date.now}
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
@@ -208,10 +210,11 @@ app.get('/getComments', function (req, res) {
 });
 
 app.get('/getRoutes', function (req, res, next) {
+        console.log(req.query.sortBy);
         let paramText = req.query.search;
         let paramDifficulty = req.query.difficulty;
         let routeQuery;
-        
+
         if (paramText == '' && paramDifficulty == undefined) {
             routeQuery = {};
         }
@@ -288,6 +291,22 @@ app.get('/getRoutes', function (req, res, next) {
     ,
 
     function (req, res) {
+        if (req.query.sortBy != undefined) {
+            let paramSort;
+            if (req.query.sortBy == 1) {
+                //Sort by name
+                paramSort = 'title';
+            } else if (req.query.sortBy == 2) {
+                //Sort by average rating
+                paramSort = 'avg_rating';
+            } else if (req.query.sortBy == 3) {
+                //Sort by date created
+                paramSort = 'created';
+            }
+
+            sortJson(req.oRoutes, paramSort);
+
+        }
         res.send(req.oRoutes);
     }
 );
