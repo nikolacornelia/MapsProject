@@ -183,6 +183,7 @@ class Search extends Component {
         }
         var detailRoute;
         if (this.state.showDetail !== -1)
+            //todo Nikola::get comments for detail route
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         return (
             <Sidebar.Pushable data-testid='siteSearch'>

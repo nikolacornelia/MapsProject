@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "nodemon app",
+    "debug": "node %NODE_DEBUG_OPTION% app.js"
   },
   "repository": {
     "type": "git",

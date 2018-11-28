@@ -202,40 +202,52 @@ app.get('/getRatings', function (req, res) {
     } **/
 });
 
+app.get('/getComments', function (req, res) {
+
+
+});
+
 app.get('/getRoutes', function (req, res, next) {
-        console.log(req.query);
-        var paramText = req.query.search;
+        let paramText = req.query.search;
+        let paramDifficulty = req.query.difficulty;
         let routeQuery;
-        if (paramText != undefined) {
-            routeQuery = {$or: []};
-            routeQuery.$or.push( {title: {$regex: paramText, $options: "i"}}, {
-                    description: {
-                        $regex: paramText,
-                        $options: "i"
-                    }
-                }, {location: {$regex: paramText, $options: "i"}}
-            );
+        
+        if (paramText == '' && paramDifficulty == undefined) {
+            routeQuery = {};
         }
-    console.log(routeQuery);
-        //difficulty kann mehrer Filter enthalten --> Array
-        var paramDifficulty = req.query.difficulty;
-        if (paramDifficulty != null) {
-            if (paramDifficulty.length = 1) {
-                if (routeQuery==undefined) {
-                    routeQuery = {$or: []};
+        else {
+            routeQuery = {$and: []};
+            if (paramText != '') {
+                routeQuery.$and.push({
+                    $or: [{title: {$regex: paramText, $options: "i"}}, {
+                        description: {
+                            $regex: paramText,
+                            $options: "i"
+                        }
+                    }, {location: {$regex: paramText, $options: "i"}}]
+                });
+            }
+
+            //difficulty kann mehrer Filter enthalten --> Array
+            console.log(paramDifficulty);
+            if (paramDifficulty != undefined) {
+                if (paramDifficulty.length == 1) {
+                    routeQuery.$and.push({difficulty: paramDifficulty[0]});
+                } else {
+                    let difficultyParam = {$or: []};
+                    for (let i = 0; i < paramDifficulty.length; i++) {
+                        console.log("FOR");
+                        console.log(paramDifficulty[i]);
+                        difficultyParam.$or.push({difficulty: paramDifficulty[i]});
+                    }
+                    routeQuery.$and.push(difficultyParam);
                 }
-                routeQuery.push({difficulty: paramDifficulty[0]});
-            } else {
-                throw err; //only one difficulty allowed
             }
         }
-        console.log(routeQuery);
-        //console.log('1)entered get Routes');
+        ;
         Route.find(routeQuery).lean().exec(function (err, data) {
             if (err)
                 throw err;
-            console.log("2) getRouteFunction" + data);
-            console.log("LENGHT "+ data.length);
             //no route was found for query
             if (data.length === 0) {
                 res.send(data);
@@ -243,7 +255,9 @@ app.get('/getRoutes', function (req, res, next) {
             req.routes = data;
             next();
         });
-    },
+    }
+    ,
+
     function (req, res, next) {
         let aRoutes = req.routes;
         let oRoutes = [];
@@ -263,15 +277,16 @@ app.get('/getRoutes', function (req, res, next) {
                 }
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
-                if (iFinishedQueries=== (aRoutes.length)) {
-                    console.log("3) oroutes:" + oRoutes);
-                    console.log(oneRoute);
+                if (iFinishedQueries === (aRoutes.length)) {
                     req.oRoutes = oRoutes;
                     next();
                 }
             });
         }
-    },
+    }
+
+    ,
+
     function (req, res) {
         res.send(req.oRoutes);
     }
@@ -341,14 +356,14 @@ app.post('/register', function (req, res) {
             myData.password = hashedPassword;
             return myData.save();
         })
-        /* .then(function () {
-            res.send();
-        })
-        .catch(function (error) {
-            console.log("Error saving user: ");
-            console.log(error);
-            next();
-        }); */
+    /* .then(function () {
+        res.send();
+    })
+    .catch(function (error) {
+        console.log("Error saving user: ");
+        console.log(error);
+        next();
+    }); */
 });
 
 app.get('/login', function (req, res) {
