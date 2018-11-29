@@ -375,14 +375,14 @@ app.post('/register', function (req, res) {
             myData.password = hashedPassword;
             return myData.save();
         })
-    /* .then(function () {
+    .then(function () {
         res.send();
     })
     .catch(function (error) {
         console.log("Error saving user: ");
         console.log(error);
         next();
-    }); */
+    });
 });
 
 app.get('/login', function (req, res) {

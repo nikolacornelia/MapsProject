@@ -108,11 +108,6 @@ class LogIn extends Component {
                         <Header as='h2' color='blue' textAlign='center'>
                             Login to your account
                         </Header>
-                        {this.state.registerSuccess &&
-                            <Message attached success header='Your account was successfully registered.'>
-                                You can now <a href='#' onClick={(e) => this.navigateInternally(e, 'login')}>login here</a>.
-                        </Message>
-                        }
                         {this.state.hasError &&
                             <Message attached error header='Invalid login data!'
                                 content='Please check your email or password.' />
@@ -146,6 +141,11 @@ class LogIn extends Component {
                         <Header as='h2' color='blue' textAlign='center'>
                             Register a new account
                         </Header>
+                        {this.state.registerSuccess &&
+                            <Message attached success header='Your account was successfully registered.'>
+                                You can now <a href='#' onClick={(e) => this.navigateInternally(e, 'login')}>login here</a>.
+                        </Message>
+                        }
                         {this.state.formErrors.length > 0 &&
                             <Message attached error>
                                 <Message.Header content='Your form has errors. You must correct them first!' />
