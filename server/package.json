@@ -41,7 +41,8 @@
     "ajax-request": "^1.2.3",
     "request": "^2.88.0",
     "then-request": "^6.0.0",
-    "sort-json-array": "^0.1.7"
+    "sort-json-array": "^0.1.7",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "eslint": "^5.9.0",

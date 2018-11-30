@@ -71,7 +71,6 @@ class Search extends Component {
      * Sends a search for routes request
      */
     onSearch = () => {
-        // todo: add sortby to request
         // todo: check if features are supposed to be sent as strings?
         axios.get('http://localhost:3001/getRoutes', {
             params: {

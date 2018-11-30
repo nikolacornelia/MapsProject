@@ -109,7 +109,7 @@ class MyReviews extends Component {
                                                 <div>Difficulty: {route.difficulty}</div>
                                             </Item.Description>
                                             <Item.Extra>
-                                                <Rating icon='star' defaultRating={route.rating} maxRating={5}
+                                                <Rating icon='star' defaultRating={route.avg_rating} maxRating={5}
                                                         disabled/>
                                             </Item.Extra>
                                         </Item.Content>

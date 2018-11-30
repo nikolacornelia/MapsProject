@@ -24,7 +24,8 @@ class MyRoutes extends Component {
         super(props);
         this.state = {
             routes: [],
-            tab: 'created'
+            tab: 'created',
+            sortBy: 1,
         };
     }
 
@@ -36,19 +37,45 @@ class MyRoutes extends Component {
     };
 
     /**
+     * sets sort by parameter
+     */
+    onSortChange = (key) => {
+        // change sort and afterwards trigger an update
+        this.setState({sortBy: key}, this.getMyRoutes());
+    };
+
+    /**
      * Gets my routes from the backend
      */
     getMyRoutes = () => {
-        axios.get('http://localhost:3001/getMyRoutes', {
-            params: {
-                tab: this.state.tab
-            }
-        }).then((response) => {
-            this.setState({
-                searched: true,
-                routes: response.data
+        if (this.state.tab == 'created') {
+            axios.get('http://localhost:3001/getMyRoutes', {
+                params: {
+                    tab: this.state.tab,
+                    sortBy: this.state.sortBy
+                }
+            }).then((response) => {
+                this.setState({
+                    searched: true,
+                    routes: response.data
+                });
             });
-        });
+
+        } else if (this.state.tab == 'liked') {
+            axios.get('http://localhost:3001/getMyLikedRoutes', {
+                params: {
+                    tab: this.state.tab,
+                    sortBy: this.state.sortBy
+                }
+            }).then((response) => {
+                this.setState({
+                    searched: true,
+                    routes: response.data
+                });
+            });
+
+        }
+
     };
 
     /**
@@ -65,12 +92,26 @@ class MyRoutes extends Component {
      * @param id - route id to be deleted
      */
     handleDelete = (id) => {
+        if (this.state.tab == 'created') {
+            axios.delete('http://localhost:3001/Route', {
+                params: {
+                    _id: id
+                }
+            }).then(() => this.getMyRoutes());
+        } else if (this.state.tab == 'liked') {
+            axios.delete('http://localhost:3001/LikedRoute', {
+                params: {
+                    _id: id
+                }
+            }).then(() => this.getMyRoutes());
+        }
+/**
         // http verb "DELETE" (similar to get)
         axios.delete('http://localhost:3001/myRoutes', {
             params: {
                 _id: id
             }
-        }).then(() => this.getMyRoutes());
+        }).then(() => this.getMyRoutes()); **/
     };
 
     render() {
@@ -96,9 +137,11 @@ class MyRoutes extends Component {
                     <Grid.Column textAlign='right'>
                         <Dropdown text='Sort By' direction='left' onChange={this.onSortChange}>
                             <Dropdown.Menu>
-                                <Dropdown.Item text='Name'/>
-                                <Dropdown.Item text='Most popular'/>
-                                <Dropdown.Item text='Most recently created'/>
+                                <Dropdown.Header icon='sort' content='Sort by'/>
+                                <Dropdown.Divider/>
+                                <Dropdown.Item active={this.state.sortBy === 1} text='Name' onClick={()=>this.onSortChange(1)}/>
+                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular' onClick={()=>this.onSortChange(2)}/>
+                                <Dropdown.Item active={this.state.sortBy === 3} text='Most recently created' onClick={()=>this.onSortChange(3)}/>
                             </Dropdown.Menu>
                         </Dropdown>
                     </Grid.Column>
@@ -106,17 +149,18 @@ class MyRoutes extends Component {
                 <Item.Group divided link>
                     {this.state.routes.map((result) =>
                         <Item>
-                            <Item.Image size='small' src={result.image}/>
+                            <Item.Image size='small' src={result.image} />
+
 
                             <Item.Content>
-                                <Item.Header as='h4'> {result.name} </Item.Header>
-                                <Item.Meta>{result.address}</Item.Meta>
+                                <Item.Header as='h4'> {result.title} </Item.Header>
+                                <Item.Meta>{result.location}</Item.Meta>
                                 <Item.Description>
                                     <div>Distance:{result.distance} km</div>
                                     <div>Difficulty: {result.difficulty}</div>
                                 </Item.Description>
                                 <Item.Extra>
-                                    <Rating icon='star' defaultRating={result.rating} maxRating={5} disabled/>
+                                    <Rating icon='star' defaultRating={result.avg_rating} maxRating={5} disabled/>
                                     <Button floated='right' compact onClick={() => this.handleDelete(result._id)}>
                                         Delete
                                     </Button>
