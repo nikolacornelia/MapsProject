@@ -53,6 +53,7 @@ class LogIn extends Component {
             }
         }).then((response) => {
             // success routine
+            sessionStorage.setItem("user", JSON.stringify(response.data));
             sessionStorage.setItem("loggedIn", "userObjectFromBackend");
             let referrTo;
             if (this.props.location.state) {

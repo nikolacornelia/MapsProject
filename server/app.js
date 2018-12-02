@@ -487,9 +487,9 @@ app.get('/login', function (req, res) {
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
-                    res.send("Erfolgreich!");
+                    res.send(user);
                 } else {
-                    res.send('Incorrect password');
+                    res.send();
                 }
             });
         }
