@@ -1,5 +1,6 @@
 // See post: http://asmaloney.com/2014/01/code/creating-an-interactive-map-with-leaflet-and-openstreetmap/
 import L from 'leaflet';
+import 'leaflet-easybutton';
 import axios from "axios";
 
 var dLat;
@@ -12,6 +13,7 @@ var map;
 var yellowWaypoint;
 var cities;
 var popup;
+var iDistance = 0;
 
 export function onInit() {
     map = L.map('map', {
@@ -36,6 +38,14 @@ export function onInit() {
         subdomains: ['a', 'b', 'c']
     }).addTo(map);
 
+    L.easyButton('fa-times', function () {
+        deleteFunction();
+    }, "Letzten Punkt löschen").addTo(map);
+
+    L.easyButton('fa-star', function () {
+        //;
+    }, "Neuer Point of Interest").addTo(map);
+
     map.setView([49.47748, 8.42216], 15);
 
     map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
@@ -47,6 +57,7 @@ export function onInit() {
         });
 
     map.on('click', onMapClick);
+
 }
 
 
@@ -56,23 +67,61 @@ export function onInit() {
 //var data = fs.readFileSync('highlights.json');
 //var highlights = JSON.parse(data);
 
+
 function onMapClick(e) {
     //Save Click Coordinates in variable;
     aHighlight.push(0);
     aPoints.push(e.latlng);
-    aMarker[aMarker.length] = L.marker(aPoints[aPoints.length - 1], {icon: yellowWaypoint}).addTo(map);
-    aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
+    aMarker[aMarker.length] = new L.marker(aPoints[aPoints.length - 1], {icon: yellowWaypoint}).on('click', connectPoint).addTo(map);
+    aPoly[aPoly.length] = L.polyline(aPoints, {
+        color: 'blue',
+        weight: 3,
+        dashArray: '20,15',
+        smoothFactor: 1
+    }).addTo(map);
+    if (aPoints.length > 1) {
+        iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+    }
+}
+function connectPoint(e) {
+    aHighlight.push(0);
+    aPoints.push(e.latlng);
+    aMarker[aMarker.length] = null;
+    aPoly[aPoly.length] = L.polyline(aPoints, {
+        color: 'blue',
+        weight: 3,
+        dashArray: '20,15',
+        smoothFactor: 1
+    }).addTo(map);
+    if (aPoints.length > 1) {
+        iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+    }
 }
 
-function connectPoint(koordinaten) {
+function connectHighlight(koordinaten) {
     aHighlight.push(1);
     aPoints.push(koordinaten);
     aMarker[aMarker.length] = null;
-    aPoly[aPoly.length] = L.polyline(aPoints, {color: 'red'}).addTo(map);
+    aPoly[aPoly.length] = L.polyline(aPoints, {
+        color: 'blue',
+        weight: 3,
+        dashArray: '20,15',
+        smoothFactor: 1
+    }).addTo(map);
+    if (aPoints.length > 1) {
+        iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+    }
 }
 
 
 function deleteFunction() {
+    if (aPoints.length > 1) {
+        iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+    }
     if (aHighlight[aHighlight.length - 1] == 0) {
         map.removeLayer(aMarker[aMarker.length - 1]);
     }
@@ -87,14 +136,11 @@ function deleteFunction() {
 function submitFunction() {
     var sName = document.getElementById("name").value;
     var sDescription = document.getElementById("beschreibung").value;
-
-
     var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Latitude": dLat, "Longitude": dLng};
     localStorage.setItem('myStorage', JSON.stringify(objHighlight));
-    objHighlight = JSON.parse(localStorage.getItem('myStorage'));
+    var objHighlight = JSON.parse(localStorage.getItem('myStorage'));
 
     //data.writeFile('highlights.json', newHighlight, finished);
-
 }
 
 async function onMapLoad(e) {
@@ -108,20 +154,16 @@ function getLocalPointsOfInterest() {
     oBorder.dMinLong = map.getBounds().getWest();
     oBorder.dMaxLat = map.getBounds().getNorth();
     oBorder.dMinLat = map.getBounds().getSouth();
-    /*$.ajax({
-       type: 'GET',
-        url: 'http://localhost:3001/getLocalPoints',
-        dataType: "json",
-        data: {border: oBorder},
-        success: function(data) {
-            console.log("success");
-            displayPoints(data);
-        },
-        error: function(err) {
-           console.log(err);
-        }
-    });*/
+    axios.get('http://localhost:3001/getLocalPoints', {
+        params: {border: oBorder}
+    }).then(function (response) {
+        console.log("success");
+        displayPoints(response.data);
+    }).catch(function (err) {
+        console.log(err);
+    });
 }
+
 
 function displayPoints(arrayPoints) {
     for (let i in arrayPoints) {
@@ -135,21 +177,42 @@ function displayPoints(arrayPoints) {
     }
     cities.addTo(map);
 
-    cities.eachLayer(function (layer) {
-        layer.on('click', function () {
-            connectPoint(this.getLatLng());
+    cities.eachLayer(function(layer) {
+        layer.on('click', function(){
+            connectHighlight(this.getLatLng());
         });
     });
 
-    cities.eachLayer(function (layer) {
-        layer.on('mouseover', function () {
+    cities.eachLayer(function(layer) {
+        layer.on('mouseover', function(){
             layer.openPopup();
         });
     });
 }
 
-function newEntry() {
-    console.log('createRoute new Entry');
+//die funktion funktioniert noch nicht
+function getDistance(origin, destination) {
+    // return distance in meters
+    var lon1 = toRadian(origin[1]),
+        lat1 = toRadian(origin[0]),
+        lon2 = toRadian(destination[1]),
+        lat2 = toRadian(destination[0]);
+
+    var deltaLat = lat2 - lat1;
+    var deltaLon = lon2 - lon1;
+
+    var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
+    var c = 2 * Math.asin(Math.sqrt(a));
+    var EARTH_RADIUS = 6371;
+    console.log(c * EARTH_RADIUS * 1000);
+    return c * EARTH_RADIUS * 1000;
+}
+function toRadian(degree) {
+    return degree*Math.PI/180;
+}
+
+//@Nikola please check
+function newEntry(){
     let oRoute = {};
     oRoute.name = document.getElementById("sName").value;
     oRoute.description = document.getElementById("sDescription").value;
@@ -158,7 +221,15 @@ function newEntry() {
     //oRoute.poly = aPoly;
     oRoute.highlights = aHighlight;
     let jsonRoute = JSON.stringify(oRoute);
-
+    /*$.ajax({
+        type: 'POST',
+        data: { route: jsonRoute },
+        datatype: 'json',
+        url: 'http://localhost:3001/saveRoute',
+        success: function(data) {
+            alert('savedRoute');
+        }
+    });*/
 }
 
 //Points and Highlights for frontend
@@ -183,6 +254,6 @@ function getRoutes() {
         .then((response) => {
             console.log(response);
         }).catch((error) => {
-            console.log(error);
+        console.log(error);
     });
 }
