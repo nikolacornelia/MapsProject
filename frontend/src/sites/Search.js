@@ -268,7 +268,7 @@ class Search extends Component {
                                                 : 'Add this route to your favorites.'}
                                             size='tiny' position='bottom right'/>
                                     </span>
-                                    <Header.Subheader as='h4'>{detailRoute.address}</Header.Subheader>
+                                    <Header.Subheader as='h4'>{detailRoute.location}</Header.Subheader>
                                 </Header.Content>
                             </Header>
 

@@ -223,10 +223,10 @@ app.post('/saveRoute', function (req, res, next) {
 
 app.post('/saveRating', function (req, res) {
     //todo get real rating
-    req.body.user = "5bf86b725d5d083aea9d6091";
-    req.body.route = "5bfd7adf3ef5fe62ebc4d9e3";
+    req.body.user = "5bf86b725d5d083aea9d6093";
+    req.body.route = "5c012bb83a4ece84eeb4038f";
     req.body.comment = "Nicht zu empfehlen";
-    req.body.rating = 1;
+    req.body.rating = 3;
 
     var oComment = {
         user: req.body.user,
