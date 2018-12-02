@@ -26,6 +26,7 @@ class Create extends Component {
             lng: -0.09,
             zoom: 13,
         }
+        this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
     // Accordion Logik
@@ -81,6 +82,7 @@ class Create extends Component {
                 highlights: oRoute.highlights,
                 image: image
             }).then((response) => {
+                console.log(this.user._id);
                 this.setState({routeCreated: true});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
