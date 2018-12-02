@@ -224,9 +224,9 @@ app.post('/saveRoute', function (req, res, next) {
 
 app.post('/saveRating', function (req, res) {
     //todo get real rating
-    req.body.user = "5bf86b725d5d083aea9d6093";
-    req.body.route = "5c012bb83a4ece84eeb4038f";
-    req.body.comment = "Nicht zu empfehlen";
+    //req.body.user = "5bf86b725d5d083aea9d6093";
+    //req.body.route = "5c012bb83a4ece84eeb4038f";
+    //req.body.comment = "Nicht zu empfehlen";
     req.body.rating = 3;
 
     var oComment = {
@@ -279,7 +279,11 @@ app.get('/getRatings', function (req, res) {
 });
 
 app.get('/getComments', function (req, res) {
-
+    Comment.find({route: req.query.route}, function (err, data) {
+        if (err)
+            throw err;
+        res.send(data);
+    });
 
 });
 
@@ -624,6 +628,11 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
 )
 ;
 
+app.post('/Review', function (req, res, next) {
+    let oReview = req.body;
+console.log(oReview);
+    //oRoute.user = req.body.user;
+});
 
 app.listen(3001, function () {
     console.log("Working on port 3001");

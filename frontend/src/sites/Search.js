@@ -116,9 +116,11 @@ class Search extends Component {
 
     onSubmitReview = (id) => {
         // todo: backend-service is not yet available
-        axios.post('http://lcoalhost:3001/route/review', {
+        axios.post('http://localhost:3001/saveRating', {
             routeId: this.state.showDetail,
-            review: this.state.review
+           // review: this.state.review,
+            user: this.user._id,
+            comment: this.state.commentText
         }).then(() => {
             // close the dialog & refresh
             this.toggleReviewDialog();
@@ -126,9 +128,10 @@ class Search extends Component {
         });
     };
 
-    onChangeReview = () => {
-        // todo
-
+    onChangeReview = (e, {name, value}) => {
+        // todo Nikola tried (rating is not working)
+        this.setState({[name]: value});
+        console.log(this.state);
     };
 
     onChangeReviewImage = () => {
@@ -185,6 +188,12 @@ class Search extends Component {
         var detailRoute;
         if (this.state.showDetail !== -1)
             //todo Nikola::get comments for detail route
+            // axios.get('http://localhost:3001/getComments', {
+        //             params: {
+        //                 route: route._id
+        //             }
+        //         })
+            // returns object of all comments created
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
@@ -327,7 +336,7 @@ class Search extends Component {
                                                                 <Comment.Author as='a'>Max Mustermann</Comment.Author>
                                                                 <Comment.Text>
 
-                                                                    <Form.Field><Rating icon='star' size='huge' onChange={this.onChangeReview}
+                                                                    <Form.Field><Rating icon='star' size='huge' name='rating' onChange={this.onChangeReview}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
                                                                                    name='commentText' onChange={this.onChangeReview}
