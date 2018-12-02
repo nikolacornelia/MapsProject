@@ -89,6 +89,7 @@ app.post('/saveRoute', function (req, res) {
     oRoute.description = aResult.description;
     oRoute.points = aResult.points;
     oRoute.highlights = aResult.highlights;
+    oRoute.user = user;
     let oData = new Route(oRoute);
     oData.save()
         .then(item => {

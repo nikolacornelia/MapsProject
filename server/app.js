@@ -116,7 +116,7 @@ app.post('/favoriseRoute', function (req, res) {
     console.log(req.body);
     oFavourite.route = req.body.id;
     //oFavourite.route = "5bfd7adf3ef5fe62ebc4d9e3";
-    oFavourite.user = user;
+    oFavourite.user = req.body.user;
     console.log("ISFAVORISED");
     console.log(req.body.isFavorised);
 
@@ -156,6 +156,7 @@ app.post('/savePoint', function (req, res) {
 });
 
 app.delete('/Route', function (req, res) {
+    //todo delete dependencies
     Route.findOneAndDelete(req.query, function (err, data) {
         if (err)
             throw err;
@@ -170,7 +171,7 @@ app.delete('/LikedRoute', function (req, res) {
     console.log(req.query._id);
     let query = {};
     query.route = req.query._id;
-    query.user = user;
+    query.user = req.query.user;
     console.log("QUERY");
     console.log(query);
     Favourite.findOneAndDelete(query, function (err,data) {
@@ -186,7 +187,7 @@ app.delete('/LikedRoute', function (req, res) {
 app.post('/saveRoute', function (req, res, next) {
     let oRoute = req.body;
     //todo get real user id
-    oRoute.user = user;
+    oRoute.user = req.body.user;
 
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
@@ -499,8 +500,8 @@ app.get('/login', function (req, res) {
 app.get('/getMyRoutes', function (req, res, next) {
         console.log('getMyRoutes');
         let routeQuery = {};
-        routeQuery.user = "5bf86b725d5d083aea9d6090";
-        //routeQuery.user = req.user;
+        //routeQuery.user = "5bf86b725d5d083aea9d6090";
+        routeQuery.user = req.query.user;
         Route.find(routeQuery).lean().exec(function (err, data) {
             if (err)
                 throw err;
@@ -560,12 +561,17 @@ app.get('/getMyRoutes', function (req, res, next) {
 app.get('/getMyLikedRoutes', function (req, res, next) {
     console.log('getMyLikedRoutes');
         let routeQuery = {};
-        routeQuery.user = user;
-        //routeQuery.user = req.user;
+        //routeQuery.user = user;
+        routeQuery.user = req.query.user;
+        console.log(routeQuery.user);
         Favourite.find(routeQuery).exec(function (err, data) {
             if (err)
                 throw err;
+            console.log(data);
             req.fav = data;
+            if (data.length == 0) {
+                res.send(data);
+            }
             next();
         })
 

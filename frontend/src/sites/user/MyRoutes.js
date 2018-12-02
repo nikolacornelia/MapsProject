@@ -27,6 +27,7 @@ class MyRoutes extends Component {
             tab: 'created',
             sortBy: 1,
         };
+        this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
     /**
@@ -52,7 +53,8 @@ class MyRoutes extends Component {
             axios.get('http://localhost:3001/getMyRoutes', {
                 params: {
                     tab: this.state.tab,
-                    sortBy: this.state.sortBy
+                    sortBy: this.state.sortBy,
+                    user: this.user._id
                 }
             }).then((response) => {
                 this.setState({
@@ -65,7 +67,8 @@ class MyRoutes extends Component {
             axios.get('http://localhost:3001/getMyLikedRoutes', {
                 params: {
                     tab: this.state.tab,
-                    sortBy: this.state.sortBy
+                    sortBy: this.state.sortBy,
+                    user: this.user._id
                 }
             }).then((response) => {
                 this.setState({
@@ -95,13 +98,15 @@ class MyRoutes extends Component {
         if (this.state.tab == 'created') {
             axios.delete('http://localhost:3001/Route', {
                 params: {
-                    _id: id
+                    _id: id,
+                    user: this.user._id
                 }
             }).then(() => this.getMyRoutes());
         } else if (this.state.tab == 'liked') {
             axios.delete('http://localhost:3001/LikedRoute', {
                 params: {
-                    _id: id
+                    _id: id,
+                    user: this.user._id
                 }
             }).then(() => this.getMyRoutes());
         }

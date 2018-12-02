@@ -50,6 +50,7 @@ class Search extends Component {
             reviewIsOpen: false,
             isFavorised: false
         }
+        this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
     // RadioButton Logik
@@ -143,7 +144,8 @@ class Search extends Component {
         // send request to toggle favorite
         axios.post('http://localhost:3001/favoriseRoute', {
             id: this.state.showDetail,  // currently selected routeid
-            isFavorised: isFavorised
+            isFavorised: isFavorised,
+            user: this.user._id
         }).then((response) => {
             // toggle status (or is the new status in response.data?)
             this.setState({isFavorised: isFavorised});

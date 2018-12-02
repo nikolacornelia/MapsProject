@@ -80,7 +80,8 @@ class Create extends Component {
                 difficulty: this.state.difficulty,
                 points: oRoute.points,
                 highlights: oRoute.highlights,
-                image: image
+                image: image,
+                user: this.user._id
             }).then((response) => {
                 console.log(this.user._id);
                 this.setState({routeCreated: true});
