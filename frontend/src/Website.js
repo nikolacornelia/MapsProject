@@ -86,7 +86,7 @@ class Website extends Component {
                         </Menu.Item>
                     </Menu>
 
-                    <Segment vertical className='content' style={{padding: "5em 0 0 0"}} data-testid='siteContent'>
+                    <Segment vertical className='content' style={{padding: "5.2em 0 0 0"}} data-testid='siteContent'>
                         <Route exact path="/" component={Home}/>
                         <Route path="/search" component={Search}/>
                         <PrivateRoute path="/create" component={Create}/>

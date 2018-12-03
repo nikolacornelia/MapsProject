@@ -21,6 +21,21 @@ html, #root, .App {
     border: none !important;
     border-radius: 0;
 }
+.ui.grid.map{
+    height:100%;
+}
+
+.sidebar{
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    top: 5.7rem;
+    right: 0;
+    bottom: 0;
+    width: 35%;
+    padding-right: 2rem;
+    padding-top: 1rem;
+}
 
 /* always show actions in minimal comments */
 .ui.minimal.comments .comment .actions {
