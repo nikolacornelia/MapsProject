@@ -22,7 +22,7 @@ function displayRoute (aPoints, aHighlights){
 
    while (iCounter < aPoints.length()){
        if (aHighlight[iCounter]==1){
-         aHighlightMarker[aHighlightMarker.length] = new L.marker(aPoints[iCounter]).on('click',connectPoint).on('mouseover', function(){
+         aHighlightMarker[aHighlightMarker.length] = new L.marker(aPoints[iCounter]).on('mouseover', function(){
             layer.openPopup();
          });
          aHighlightMarker[aHighlightMarker.length].bindPopup('Test');
