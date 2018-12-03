@@ -81,7 +81,8 @@ class Create extends Component {
                 points: oRoute.points,
                 highlights: oRoute.highlights,
                 image: image,
-                user: this.user._id
+                user: this.user._id,
+                files: this.files
             }).then((response) => {
                 console.log(this.user._id);
                 this.setState({routeCreated: true});

@@ -188,6 +188,7 @@ app.post('/saveRoute', function (req, res, next) {
     let oRoute = req.body;
     //todo get real user id
     oRoute.user = req.body.user;
+    console.log(req.body.files);
 
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
@@ -637,3 +638,14 @@ console.log(oReview);
 app.listen(3001, function () {
     console.log("Working on port 3001");
 });
+
+savePhoto = function () {
+    const category = new Category();
+
+    const img = req.body.files;
+    const split = img.split(',');
+    const base64string = split[1];
+    const buffer = Buffer.from(base64string, 'base64');
+
+    category.img.data = buffer;
+}
