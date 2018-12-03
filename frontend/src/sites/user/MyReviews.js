@@ -81,7 +81,7 @@ class MyReviews extends Component {
         axios.post('http://lcoalhost:3001/review', {
             routeId: route._id,
             review: route.comments[0]
-        }).then(this.toggleReviewDialog);
+        }).then(this.getMyReviews);
     };
 
     render() {

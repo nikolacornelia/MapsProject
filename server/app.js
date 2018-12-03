@@ -410,7 +410,7 @@ app.get('/getRoutes', function (req, res, next) {
 
 
 app.get('/getLocalPoints', function (req, res) {
-    let oBorder = req.query.border;
+    let oBorder = JSON.parse(req.query.border);
 
     let dMinLat = Number(oBorder.dMinLat);
     let dMaxLat = Number(oBorder.dMaxLat);

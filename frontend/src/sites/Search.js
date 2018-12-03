@@ -27,10 +27,10 @@ import {
     Modal,
     Popup
 } from 'semantic-ui-react'
-import {Map, TileLayer, Marker} from 'react-leaflet';
 import {Slider} from 'react-semantic-ui-range';
 import {mockData, mockFeatures} from '../mockData';
 import axios from "axios";
+import * as ShowRoute from './maps/showRoute';
 
 class Search extends Component {
     constructor(props) {
@@ -49,9 +49,13 @@ class Search extends Component {
             showDetail: -1,
             reviewIsOpen: false,
             isFavorised: false
-        }
+        };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
+
+    componentDidMount = () => {
+        ShowRoute.onInit();
+    };
 
     // RadioButton Logik
     handleChangeDifficulty = (e, {name, value, checked}) => {
@@ -96,7 +100,7 @@ class Search extends Component {
      */
     onShowDetail = (id) => {
         let isFavorised = id !== -1
-            ? this.state.routes.find((route) => route._id = id).isFavorised
+            ? this.state.routes.find((route) => route._id === id).isFavorised
             : false;
 
         // scroll to top
@@ -156,37 +160,20 @@ class Search extends Component {
     };
 
 
-
     render() {
-        const position = [this.state.lat, this.state.lng];
+        /*
+                var searchResults = [];
+                if (this.state.searched) {
+                    console.log(this.state.routes);
+                    this.state.routes.forEach((route) => {
+                        searchResults.push(
+                            //route._id is the right name to get id from mongo db
 
-        var searchResults = [];
-        if (this.state.searched) {
-            console.log(this.state.routes);
-            this.state.routes.forEach((route) => {
-                searchResults.push(
-                    //route._id is the right name to get id from mongo db
-                    <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
-                        <Item.Image size='small' rounded src={route.image || '/static/media/route-noimage.png'}/>
-                        <Item.Content>
-                            <Item.Header as='h4'> {route.title} </Item.Header>
-                            <Item.Meta>{route.address}</Item.Meta>
-                            <Item.Description>
-                                <p/>
-                                Distance: {route.distance} km
-                                <p/>
-                                Difficulty: {route.difficulty}
-                                <Item.Extra>
-                                    <Rating icon='star' defaultRating={route.avg_rating} maxRating={5} disabled/>
-                                </Item.Extra>
-                            </Item.Description>
-                        </Item.Content>
-                    </Item>
-                )
-            });
-        }
+                        )
+                    });
+                }*/
         var detailRoute;
-        if (this.state.showDetail !== -1)
+        if (this.state.showDetail !== -1) {
             //todo Nikola::get comments for detail route
             // axios.get('http://localhost:3001/getComments', {
         //             params: {
@@ -195,6 +182,7 @@ class Search extends Component {
         //         })
             // returns object of all comments created
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
+        }
         return (
             <Sidebar.Pushable data-testid='siteSearch'>
                 {/* Sidebar = Right Column */}
@@ -248,16 +236,38 @@ class Search extends Component {
                                             <Dropdown.Menu>
                                                 <Dropdown.Header icon='sort' content='Sort by'/>
                                                 <Dropdown.Divider/>
-                                                <Dropdown.Item active={this.state.sortBy === 1} text='Name' onClick={()=>this.onChangeSort(1)}/>
-                                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular' onClick={()=>this.onChangeSort(2)}/>
-                                                <Dropdown.Item active={this.state.sortBy === 3} text='Most recently created' onClick={()=>this.onChangeSort(3)}/>
+                                                <Dropdown.Item active={this.state.sortBy === 1} text='Name'
+                                                               onClick={() => this.onChangeSort(1)}/>
+                                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular'
+                                                               onClick={() => this.onChangeSort(2)}/>
+                                                <Dropdown.Item active={this.state.sortBy === 3}
+                                                               text='Most recently created'
+                                                               onClick={() => this.onChangeSort(3)}/>
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </Grid.Column>
                                 </Grid>
 
                                 <Item.Group divided link>
-                                    {searchResults}
+                                    {this.state.searched && this.state.routes.map((route) =>
+                                        <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
+                                            <Item.Image size='small' rounded
+                                                        src={route.image || '/static/media/route-noimage.png'}/>
+                                            <Item.Content>
+                                                <Item.Header as='h4'> {route.title} </Item.Header>
+                                                <Item.Meta>{route.address}</Item.Meta>
+                                                <Item.Description>
+                                                    <p/>
+                                                    Distance: {route.distance} km
+                                                    <p/>
+                                                    Difficulty: {route.difficulty}
+                                                    <Item.Extra>
+                                                        <Rating icon='star' defaultRating={route.avg_rating}
+                                                                maxRating={5} disabled/>
+                                                    </Item.Extra>
+                                                </Item.Description>
+                                            </Item.Content>
+                                        </Item>)}
                                 </Item.Group>
                                 <p/>
                             </div>}
@@ -339,11 +349,13 @@ class Search extends Component {
                                                                     <Form.Field><Rating icon='star' size='huge' name='rating' onChange={this.onChangeReview}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
-                                                                                   name='commentText' onChange={this.onChangeReview}
+                                                                                   name='commentText'
+                                                                                   onChange={this.onChangeReview}
                                                                                    placeholder='Enter your review'/>
                                                                     <Form.Input type='file' fluid label='Image'
                                                                                 placeholder='Upload image file'
-                                                                                iconPosition='left' onChange={this.onChangeReviewImage}
+                                                                                iconPosition='left'
+                                                                                onChange={this.onChangeReviewImage}
                                                                                 icon={<Icon name='add' link inverted
                                                                                             color='black'/>}/>
                                                                 </Comment.Text>
@@ -387,17 +399,7 @@ class Search extends Component {
 
                 {/* Sidebar.Pusher = Left Column */}
                 <Sidebar.Pusher style={{height: '100%'}}>
-                    <Map center={position} zoom={this.state.zoom} style={{height: "100%"}}>
-                        <TileLayer
-                            attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        <Marker position={position}>
-                            <Popup>
-                                A pretty CSS3 popup. <br/> Easily customizable
-                            </Popup>
-                        </Marker>
-                    </Map>
+                    <div id='map' style={{height: "100%"}}/>
                 </Sidebar.Pusher>
             </Sidebar.Pushable>
         );
