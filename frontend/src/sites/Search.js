@@ -86,6 +86,25 @@ class Search extends Component {
                 sortBy: this.state.sortBy
             }
         }).then((response) => {
+
+            for (let i = 0; i < response.data.length; i++) {
+
+                // response.data[i].image = new Buffer( response.data[i].image, 'base64').toString('binary');
+                // response.data[i].image = Buffer.from(response.data[i].image, 'base64');
+                if (response.data[i].image != undefined) {
+                //response.data[i].image = "data:image/jpeg;base64,/9j" + response.data[i].image;
+                    response.data[i].image.toString();
+                    console.log(response.data[i].image);
+                    //response.data[i].image.toString();
+                    //response.data[i].image = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCADqATkDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EACQQAQEBAAIBBAMBAQEBAAAAAAABESExQQISUXFhgZGxocHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAAAEQH/2gAMAwEAAhEDEQA/AMriLyCKgg1gQwCgs4FTMOdutepjQak+FzMSVqgxZdRdPPIIvH5WzzGdBriphtTeAXg2ZjKA1pqKDUGZca3foBek8gFv8Ie3fKdA1qb8s7hoL6eLVt51FsAnql3Ut1M7AWbflLMDkEMX/F6/YjK/pADFQAUNA6alYagKk72m/j9p4Bq2fDDSYKLNXPNLoHE/NT6RYC31cJxZ3yWVM+aBYi/S2ZgiAsnYJx5D21vPmqrm3PTfpQQwyAC8JZvSKDni41ZrMuUVVl+Uz9w9v/1QWrZsZ5nFPHYH+JZyureQSF5M+fJ0CAfwRAVRBQA1DAWVUayoJUWoDpsxntPsueBV4+VxhdyAtv8AjOLGpIDMLbeGvbF4iozJfr/WukAVABAXAQXEAAASzVAZdO2WNordm+emFl7XcQSNZiFtv0C9w90nhJf4mA1u+GcJFwIyAqL/AOovwgGNfSRqdIrNa29M0gKCAojU9PAMjWXpckEJFNFEAAXEUBABYz6rZ0ureQc9vyt9XxDF2QAXtABcQAs0AZywkvluJbyipifas52DcyxjlZweAO0xri/hc+wZOEKIu6nSyeToVZyWXwvCg53gW81QQ7aTNAn5dGZJPs1UXURQAUEMCXQLZE93PRZ5hPTgNMrbIzKCm52LZwCs+2M8w2g3sjPuZAXb4IsMAUACzVUGM4/K+md6vEXUUyM5PDR0IxYe6ramih0VNBrS4xoqN8Q1BFQk3yqyAsioioAAKgDSJL4/jQIn5igLrPqtOuf6oOaxbMoAltUAhhIoJiiggrPu+AaOIxtAX3JbaAIaLwi4t9X4T3fg2AFtqcrUUarP20zUDAmqoE0WRBZPNVUVEAAAAVAC8kvih2DSKxOdBqs7Z0l0gI0mKAC4AuHE7ZtBriM+744QAAAAABAFsveIttBICyaikvy1+r/Cen5rWQHIBQa4rIDRqSl5qDWqziqgAAAATA7BpGdqXb2C2+J/UgAtRQBSQtkBWb6vhLbQAAAAAEBRAAAAAUbm+GZNdPxAP+ql2Tjwx7/wIgZ8iKvBk+CJoCXii9gaqZ/qqihAAAEVABGkBFUwBftNkZ3QW34QAAABFAQAVAAAAAARVkl8gs/43sk1jL45LvHArepk+E9XTG35oLqsmIKmLAEygKg0y1AFQBUXwgAAAoBC34S3UAAABAVAAAAAABAUQAVABdRQa1PcYyit2z58M8C4ouM2NXpOEGeWtNZUatiAIoAKIoCoAoG4C9MW6dgIoAIAAAAAAACKWAgL0CAAAALiANCKioNLgM1CrLihmTafkt1EF3SZ5ZVUW4mnIKvAi5fhEURVDWVQBRAAAAAAAAQFRVyAyulgAqCKlF8IqLsEgC9mGoC+IusqCrv5ZEUVOk1RuJfwSLOOkGFi4XPCoYYrNiKauosBGi9ICstM1UAAAAAAFQ0VcTBAXUGgIqGoKhKAzRRUQUAwxoSrGRpkQA/qiosOL9oJptMRRVZa0VUqSiChE6BqMgCwqKqIogAIAqKCKgKoogg0lBFuIKgAAAKNRlf2gqsftsEtZWoAAqAACKoMqAAeSoqp39kL2AqLOlE8rEBFQARYALhigrNC9gGmooLp4TweEQFFBFAECgIoAu0ifIAqAAA//9k=";
+/**
+                    response.data[i].image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==";
+                    console.log(response.data[i].image);
+                } **/
+
+            } }
+            console.log(response.data);
+
             this.setState({
                 searched: true,
                 routes: response.data
@@ -122,7 +141,7 @@ class Search extends Component {
         // todo: backend-service is not yet available
         axios.post('http://localhost:3001/saveRating', {
             routeId: this.state.showDetail,
-           // review: this.state.review,
+            // review: this.state.review,
             user: this.user._id,
             comment: this.state.commentText
         }).then(() => {
@@ -176,10 +195,10 @@ class Search extends Component {
         if (this.state.showDetail !== -1) {
             //todo Nikola::get comments for detail route
             // axios.get('http://localhost:3001/getComments', {
-        //             params: {
-        //                 route: route._id
-        //             }
-        //         })
+            //             params: {
+            //                 route: route._id
+            //             }
+            //         })
             // returns object of all comments created
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         }
@@ -348,7 +367,9 @@ class Search extends Component {
                                                                 <Comment.Author as='a'>Max Mustermann</Comment.Author>
                                                                 <Comment.Text>
 
-                                                                    <Form.Field><Rating icon='star' size='huge' name='rating' onChange={this.onChangeReview}
+                                                                    <Form.Field><Rating icon='star' size='huge'
+                                                                                        name='rating'
+                                                                                        onChange={this.onChangeReview}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
                                                                                    name='commentText'
