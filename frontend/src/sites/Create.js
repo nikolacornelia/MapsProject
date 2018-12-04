@@ -80,6 +80,7 @@ class Create extends Component {
                 difficulty: this.state.difficulty,
                 points: oRoute.points,
                 highlights: oRoute.highlights,
+                distance: oRoute.distance,
                 image: image,
                 user: this.user._id,
                 files: this.files

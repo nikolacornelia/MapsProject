@@ -211,32 +211,12 @@ function toRadian(degree) {
     return degree*Math.PI/180;
 }
 
-//@Nikola please check
-function newEntry(){
-    let oRoute = {};
-    oRoute.name = document.getElementById("sName").value;
-    oRoute.description = document.getElementById("sDescription").value;
-    oRoute.points = aPoints;
-    //oRoute.marker = aMarker;
-    //oRoute.poly = aPoly;
-    oRoute.highlights = aHighlight;
-    let jsonRoute = JSON.stringify(oRoute);
-    /*$.ajax({
-        type: 'POST',
-        data: { route: jsonRoute },
-        datatype: 'json',
-        url: 'http://localhost:3001/saveRoute',
-        success: function(data) {
-            alert('savedRoute');
-        }
-    });*/
-}
-
 //Points and Highlights for frontend
 export function getRouteMapData() {
     let oRoute = {};
     oRoute.points = aPoints;
     oRoute.highlights = aHighlight;
+    oRoute.distance = iDistance;
     console.log(oRoute);
     return oRoute;
 }

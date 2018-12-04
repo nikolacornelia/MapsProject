@@ -45,6 +45,7 @@ let schemaRoute = new mongoose.Schema({
     difficulty: String,
     points: [{lat: Number, lng: Number}],
     highlights: [Number],
+    distance: [Number],
     location: String,
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
