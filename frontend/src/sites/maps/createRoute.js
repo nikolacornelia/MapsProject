@@ -204,8 +204,8 @@ function getDistance(origin, destination) {
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
-    console.log(c * EARTH_RADIUS * 1000);
-    return c * EARTH_RADIUS * 1000;
+    return (Math.round(c * EARTH_RADIUS * 10) / 10);
+    
 }
 function toRadian(degree) {
     return degree*Math.PI/180;
