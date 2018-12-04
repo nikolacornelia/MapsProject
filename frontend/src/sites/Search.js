@@ -203,12 +203,14 @@ class Search extends Component {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         }
         return (
-            <Sidebar.Pushable data-testid='siteSearch'>
-                {/* Sidebar = Right Column */}
-                <Sidebar id='sidebar' as={Segment} animation='push' direction='right' visible width='very wide'>
+            <Grid stackable columns={2} className='map' data-testid='siteSearch' >
+                <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
+                    <div id='map' style={{height: "100%"}}/>
+                </Grid.Column>
+                <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
                     {this.state.showDetail === -1 ?
                         /* display search form*/
-                        <div>
+                        <div class='sidebar'>
                             <Form size='large'>
                                 <Header as='h2'>Find a trail / Search for a route</Header>
                                 <Form.Input fluid placeholder='Enter area, city or landmark' name='searchText'
@@ -416,13 +418,8 @@ class Search extends Component {
 
                         </Form>
                     }
-                </Sidebar>
-
-                {/* Sidebar.Pusher = Left Column */}
-                <Sidebar.Pusher style={{height: '100%'}}>
-                    <div id='map' style={{height: "100%"}}/>
-                </Sidebar.Pusher>
-            </Sidebar.Pushable>
+                </Grid.Column>
+            </Grid>
         );
     };
 

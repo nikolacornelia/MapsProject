@@ -59,6 +59,7 @@ function onMapClick(e) {
   aPoly[aPoly.length] = L.polyline(aPoints, {color: 'blue', weight: 3, dashArray: '20,15',smoothFactor: 1}).addTo(map);
   if (aPoints.length >1){
     iDistance = iDistance + getDistance(aPoints[aPoints.length-1], aPoints[aPoints.length-2]);
+    console.log(aPoints[aPoints.length-1], aPoints[aPoints.length-2]);
     console.log(iDistance);
   }
 }
@@ -167,11 +168,13 @@ var popup = L.popup();
 
 //die funktion funktioniert noch nicht
 function getDistance(origin, destination) {
+  
   // return distance in meters
-  var lon1 = toRadian(origin[1]),
-      lat1 = toRadian(origin[0]),
-      lon2 = toRadian(destination[1]),
-      lat2 = toRadian(destination[0]);
+  var lon1 = toRadian(origin.lng),
+      lat1 = toRadian(origin.lat),
+      lon2 = toRadian(destination.lng),
+      lat2 = toRadian(destination.lat);
+  console.log(lon1, lat1, lon2, lat2);      
 
   var deltaLat = lat2 - lat1;
   var deltaLon = lon2 - lon1;

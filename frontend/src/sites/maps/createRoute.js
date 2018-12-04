@@ -193,10 +193,10 @@ function displayPoints(arrayPoints) {
 //die funktion funktioniert noch nicht
 function getDistance(origin, destination) {
     // return distance in meters
-    var lon1 = toRadian(origin[1]),
-        lat1 = toRadian(origin[0]),
-        lon2 = toRadian(destination[1]),
-        lat2 = toRadian(destination[0]);
+    var lon1 = toRadian(origin.lng),
+        lat1 = toRadian(origin.lat),
+        lon2 = toRadian(destination.lng),
+        lat2 = toRadian(destination.lat);
 
     var deltaLat = lat2 - lat1;
     var deltaLon = lon2 - lon1;
@@ -204,32 +204,11 @@ function getDistance(origin, destination) {
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
-    console.log(c * EARTH_RADIUS * 1000);
-    return c * EARTH_RADIUS * 1000;
+    return (Math.round(c * EARTH_RADIUS * 10) / 10);
+    
 }
 function toRadian(degree) {
     return degree*Math.PI/180;
-}
-
-//@Nikola please check
-function newEntry(){
-    let oRoute = {};
-    oRoute.name = document.getElementById("sName").value;
-    oRoute.description = document.getElementById("sDescription").value;
-    oRoute.points = aPoints;
-    //oRoute.marker = aMarker;
-    //oRoute.poly = aPoly;
-    oRoute.highlights = aHighlight;
-    let jsonRoute = JSON.stringify(oRoute);
-    /*$.ajax({
-        type: 'POST',
-        data: { route: jsonRoute },
-        datatype: 'json',
-        url: 'http://localhost:3001/saveRoute',
-        success: function(data) {
-            alert('savedRoute');
-        }
-    });*/
 }
 
 //Points and Highlights for frontend
@@ -237,6 +216,7 @@ export function getRouteMapData() {
     let oRoute = {};
     oRoute.points = aPoints;
     oRoute.highlights = aHighlight;
+    oRoute.distance = iDistance;
     console.log(oRoute);
     return oRoute;
 }
