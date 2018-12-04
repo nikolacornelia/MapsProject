@@ -119,8 +119,8 @@ class LogIn extends Component {
                         }
                         <Form size='large' onSubmit={this.onSubmitLogin} className='attached fluid segment'>
 
-                            <Form.Input fluid icon='mail' name='user' iconPosition='left'
-                                placeholder='E-mail address' onChange={this.onChangeInput} required />
+                            <Form.Input fluid icon='user' name='user' iconPosition='left'
+                                placeholder='Email address or user name' onChange={this.onChangeInput} required />
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
                                 placeholder='Password' onChange={this.onChangeInput}
                                 type='password' required />

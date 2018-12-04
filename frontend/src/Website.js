@@ -55,7 +55,7 @@ class Website extends Component {
 
                         <Header style={{paddingLeft: "1rem"}}>
                             <Icon name='tree'/>
-                            <Header.Content> Name</Header.Content>
+                            <Header.Content> Wanderlust</Header.Content>
                         </Header>
                         {!this.state.loggedIn ?
                             <Menu.Item position='right' name='user' as={NavLink} exact to='/login'>
