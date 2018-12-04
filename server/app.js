@@ -50,15 +50,9 @@ let schemaRoute = new mongoose.Schema({
     highlights: [Number],
     distance: [Number],
     location: String,
-<<<<<<< HEAD
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    image: String
-    //image: Buffer
-=======
-    created: { type: Date, default: Date.now },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
->>>>>>> c4fbf0f9c19021b921adaa29f33baf3c64327c1c
+    image: String//image: Buffer
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
