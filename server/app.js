@@ -24,7 +24,9 @@ let request = require('request');
 let thenquest = require('then-request');
 let sortJson = require('sort-json-array');
 let user = "5bf86b725d5d083aea9d6090";
+//let Buffer = require('buffer/').Buffer;
 var cors = require('cors');
+
 
 
 let schemaPoint = new mongoose.Schema({
@@ -48,6 +50,8 @@ let schemaRoute = new mongoose.Schema({
     location: String,
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    image: String
+    //image: Buffer
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
@@ -79,7 +83,10 @@ let schemaFavs = new mongoose.Schema({
 })
 let Favourite = mongoose.model("Favourite", schemaFavs);
 
-app.use(bodyParser());
+//app.use(bodyParser());
+app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 app.use(methodOverride());
 app.use(cors());
 
@@ -186,9 +193,8 @@ app.delete('/LikedRoute', function (req, res) {
 
 app.post('/saveRoute', function (req, res, next) {
     let oRoute = req.body;
-    //todo get real user id
+
     oRoute.user = req.body.user;
-    console.log(req.body.files);
 
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
@@ -207,10 +213,19 @@ app.post('/saveRoute', function (req, res, next) {
             console.log(res.body.address.town);
             oRoute.location = res.body.address.town;
         }
+
+        //todo save image as Buffer?
+        //oRoute.image = new Buffer(req.body.images.split(",")[1],"base64");
+        oRoute.image = req.body.images;
+        //oRoute.image = new Buffer(req.body.images, 'binary').toString('base64');
+
+        //oRoute.image = new Buffer(req.body.images);
         req.oRoute = oRoute;
         next();
     });
-}, function (req, res) {
+},
+
+    function (req, res) {
     let oData = new Route(req.oRoute);
     oData.save()
         .then(item => {
@@ -325,6 +340,7 @@ app.get('/getRoutes', function (req, res, next) {
                     routeQuery.$and.push(difficultyParam);
                 }
             }
+            //todo distance as parameter
         }
         ;
         Route.find(routeQuery).lean().exec(function (err, data) {
@@ -350,6 +366,8 @@ app.get('/getRoutes', function (req, res, next) {
                 , {$group: {_id: null, rating: {$avg: '$rating'}}}
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
+                if(oneRoute.image != undefined)
+                    oneRoute.image.toString('base64');
                 // one route may not have a rating yet
                 if (response.length == 0) {
                     oneRoute.avg_rating = undefined;
@@ -378,6 +396,10 @@ app.get('/getRoutes', function (req, res, next) {
                 } else {
                     oneFav.isFavorised = true;
                 }
+                //oneFav.image = new Buffer(oneFav.image).toString('base64');
+                if (oneFav.image != undefined) {
+                //oneFav.image = new Buffer(oneFav.image, 'base64').toString('binary');
+                }
                 oRoutes.push(oneFav);
                 iFinishedQueries++;
                 if (iFinishedQueries === (req.oRoutes.length)) {
@@ -404,6 +426,7 @@ app.get('/getRoutes', function (req, res, next) {
             }
             sortJson(req.oRoutes, paramSort);
         }
+
         res.send(req.oRoutes);
     }
 );
@@ -596,7 +619,7 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
                 }
                 iFinishedQueries++;
                 if (iFinishedQueries === (aFavRoutes.length)) {
-                    req.favRoutes = oRoutes;
+                    req.oRoutes = oRoutes;
                     next();
                 }
             });
@@ -605,6 +628,32 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
 
     }
     ,
+    function (req, res, next) {
+        let aRoutes = req.oRoutes;
+        let oRoutes = [];
+        //amount of finished queries;
+        let iFinishedQueries = 0;
+        for (let i in aRoutes) {
+            Rating.aggregate([{$match: {route: aRoutes[i]._id}}
+                , {$group: {_id: null, rating: {$avg: '$rating'}}}
+            ]).then(function (response) {
+                let oneRoute = aRoutes[i];
+                // one route may not have a rating yet
+                if (response.length == 0) {
+                    oneRoute.avg_rating = undefined;
+                } else {
+                    let avgRating = response[0].rating;
+                    oneRoute.avg_rating = avgRating;
+                }
+                oRoutes.push(oneRoute);
+                iFinishedQueries++;
+                if (iFinishedQueries === (aRoutes.length)) {
+                    req.favRoutes = oRoutes;
+                    next();
+                }
+            });
+        }
+    },
     function (req, res) {
         if (req.query.sortBy != undefined) {
             let paramSort;
