@@ -100,7 +100,7 @@ app.use(session({
 }));
 
 var auth = function (req, res, next) {
-    if (req.session && req.session.user === req.body._id && req.session.admin)
+    if (req.session)
         return next();
     else
         return res.sendStatus(401);
@@ -508,7 +508,7 @@ app.get('/login', function (req, res) {
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
-                    req.session.user = req.query._id;
+                    req.session.user = user.id;
                     req.session.admin = true;
                     res.send(user);
                 } else {
