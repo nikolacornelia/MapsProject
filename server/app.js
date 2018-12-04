@@ -13,7 +13,7 @@ let oSchema = Schema.sPointOfInterest();
 let jQuery = require('jQuery');
 let assert = require('assert');
 let dbMongo;
-const {ObjectID} = require("mongodb");
+const { ObjectID } = require("mongodb");
 let mongodb = require("mongodb");
 let Grid = require('gridfs-stream');
 Grid.mongo = mongoose.mongo;
@@ -24,7 +24,10 @@ let request = require('request');
 let thenquest = require('then-request');
 let sortJson = require('sort-json-array');
 let user = "5bf86b725d5d083aea9d6090";
+//let Buffer = require('buffer/').Buffer;
 var cors = require('cors');
+let session = require('express-session');
+
 
 
 let schemaPoint = new mongoose.Schema({
@@ -34,7 +37,7 @@ let Point = mongoose.model("Point", schemaPoint);
 
 //User
 let schemaUser = new mongoose.Schema({
-    email: {type: String, unique: true}, username: String, password: String
+    email: { type: String, unique: true }, username: String, password: String
 });
 let User = mongoose.model("User", schemaUser);
 
@@ -43,11 +46,13 @@ let schemaRoute = new mongoose.Schema({
     title: String,
     description: String,
     difficulty: String,
-    points: [{lat: Number, lng: Number}],
+    points: [{ lat: Number, lng: Number }],
     highlights: [Number],
+    distance: [Number],
     location: String,
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    image: String//image: Buffer
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
@@ -55,31 +60,34 @@ let Route = mongoose.model("Route", schemaRoute);
 
 // Comment
 let schemaComment = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    route: {type: mongoose.Schema.Types.ObjectId, ref: 'Route'},
-    created: {type: Date, default: Date.now},
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
+    created: { type: Date, default: Date.now },
     comment: String
 })
 let Comment = mongoose.model("Comment", schemaComment);
 
 //Rating
 let schemaRating = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    route: {type: mongoose.Schema.Types.ObjectId, ref: 'Route'},
-    created: {type: Date, default: Date.now},
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
+    created: { type: Date, default: Date.now },
     rating: Number,
 })
 let Rating = mongoose.model("Rating", schemaRating);
 
 //Favourites
 let schemaFavs = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    route: {type: mongoose.Schema.Types.ObjectId, ref: 'Route'},
-    created: {type: Date, default: Date.now},
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
+    created: { type: Date, default: Date.now },
 })
 let Favourite = mongoose.model("Favourite", schemaFavs);
 
-app.use(bodyParser());
+//app.use(bodyParser());
+app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 app.use(methodOverride());
 app.use(cors());
 
@@ -90,6 +98,19 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+app.use(session({
+    secret: '2C44-4D44-WppQ38S',
+    resave: true,
+    saveUninitialized: true
+}));
+
+var auth = function (req, res, next) {
+    if (req.session)
+        return next();
+    else
+        return res.sendStatus(401);
+};
 //connect for image upload (Grid creation)
 let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
 conn.once('open', function () {
@@ -99,18 +120,18 @@ conn.once('open', function () {
 
 
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
-        if (err) {
-            console.log('Unable to connect to the mongoDB server. Error:', err);
-        } else {
-            console.log('Connection established');
-        }
+    if (err) {
+        console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+        console.log('Connection established');
     }
+}
 );
 mongoose.connection.once('open', function () {
     console.log('connected');
 });
 
-app.post('/favoriseRoute', function (req, res) {
+app.post('/favoriseRoute', auth, function (req, res) {
     let oFavourite = {};
     console.log("FAVORISE ROUTE");
     console.log(req.body);
@@ -140,7 +161,7 @@ app.post('/favoriseRoute', function (req, res) {
     }
 });
 
-app.post('/savePoint', function (req, res) {
+app.post('/savePoint', auth, function (req, res) {
     console.log(req.body.point);
     let aResult = req.body.point;
     aResult = JSON.parse(aResult);
@@ -155,7 +176,7 @@ app.post('/savePoint', function (req, res) {
         });
 });
 
-app.delete('/Route', function (req, res) {
+app.delete('/Route',auth, function (req, res) {
     //todo delete dependencies
     Route.findOneAndDelete(req.query, function (err, data) {
         if (err)
@@ -166,7 +187,7 @@ app.delete('/Route', function (req, res) {
     });
 });
 
-app.delete('/LikedRoute', function (req, res) {
+app.delete('/LikedRoute', auth, function (req, res) {
     console.log('inseide liked route');
     console.log(req.query._id);
     let query = {};
@@ -174,7 +195,7 @@ app.delete('/LikedRoute', function (req, res) {
     query.user = req.query.user;
     console.log("QUERY");
     console.log(query);
-    Favourite.findOneAndDelete(query, function (err,data) {
+    Favourite.findOneAndDelete(query, function (err, data) {
         if (err)
             throw err;
         console.log(data);
@@ -184,11 +205,10 @@ app.delete('/LikedRoute', function (req, res) {
 });
 
 
-app.post('/saveRoute', function (req, res, next) {
+app.post('/saveRoute', auth, function (req, res, next) {
     let oRoute = req.body;
-    //todo get real user id
+
     oRoute.user = req.body.user;
-    console.log(req.body.files);
 
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
@@ -207,10 +227,19 @@ app.post('/saveRoute', function (req, res, next) {
             console.log(res.body.address.town);
             oRoute.location = res.body.address.town;
         }
+
+        //todo save image as Buffer?
+        //oRoute.image = new Buffer(req.body.images.split(",")[1],"base64");
+        oRoute.image = req.body.images;
+        //oRoute.image = new Buffer(req.body.images, 'binary').toString('base64');
+
+        //oRoute.image = new Buffer(req.body.images);
         req.oRoute = oRoute;
         next();
     });
-}, function (req, res) {
+},
+
+    function (req, res) {
     let oData = new Route(req.oRoute);
     oData.save()
         .then(item => {
@@ -223,7 +252,7 @@ app.post('/saveRoute', function (req, res, next) {
         });
 });
 
-app.post('/saveRating', function (req, res) {
+app.post('/saveRating', auth, function (req, res) {
     //todo get real rating
     //req.body.user = "5bf86b725d5d083aea9d6093";
     //req.body.route = "5c012bb83a4ece84eeb4038f";
@@ -246,7 +275,7 @@ app.post('/saveRating', function (req, res) {
         .then(item => {
             console.log('comment');
 
-            Rating.deleteMany({user: req.body.user, route: req.body.route}, function (err) {
+            Rating.deleteMany({ user: req.body.user, route: req.body.route }, function (err) {
                 if (err) throw err;
             });
 
@@ -257,9 +286,9 @@ app.post('/saveRating', function (req, res) {
                 })
             res.send("items saved to database");
         }).catch(err => {
-        console.log('unable to save');
-        res.status(400).send("unable to save to database");
-    });
+            console.log('unable to save');
+            res.status(400).send("unable to save to database");
+        });
 
 });
 
@@ -280,7 +309,7 @@ app.get('/getRatings', function (req, res) {
 });
 
 app.get('/getComments', function (req, res) {
-    Comment.find({route: req.query.route}, function (err, data) {
+    Comment.find({ route: req.query.route }, function (err, data) {
         if (err)
             throw err;
         res.send(data);
@@ -289,55 +318,56 @@ app.get('/getComments', function (req, res) {
 });
 
 app.get('/getRoutes', function (req, res, next) {
-        console.log(req.query.sortBy);
-        let paramText = req.query.search;
-        let paramDifficulty = req.query.difficulty;
-        let routeQuery;
+    console.log(req.query.sortBy);
+    let paramText = req.query.search;
+    let paramDifficulty = req.query.difficulty;
+    let routeQuery;
 
-        if (paramText == '' && paramDifficulty == undefined) {
-            routeQuery = {};
-        }
-        else {
-            routeQuery = {$and: []};
-            if (paramText != '') {
-                routeQuery.$and.push({
-                    $or: [{title: {$regex: paramText, $options: "i"}}, {
-                        description: {
-                            $regex: paramText,
-                            $options: "i"
-                        }
-                    }, {location: {$regex: paramText, $options: "i"}}]
-                });
-            }
-
-            //difficulty kann mehrer Filter enthalten --> Array
-            console.log(paramDifficulty);
-            if (paramDifficulty != undefined) {
-                if (paramDifficulty.length == 1) {
-                    routeQuery.$and.push({difficulty: paramDifficulty[0]});
-                } else {
-                    let difficultyParam = {$or: []};
-                    for (let i = 0; i < paramDifficulty.length; i++) {
-                        console.log("FOR");
-                        console.log(paramDifficulty[i]);
-                        difficultyParam.$or.push({difficulty: paramDifficulty[i]});
-                    }
-                    routeQuery.$and.push(difficultyParam);
-                }
-            }
-        }
-        ;
-        Route.find(routeQuery).lean().exec(function (err, data) {
-            if (err)
-                throw err;
-            //no route was found for query
-            if (data.length === 0) {
-                res.send(data);
-            }
-            req.routes = data;
-            next();
-        });
+    if (paramText == '' && paramDifficulty == undefined) {
+        routeQuery = {};
     }
+    else {
+        routeQuery = { $and: [] };
+        if (paramText != '') {
+            routeQuery.$and.push({
+                $or: [{ title: { $regex: paramText, $options: "i" } }, {
+                    description: {
+                        $regex: paramText,
+                        $options: "i"
+                    }
+                }, { location: { $regex: paramText, $options: "i" } }]
+            });
+        }
+
+        //difficulty kann mehrer Filter enthalten --> Array
+        console.log(paramDifficulty);
+        if (paramDifficulty != undefined) {
+            if (paramDifficulty.length == 1) {
+                routeQuery.$and.push({ difficulty: paramDifficulty[0] });
+            } else {
+                let difficultyParam = { $or: [] };
+                for (let i = 0; i < paramDifficulty.length; i++) {
+                    console.log("FOR");
+                    console.log(paramDifficulty[i]);
+                    difficultyParam.$or.push({ difficulty: paramDifficulty[i] });
+                }
+                routeQuery.$and.push(difficultyParam);
+            }
+            //todo distance as parameter
+        }
+    }
+    ;
+    Route.find(routeQuery).lean().exec(function (err, data) {
+        if (err)
+            throw err;
+        //no route was found for query
+        if (data.length === 0) {
+            res.send(data);
+        }
+        req.routes = data;
+        next();
+    });
+}
     ,
 
     function (req, res, next) {
@@ -346,10 +376,12 @@ app.get('/getRoutes', function (req, res, next) {
         //amount of finished queries;
         let iFinishedQueries = 0;
         for (let i in aRoutes) {
-            Rating.aggregate([{$match: {route: aRoutes[i]._id}}
-                , {$group: {_id: null, rating: {$avg: '$rating'}}}
+            Rating.aggregate([{ $match: { route: aRoutes[i]._id } }
+                , { $group: { _id: null, rating: { $avg: '$rating' } } }
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
+                if(oneRoute.image != undefined)
+                    oneRoute.image.toString('base64');
                 // one route may not have a rating yet
                 if (response.length == 0) {
                     oneRoute.avg_rating = undefined;
@@ -370,13 +402,17 @@ app.get('/getRoutes', function (req, res, next) {
         let oRoutes = [];
         let iFinishedQueries = 0;
         for (let i in req.oRoutes) {
-            Favourite.findOne({$and: [{route: req.oRoutes[i]._id}, {user: user}]}, function (err, obj) {
+            Favourite.findOne({ $and: [{ route: req.oRoutes[i]._id }, { user: user }] }, function (err, obj) {
                 let oneFav = req.oRoutes[i];
                 //if no search result ->  route isn't favorised
                 if (obj === null) {
                     oneFav.isFavorised = false;
                 } else {
                     oneFav.isFavorised = true;
+                }
+                //oneFav.image = new Buffer(oneFav.image).toString('base64');
+                if (oneFav.image != undefined) {
+                //oneFav.image = new Buffer(oneFav.image, 'base64').toString('binary');
                 }
                 oRoutes.push(oneFav);
                 iFinishedQueries++;
@@ -404,6 +440,7 @@ app.get('/getRoutes', function (req, res, next) {
             }
             sortJson(req.oRoutes, paramSort);
         }
+
         res.send(req.oRoutes);
     }
 );
@@ -417,7 +454,7 @@ app.get('/getLocalPoints', function (req, res) {
     let dMinLong = Number(oBorder.dMinLong);
     let dMaxLong = Number(oBorder.dMaxLong);
 
-    Point.find({latitude: {$gt: dMinLat, $lt: dMaxLat}}, function (err, data) {
+    Point.find({ latitude: { $gt: dMinLat, $lt: dMaxLat } }, function (err, data) {
         if (err) {
             throw err;
         }
@@ -426,7 +463,7 @@ app.get('/getLocalPoints', function (req, res) {
 
 });
 
-app.post('/saveDocument', function (req, res) {
+app.post('/saveDocument', auth, function (req, res) {
 
     let oObject = req.body.object;
     oObject = 'test.jpg';
@@ -441,13 +478,13 @@ app.post('/saveDocument', function (req, res) {
 app.get('/getDocument', function (req, res) {
     //important: there must be only one file with this filename, otherwise no photo gets displayed
     let filename = 'test.jpg';
-    gfs.exist({filename: filename}, (err, file) => {
+    gfs.exist({ filename: filename }, (err, file) => {
         if (err || !file) {
             res.status(404).send('File not Found');
             return
         }
         let data = [];
-        let readstream = gfs.createReadStream({filename: filename});
+        let readstream = gfs.createReadStream({ filename: filename });
         readstream.on('data', function (result) {
             data.push(result);
         });
@@ -486,13 +523,15 @@ app.get('/login', function (req, res) {
     let aResult = req.query;
     User.findOne(
         //     {$or: [{email: aResult.email}, {username: aResult.username}]}
-        {$or: [{email: aResult.user}, {username: aResult.user}]}
+        { $or: [{ email: aResult.user }, { username: aResult.user }] }
     ).then(function (user) {
         if (!user) {
             console.log("User nicht vorhanden");
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
+                    req.session.user = user.id;
+                    req.session.admin = true;
                     res.send(user);
                 } else {
                     res.send();
@@ -503,25 +542,25 @@ app.get('/login', function (req, res) {
 });
 
 app.get('/getMyRoutes', function (req, res, next) {
-        console.log('getMyRoutes');
-        let routeQuery = {};
-        //routeQuery.user = "5bf86b725d5d083aea9d6090";
-        routeQuery.user = req.query.user;
-        Route.find(routeQuery).lean().exec(function (err, data) {
-            if (err)
-                throw err;
-            req.responseData = data;
-            next();
-        });
-    },
+    console.log('getMyRoutes');
+    let routeQuery = {};
+    //routeQuery.user = "5bf86b725d5d083aea9d6090";
+    routeQuery.user = req.query.user;
+    Route.find(routeQuery).lean().exec(function (err, data) {
+        if (err)
+            throw err;
+        req.responseData = data;
+        next();
+    });
+},
     function (req, res, next) {
         let aRoutes = req.responseData;
         let oRoutes = [];
         //amount of finished queries;
         let iFinishedQueries = 0;
         for (let i in aRoutes) {
-            Rating.aggregate([{$match: {route: aRoutes[i]._id}}
-                , {$group: {_id: null, rating: {$avg: '$rating'}}}
+            Rating.aggregate([{ $match: { route: aRoutes[i]._id } }
+                , { $group: { _id: null, rating: { $avg: '$rating' } } }
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
                 // one route may not have a rating yet
@@ -561,26 +600,26 @@ app.get('/getMyRoutes', function (req, res, next) {
         res.send(req.oRoutes);
     }
 )
-;
+    ;
 
 app.get('/getMyLikedRoutes', function (req, res, next) {
     console.log('getMyLikedRoutes');
-        let routeQuery = {};
-        //routeQuery.user = user;
-        routeQuery.user = req.query.user;
-        console.log(routeQuery.user);
-        Favourite.find(routeQuery).exec(function (err, data) {
-            if (err)
-                throw err;
-            console.log(data);
-            req.fav = data;
-            if (data.length == 0) {
-                res.send(data);
-            }
-            next();
-        })
+    let routeQuery = {};
+    //routeQuery.user = user;
+    routeQuery.user = req.query.user;
+    console.log(routeQuery.user);
+    Favourite.find(routeQuery).exec(function (err, data) {
+        if (err)
+            throw err;
+        console.log(data);
+        req.fav = data;
+        if (data.length == 0) {
+            res.send(data);
+        }
+        next();
+    })
 
-    },
+},
     function (req, res, next) {
         let aFavRoutes = req.fav;
         let oRoutes = [];
@@ -588,7 +627,7 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
         let iFinishedQueries = 0;
         for (let i in aFavRoutes) {
             console.log(aFavRoutes[i].route);
-            Route.findOne({_id: aFavRoutes[i].route}).lean().exec(function (err, data) {
+            Route.findOne({ _id: aFavRoutes[i].route }).lean().exec(function (err, data) {
                 if (err)
                     throw err;
                 if (data != null) {
@@ -596,7 +635,7 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
                 }
                 iFinishedQueries++;
                 if (iFinishedQueries === (aFavRoutes.length)) {
-                    req.favRoutes = oRoutes;
+                    req.oRoutes = oRoutes;
                     next();
                 }
             });
@@ -605,6 +644,32 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
 
     }
     ,
+    function (req, res, next) {
+        let aRoutes = req.oRoutes;
+        let oRoutes = [];
+        //amount of finished queries;
+        let iFinishedQueries = 0;
+        for (let i in aRoutes) {
+            Rating.aggregate([{$match: {route: aRoutes[i]._id}}
+                , {$group: {_id: null, rating: {$avg: '$rating'}}}
+            ]).then(function (response) {
+                let oneRoute = aRoutes[i];
+                // one route may not have a rating yet
+                if (response.length == 0) {
+                    oneRoute.avg_rating = undefined;
+                } else {
+                    let avgRating = response[0].rating;
+                    oneRoute.avg_rating = avgRating;
+                }
+                oRoutes.push(oneRoute);
+                iFinishedQueries++;
+                if (iFinishedQueries === (aRoutes.length)) {
+                    req.favRoutes = oRoutes;
+                    next();
+                }
+            });
+        }
+    },
     function (req, res) {
         if (req.query.sortBy != undefined) {
             let paramSort;
@@ -627,11 +692,11 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
         }
     }
 )
-;
+    ;
 
-app.post('/Review', function (req, res, next) {
+app.post('/Review', auth, function (req, res, next) {
     let oReview = req.body;
-console.log(oReview);
+    console.log(oReview);
     //oRoute.user = req.body.user;
 });
 

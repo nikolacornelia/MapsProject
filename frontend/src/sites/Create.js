@@ -67,7 +67,14 @@ class Create extends Component {
 
         // create a function that is called after image file is read
         let createRoute = (e) => {
+            console.log(oRoute.points);
+            if (oRoute.points.length === 0) {
+                //todo: display error message instead of success?
+                alert('Please select points for your route in the map');
+                return;
+            }
             let image = e && e.target.result; // sends the image as base64
+            image.toString();
             console.log(image);
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.name,
@@ -75,12 +82,12 @@ class Create extends Component {
                 difficulty: this.state.difficulty,
                 points: oRoute.points,
                 highlights: oRoute.highlights,
-                image: image,
+                images: image,
+                distance: oRoute.distance,
                 //sobald session im backend existiert, kommt die Zeile weg
                 user: this.user._id,
-                //Was ist files?
-                files: this.files,
-                features: this.state.features
+                //Wofür files?
+                files: this.state.files
             }).then((response) => {
                 console.log(this.user._id);
                 this.setState({routeCreated: true});

@@ -18,10 +18,16 @@
   },
   "homepage": "https://github.com/nikolacornelia/MapsProject#readme",
   "dependencies": {
+    "acorn": "^6.0.4",
+    "ajax-request": "^1.2.3",
+    "async": "^2.6.1",
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
     "eslint": "^5.6.1",
     "express": "^4.16.3",
+    "express-async-errors": "^3.1.1",
     "express-session": "^1.15.6",
     "gridfs": "^1.0.0",
     "gridfs-stream": "^1.1.1",
@@ -35,14 +41,11 @@
     "morgan": "^1.9.1",
     "multer": "^1.4.1",
     "npm": "^6.4.1",
-    "acorn": "^6.0.4",
-    "express-async-errors": "^3.1.1",
-    "async": "^2.6.1",
-    "ajax-request": "^1.2.3",
     "request": "^2.88.0",
-    "then-request": "^6.0.0",
     "sort-json-array": "^0.1.7",
-    "cors": "^2.8.5"
+    "buffer": "^5.2.1",
+    "then-request": "^6.0.0"
+
   },
   "devDependencies": {
     "eslint": "^5.9.0",
