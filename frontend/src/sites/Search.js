@@ -30,16 +30,13 @@ import {
 import {Slider} from 'react-semantic-ui-range';
 import {mockData, mockFeatures} from '../mockData';
 import axios from "axios";
+import validator from 'validator';
 import * as ShowRoute from './maps/showRoute';
 
 class Search extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            lat: 51.505,
-            lng: -0.09,
-            zoom: 13,
-
             difficulty: [],
             routeLength: 5,
             searchText: '',
@@ -48,7 +45,9 @@ class Search extends Component {
             searched: false,
             showDetail: -1,
             reviewIsOpen: false,
-            isFavorised: false
+            isFavorised: false,
+            comments: [],
+            files: []
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -86,10 +85,15 @@ class Search extends Component {
                 sortBy: this.state.sortBy
             }
         }).then((response) => {
-            //können die Bilder nicht einfacher per Link zur Verfügung gestellt werden?
+
+            // todo: it would be better to provide URLs for the images (put urls in response body, not image data)
+            //       then the search response is smaller (because not every image is in there) & quicker.
+            //       The browser can then send requests for each <img src="..."> asynchronously
 
             for (let i = 0; i < response.data.length; i++) {
 
+                if(response.data[i].distance && response.data[i].distance > 0)
+                    response.data[i].distance = Math.round(response.data[i].distance * 100) / 100;
                 // response.data[i].image = new Buffer( response.data[i].image, 'base64').toString('binary');
                 // response.data[i].image = Buffer.from(response.data[i].image, 'base64');
                 if (response.data[i].image != undefined) {
@@ -127,6 +131,17 @@ class Search extends Component {
         // scroll to top
         document.getElementsByClassName('sidebar')[0].scrollTop = 0;
 
+        // request comments for selected route
+        if(id !== -1) {
+            axios.get('http://localhost:3001/getComments', {
+                params: {
+                    route: id
+                }
+            }).then((response) => {
+                // returns object of all comments created
+                this.setState({comments: response.data});
+            });
+        }
         // navigate internally to details view
         this.setState({
             showDetail: id,
@@ -134,38 +149,64 @@ class Search extends Component {
         });
     };
 
-    onChangeSort = (key) => {
-        // change sort and afterwards trigger an update
-        this.setState({sortBy: key}, this.onSearch);
+    /**
+     * Changes the sorting of the search result list
+     * @param key
+     */
+    onChangeSort = (key) => this.setState({sortBy: key}, this.onSearch);
+
+    onSubmitReview = () => {
+
+        let _submitReview = (e) => {
+            let image = e && e.target.result; // sends the image as base64
+            axios.post('http://localhost:3001/saveRating', {
+                routeId: this.state.showDetail,
+                rating: this.state.rating,
+                // todo: never pass the userid as an identification in the backend
+                //       because it can easily be manipulated. Use backend session as reference for user id
+                user: this.user._id,
+                comment: this.state.commentText,
+                image: image
+            }).then(() => {
+                // close the dialog & refresh
+                this.toggleReviewDialog();
+                this.onSearch();
+            });
+        };
+
+        // read file if given
+        if (this.state.files.length === 1) {
+            let fileReader = new FileReader();
+            fileReader.onload = _submitReview;
+            fileReader.readAsDataURL(this.state.files[0]);
+        } else {
+            _submitReview();
+        }
     };
 
-    onSubmitReview = (id) => {
-        // todo: backend-service is not yet available
-        axios.post('http://localhost:3001/saveRating', {
-            routeId: this.state.showDetail,
-            // review: this.state.review,
-            user: this.user._id,
-            comment: this.state.commentText
-        }).then(() => {
-            // close the dialog & refresh
-            this.toggleReviewDialog();
-            this.onSearch();
-        });
+    /* Functions for review dialog */
+    toggleReviewDialog = () => this.setState({reviewIsOpen: !this.state.reviewIsOpen});
+
+    onChangeReviewText = (e, {name, value}) => this.setState({[name]: value});
+    onChangeReviewRating = (e, {name, rating}) => this.setState({[name]: rating});
+    onChangeReviewImage = (e) => {
+        let files = e.target.files;
+
+        // Check file type and size
+        for (let i = 0; i < files.length; i++) {
+            if (!files[i].type.match('image.*')) {
+                // Error: file is not an image
+                alert("The file you tried to attach is not an image!");
+            } else if (files[i].size >= 10 * 1024 * 1024) {
+                // Error: file is too large
+                // todo: define max. file size & error routine...
+                alert("The file you tried to attach is too big. Images are limited to 1234mb.");
+            }
+        }
+        this.setState({files: files});
     };
 
-    onChangeReview = (e, {name, value}) => {
-        // todo Nikola tried (rating is not working)
-        this.setState({[name]: value});
-        console.log(this.state);
-    };
 
-    onChangeReviewImage = () => {
-        // todo
-    };
-
-    toggleReviewDialog = () => {
-        this.setState({reviewIsOpen: !this.state.reviewIsOpen});
-    };
     toggleFavorite = () => {
         let isFavorised = !this.state.isFavorised;
 
@@ -195,13 +236,6 @@ class Search extends Component {
                 }*/
         var detailRoute;
         if (this.state.showDetail !== -1) {
-            //todo Nikola::get comments for detail route
-            // axios.get('http://localhost:3001/getComments', {
-            //             params: {
-            //                 route: route._id
-            //             }
-            //         })
-            // returns object of all comments created
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         }
         return (
@@ -369,13 +403,13 @@ class Search extends Component {
                                                         <Comment>
                                                             <Comment.Avatar src='./static/media/avatar-1.png'/>
                                                             <Comment.Content>
-                                                                <Comment.Author as='a'>Max
-                                                                    Mustermann</Comment.Author>
+                                                                <Comment.Author
+                                                                    as='a'>{this.user.username}</Comment.Author>
                                                                 <Comment.Text>
 
                                                                     <Form.Field><Rating icon='star' size='huge'
-                                                                                        name='rating'
-                                                                                        onChange={this.onChangeReview}
+                                                                                        name='rating' clearable
+                                                                                        onRate={this.onChangeReview}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
                                                                                    name='commentText'
@@ -399,11 +433,11 @@ class Search extends Component {
                                             </Modal.Actions>
                                         </Modal>
 
-                                        {(!detailRoute.comments || detailRoute.comments.length === 0)
+                                        {(!this.state.comments || this.state.comments.length === 0)
                                             ? <Container textAlign='center'>
                                                 <i>No comments available. Be the first one to comment!</i>
                                             </Container>
-                                            : detailRoute.comments.map((comment) => <Comment>
+                                            : this.state.comments.map((comment) => <Comment>
                                                 <Comment.Avatar src='./static/media/avatar-1.png'/>
                                                 <Comment.Content>
                                                     <Comment.Author as='b'>{comment.author}</Comment.Author>

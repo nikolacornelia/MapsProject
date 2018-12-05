@@ -24,7 +24,7 @@ class Create extends Component {
             lat: 51.505,
             lng: -0.09,
             zoom: 13,
-        }
+        };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
@@ -66,7 +66,7 @@ class Create extends Component {
         let oRoute = CreateMap.getRouteMapData();
 
         // create a function that is called after image file is read
-        let createRoute = (e) => {
+        let _createRoute = (e) => {
             console.log(oRoute.points);
             if (oRoute.points.length === 0) {
                 //todo: display error message instead of success?
@@ -103,10 +103,10 @@ class Create extends Component {
         // read file if given
         if (this.state.files.length === 1) {
             let fileReader = new FileReader();
-            fileReader.onload = createRoute;
+            fileReader.onload = _createRoute;
             fileReader.readAsDataURL(this.state.files[0]);
         } else {
-            createRoute();
+            _createRoute();
         }
     };
 
