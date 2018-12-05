@@ -155,8 +155,10 @@ app.post('/favoriseRoute',function (req, res) {
 });
 
 app.post('/savePoint', function (req, res) {
-    console.log(req.body.point);
-    let aResult = req.body.point;
+    console.log(req.body);
+    console.log(typeof req.body);
+    console.log(req.body.data.point);
+    let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
     let myData = new Point(aResult);
     // myData =new Point({ name: "NameNew", description: "DescriptionNew", category: "CategoryNew", latitude: 4534, longitude: 2565});
