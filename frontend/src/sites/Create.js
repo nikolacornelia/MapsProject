@@ -18,7 +18,6 @@ class Create extends Component {
         super(props);
         this.state = {
             activeIndex: -1,
-            showMoreFeatures: false,
             routeCreated: false,
             files: [],
 
@@ -29,10 +28,6 @@ class Create extends Component {
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
-    // Accordion Logik
-    handleClick = (e, {index}) => {
-        this.setState({showMoreFeatures: !this.state.showMoreFeatures});
-    };
 
     /**
      * Handles the change of most of the input fields
@@ -89,7 +84,9 @@ class Create extends Component {
                 highlights: oRoute.highlights,
                 images: image,
                 distance: oRoute.distance,
+                //sobald session im backend existiert, kommt die Zeile weg
                 user: this.user._id,
+                //Wofür files?
                 files: this.state.files
             }).then((response) => {
                 console.log(this.user._id);

@@ -86,6 +86,7 @@ class Search extends Component {
                 sortBy: this.state.sortBy
             }
         }).then((response) => {
+            //können die Bilder nicht einfacher per Link zur Verfügung gestellt werden?
 
             for (let i = 0; i < response.data.length; i++) {
 
@@ -123,7 +124,7 @@ class Search extends Component {
             : false;
 
         // scroll to top
-        document.getElementById('sidebar').scrollTop = 0;
+        document.getElementsByClassName('sidebar')[0].scrollTop = 0;
 
         // navigate internally to details view
         this.setState({
@@ -203,7 +204,7 @@ class Search extends Component {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         }
         return (
-            <Grid stackable columns={2} className='map' data-testid='siteSearch' >
+            <Grid stackable columns={2} className='map' data-testid='siteSearch'>
                 <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
                     <div id='map' style={{height: "100%"}}/>
                 </Grid.Column>
@@ -294,14 +295,15 @@ class Search extends Component {
                             </div>}
                         </div>
                         : /*else display detail form*/
-                        <Form size='large'>
+                        <div className='sidebar'>
+                            <Form size='large'>
 
-                            <Header as='h2' style={{width: "100%"}}>
-                                <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
-                                      onClick={() => this.onShowDetail(-1)}/>
-                                <Header.Content style={{width: "100%"}}>
-                                    {detailRoute.title}
-                                    <span style={{float: 'right'}}>
+                                <Header as='h2' style={{width: "100%"}}>
+                                    <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
+                                          onClick={() => this.onShowDetail(-1)}/>
+                                    <Header.Content style={{width: "100%"}}>
+                                        {detailRoute.title}
+                                        <span style={{float: 'right'}}>
                                         <Popup
                                             trigger={<Icon name={this.state.isFavorised ? 'heart' : 'heart outline'}
                                                            link color='red' onClick={this.toggleFavorite}/>}
@@ -310,63 +312,91 @@ class Search extends Component {
                                                 : 'Add this route to your favorites.'}
                                             size='tiny' position='bottom right'/>
                                     </span>
-                                    <Header.Subheader as='h4'>{detailRoute.location}</Header.Subheader>
-                                </Header.Content>
-                            </Header>
+                                        <Header.Subheader as='h4'>{detailRoute.location}</Header.Subheader>
+                                    </Header.Content>
+                                </Header>
 
-                            <Segment.Group className='basic'>
-                                <Segment basic>
-                                    <Image centered fluid rounded
-                                           src={detailRoute.image || '/static/media/route-noimage.png'}/>
-                                </Segment>
-
-                                <Segment.Group className='basic' horizontal textAlign='center'>
+                                <Segment.Group className='basic'>
                                     <Segment basic>
-                                        <Statistic horizontal size='mini' label='km'>
-                                            <Statistic.Value>
-                                                <Icon name='map'/> {detailRoute.distance} km
-                                            </Statistic.Value>
-                                        </Statistic>
+                                        <Image centered fluid rounded
+                                               src={detailRoute.image || '/static/media/route-noimage.png'}/>
                                     </Segment>
+
+                                    <Segment.Group className='basic' horizontal textAlign='center'>
+                                        <Segment basic>
+                                            <Statistic horizontal size='mini' label='km'>
+                                                <Statistic.Value>
+                                                    <Icon name='map'/> {detailRoute.distance} km
+                                                </Statistic.Value>
+                                            </Statistic>
+                                        </Segment>
+                                        <Segment basic>
+                                            <Statistic horizontal size='mini' label={detailRoute.difficulty}/>
+                                        </Segment>
+                                        <Segment basic>
+                                            <Rating basic icon='star' defaultRating={detailRoute.avg_rating}
+                                                    maxRating={5}
+                                                    disabled size='huge'/>
+                                        </Segment>
+                                    </Segment.Group>
+
+                                    {detailRoute.features &&
+                                    <Segment basic textAlign='center'>
+                                        {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
+                                    </Segment>
+                                    }
+
+                                    {detailRoute.description &&
                                     <Segment basic>
-                                        <Statistic horizontal size='mini' label={detailRoute.difficulty}/>
+                                        {detailRoute.description}
                                     </Segment>
-                                    <Segment basic>
-                                        <Rating basic icon='star' defaultRating={detailRoute.avg_rating} maxRating={5}
-                                                disabled size='huge'/>
-                                    </Segment>
-                                </Segment.Group>
+                                    }
 
-                                {detailRoute.features &&
-                                <Segment basic textAlign='center'>
-                                    {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
-                                </Segment>
-                                }
+                                    <Comment.Group minimal>
 
-                                {detailRoute.description &&
-                                <Segment basic>
-                                    {detailRoute.description}
-                                </Segment>
-                                }
+                                        <Header as='h2' dividing>
+                                            <Button color='blue' icon='heart' content='Add Review'
+                                                    onClick={this.toggleReviewDialog} floated="right" compact/>
+                                            <Header.Content>Reviews</Header.Content>
+                                            <Modal open={this.state.reviewIsOpen} closeOnEscape={false}
+                                                   closeOnDimmerClick={false} size='small' centered>
+                                                <Modal.Header>New Review for {detailRoute.title}</Modal.Header>
+                                                <Modal.Content scrolling>
+                                                    <Form>
+                                                        <Comment.Group>
+                                                            <Comment>
+                                                                <Comment.Avatar src='./static/media/avatar-1.png'/>
+                                                                <Comment.Content>
+                                                                    <Comment.Author as='a'>Max
+                                                                        Mustermann</Comment.Author>
+                                                                    <Comment.Text>
 
-                                <Comment.Group minimal>
-
-                                    <Header as='h2' dividing>
-                                        <Button color='blue' icon='heart' content='Add Review'
-                                                onClick={this.toggleReviewDialog} floated="right" compact/>
-                                        <Header.Content>Reviews</Header.Content>
-                                        <Modal open={this.state.reviewIsOpen} closeOnEscape={false}
-                                               closeOnDimmerClick={false} size='small' centered>
-                                            <Modal.Header>New Review for {detailRoute.name}</Modal.Header>
-                                            <Modal.Content scrolling>
-                                                <Form>
-                                                    <Comment.Group>
-                                                        <Comment>
-                                                            <Comment.Avatar src='./static/media/avatar-1.png'/>
-                                                            <Comment.Content>
-                                                                <Comment.Author as='a'>Max Mustermann</Comment.Author>
-                                                                <Comment.Text>
-
+                                                                        <Form.Field><Rating icon='star' size='huge'
+                                                                                            name='rating'
+                                                                                            onChange={this.onChangeReview}
+                                                                                            maxRating={5}/></Form.Field>
+                                                                        <Form.TextArea autoHeight
+                                                                                       name='commentText'
+                                                                                       onChange={this.onChangeReview}
+                                                                                       placeholder='Enter your review'/>
+                                                                        <Form.Input type='file' fluid label='Image'
+                                                                                    placeholder='Upload image file'
+                                                                                    iconPosition='left'
+                                                                                    onChange={this.onChangeReviewImage}
+                                                                                    icon={<Icon name='add' link inverted
+                                                                                                color='black'/>}/>
+                                                                    </Comment.Text>
+                                                                </Comment.Content>
+                                                            </Comment>
+                                                        </Comment.Group>
+                                                    </Form>
+                                                </Modal.Content>
+                                                <Modal.Actions>
+                                                    <Button onClick={this.toggleReviewDialog}>Cancel</Button>
+                                                    <Button primary onClick={this.onSubmitReview}>Submit</Button>
+                                                </Modal.Actions>
+                                            </Modal>
+                                        </Header>
                                                                     <Form.Field><Rating icon='star' size='huge'
                                                                                         name='rating'
                                                                                         onChange={this.onChangeReview}
@@ -394,29 +424,30 @@ class Search extends Component {
                                         </Modal>
                                     </Header>
 
-                                    {(!detailRoute.comments || detailRoute.comments.length === 0)
-                                        ? <Container textAlign='center'>
-                                            <i>No comments available. Be the first one to comment!</i>
-                                        </Container>
-                                        : detailRoute.comments.map((comment) => <Comment>
-                                            <Comment.Avatar src='./static/media/avatar-1.png'/>
-                                            <Comment.Content>
-                                                <Comment.Author as='b'>{comment.author}</Comment.Author>
-                                                <Comment.Metadata>
-                                                    <span>{comment.datetime}</span>
-                                                </Comment.Metadata>
-                                                <Comment.Text><p>{comment.text}</p></Comment.Text>
-                                                <Comment.Actions>
-                                                    <Rating as='a' icon='star' defaultRating={comment.stars}
-                                                            maxRating={5} disabled/>
-                                                </Comment.Actions>
-                                            </Comment.Content>
-                                        </Comment>)}
-                                </Comment.Group>
-                                <p/>
-                            </Segment.Group>
+                                        {(!detailRoute.comments || detailRoute.comments.length === 0)
+                                            ? <Container textAlign='center'>
+                                                <i>No comments available. Be the first one to comment!</i>
+                                            </Container>
+                                            : detailRoute.comments.map((comment) => <Comment>
+                                                <Comment.Avatar src='./static/media/avatar-1.png'/>
+                                                <Comment.Content>
+                                                    <Comment.Author as='b'>{comment.author}</Comment.Author>
+                                                    <Comment.Metadata>
+                                                        <span>{comment.datetime}</span>
+                                                    </Comment.Metadata>
+                                                    <Comment.Text><p>{comment.text}</p></Comment.Text>
+                                                    <Comment.Actions>
+                                                        <Rating as='a' icon='star' defaultRating={comment.stars}
+                                                                maxRating={5} disabled/>
+                                                    </Comment.Actions>
+                                                </Comment.Content>
+                                            </Comment>)}
+                                    </Comment.Group>
+                                    <p/>
+                                </Segment.Group>
 
-                        </Form>
+                            </Form>
+                        </div>
                     }
                 </Grid.Column>
             </Grid>

@@ -16,19 +16,18 @@ class Home extends Component {
                     </div>
                     <div>
                         <img src='./static/media/EndChineseWall.JPG'/>
-                        <p className="legend">Legend 2</p>
+                        <p className="legend">Wanderweg Chinesische Mauer</p>
                     </div>
                     <div>
                         <img src='./static/media/RiceTerraces.JPG'/>
-                        <p className="legend">Legend 3</p>
+                        <p className="legend">Wanderweg durch die Reisterrassen</p>
                     </div>
                     <div>
                         <img src='./static/media/EndChineseWall.JPG'/>
-                        <p className="legend">Legend 4</p>
+                        <p className="legend">Chinesische Mauer</p>
                     </div>
 
                 </Carousel>
-                <Container as={Segment} basic padded>Test</Container>
             </Container>
         )
     }
