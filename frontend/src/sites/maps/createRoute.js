@@ -86,9 +86,7 @@ export function onInit() {
         deleteFunction();
     }, "Delete last point").addTo(map);
 
-    L.easyButton('fa-star', function () {
-        //;
-    }, "New Point of Interest").addTo(map);
+    stateChangingButton.addTo(map);
 
     map.setView([49.47748, 8.42216], 15);
 
