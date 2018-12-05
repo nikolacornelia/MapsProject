@@ -5,6 +5,8 @@ import axios from "axios";
 
 var dLat;
 var dLng;
+var dLatH;
+var dLngH;
 var aPoints = [];
 var aMarker = [];
 var aPoly = [];
@@ -14,6 +16,48 @@ var yellowWaypoint;
 var cities;
 var popup;
 var iDistance = 0;
+var bHighlight = false;
+
+var template = 
+'<header>' +
+'<h3>Erstelle dein Highlight</h3>' +
+'</header>' +
+'<form id="popup-form">' +
+'<p>' +
+'<label for="sPName">Name:</label>' +
+'<p>' +
+'<input id="sPName" class="popup-input" type="text" />' +
+'<p>' +
+'<label for="sPDescription">Beschreibung:</label>' +
+'<p>' +
+'<textarea id="sPDescription" class="popup-textarea" type="text"></textarea>' +
+'<p>' +
+'<button id="button-submit" type="button">Save</button>' +
+'<p>' +
+'</form>';
+
+var stateChangingButton = L.easyButton({
+    states: [{
+      stateName: 'ButtonOff',      
+      icon:      'fa-star',               
+      title:     'Turn Button On', 
+      onClick: function(btn, map) {
+        bHighlight = true;
+        btn.button.style.backgroundColor = 'grey';
+        btn.state('ButtonOn');                               
+      }
+    }, {
+      stateName: 'ButtonOn',
+      icon:      'fa-star',
+      title:     'Turn Button Off',
+      onClick: function(btn, map) {
+        map.closePopup();
+        bHighlight = false;
+        btn.state('ButtonOff');
+        btn.button.style.backgroundColor = 'white';
+      }
+    }]
+  });
 
 export function onInit() {
     map = L.map('map', {
@@ -46,8 +90,6 @@ export function onInit() {
         //;
     }, "New Point of Interest").addTo(map);
 
-
-
     map.setView([49.47748, 8.42216], 15);
 
     map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
@@ -62,30 +104,59 @@ export function onInit() {
 
 }
 
-
-//var myURL = jQuery( 'script[src$="createRoute.js"]' ).attr( 'src' ).replace( 'createRoute.js', '' );
-
-//var fs = require(' fs'); //Importing filesystem package
-//var data = fs.readFileSync('highlights.json');
-//var highlights = JSON.parse(data);
-
-
 function onMapClick(e) {
     //Save Click Coordinates in variable;
-    aHighlight.push(0);
-    aPoints.push(e.latlng);
-    aMarker[aMarker.length] = new L.marker(aPoints[aPoints.length - 1], {icon: yellowWaypoint}).on('click', connectPoint).addTo(map);
-    aPoly[aPoly.length] = L.polyline(aPoints, {
-        color: 'blue',
-        weight: 3,
-        dashArray: '20,15',
-        smoothFactor: 1
-    }).addTo(map);
-    if (aPoints.length > 1) {
-        iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
-        console.log(iDistance);
+    if (!bHighlight){
+        aHighlight.push(0);
+        aPoints.push(e.latlng);
+        aMarker[aMarker.length] = new L.marker(aPoints[aPoints.length - 1], {icon: yellowWaypoint}).on('click', connectPoint).addTo(map);
+        aPoly[aPoly.length] = L.polyline(aPoints, {
+            color: 'blue',
+            weight: 3,
+            dashArray: '20,15',
+            smoothFactor: 1
+        }).addTo(map);
+        if (aPoints.length > 1) {
+            iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+            console.log(iDistance);
+        }
+    }
+    else if (bHighlight){
+            popup
+            .setLatLng(e.latlng)
+            .setContent(template)
+            .openOn(map);
+        //Save Click Coordinates in variable;
+        dLatH = e.latlng.lat;
+        dLngH = e.latlng.lng;
+        document.getElementById ("button-submit").addEventListener ("click", function(){ newPoint(); }, false);
+
     }
 }
+function newPoint(){
+    let oPoint = {};
+    oPoint.name = document.getElementById("sPName").value;
+    oPoint.description = document.getElementById("sPDescription").value;
+    oPoint.latitude = dLatH;
+    oPoint.longitude = dLngH;
+    var jsonPoint = JSON.stringify(oPoint);
+    axios.post('http://localhost:3001/savePoint', {
+        data: {point: jsonPoint}
+    }).then(function (response) {
+        console.log("success");
+        displayPoints(response.data);
+    }).catch(function (err) {
+        console.log(err);
+    });
+    L.marker([dLatH, dLngH]).addTo(map);
+    connectHighlight([dLatH, dLngH]);
+    bHighlight = false;
+    map.closePopup();
+    stateChangingButton.state('ButtonOff');
+    stateChangingButton.button.style.backgroundColor = 'white';
+    
+  }
+
 function connectPoint(e) {
     aHighlight.push(0);
     aPoints.push(e.latlng);
@@ -118,7 +189,6 @@ function connectHighlight(koordinaten) {
     }
 }
 
-
 function deleteFunction() {
     if (aPoints.length > 1) {
         iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
@@ -133,16 +203,6 @@ function deleteFunction() {
     aPoly.splice(aPoly.length - 1, 1);
     aHighlight.splice(aHighlight.length - 1);
 
-}
-
-function submitFunction() {
-    var sName = document.getElementById("name").value;
-    var sDescription = document.getElementById("beschreibung").value;
-    var objHighlight = {"Name": sName, "Beschreibung": sDescription, "Latitude": dLat, "Longitude": dLng};
-    localStorage.setItem('myStorage', JSON.stringify(objHighlight));
-    var objHighlight = JSON.parse(localStorage.getItem('myStorage'));
-
-    //data.writeFile('highlights.json', newHighlight, finished);
 }
 
 async function onMapLoad(e) {
@@ -165,7 +225,6 @@ function getLocalPointsOfInterest() {
         console.log(err);
     });
 }
-
 
 function displayPoints(arrayPoints) {
     for (let i in arrayPoints) {
@@ -222,6 +281,8 @@ export function getRouteMapData() {
     console.log(oRoute);
     return oRoute;
 }
+
+
 
 //reset array after route was created successfully
 export function resetArrays() {

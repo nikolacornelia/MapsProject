@@ -18,21 +18,16 @@ class Create extends Component {
         super(props);
         this.state = {
             activeIndex: -1,
-            showMoreFeatures: false,
             routeCreated: false,
             files: [],
 
             lat: 51.505,
             lng: -0.09,
             zoom: 13,
-        }
+        };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
-    // Accordion Logik
-    handleClick = (e, {index}) => {
-        this.setState({showMoreFeatures: !this.state.showMoreFeatures});
-    };
 
     /**
      * Handles the change of most of the input fields
@@ -71,14 +66,17 @@ class Create extends Component {
         let oRoute = CreateMap.getRouteMapData();
 
         // create a function that is called after image file is read
-        let createRoute = (e) => {
+
+        let _createRoute = (e) => {
+            console.log(oRoute.points);
             if (oRoute.points.length === 0) {
                 //todo: display error message instead of success?
                 alert('Please select points for your route in the map');
                 return;
             }
             let image = e && e.target.result; // sends the image as base64
-            image.toString();
+            //image.toString();
+
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.name,
                 description: this.state.description,
@@ -87,7 +85,9 @@ class Create extends Component {
                 highlights: oRoute.highlights,
                 images: image,
                 distance: oRoute.distance,
+                //sobald session im backend existiert, kommt die Zeile weg
                 user: this.user._id,
+                //Wofür files?
                 files: this.state.files
             }).then((response) => {
                 console.log(this.user._id);
@@ -104,10 +104,10 @@ class Create extends Component {
         // read file if given
         if (this.state.files.length === 1) {
             let fileReader = new FileReader();
-            fileReader.onload = createRoute;
+            fileReader.onload = _createRoute;
             fileReader.readAsDataURL(this.state.files[0]);
         } else {
-            createRoute();
+            _createRoute();
         }
     };
 

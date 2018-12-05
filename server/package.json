@@ -23,6 +23,7 @@
     "async": "^2.6.1",
     "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
+    "buffer": "^5.2.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.5",
     "eslint": "^5.6.1",
@@ -43,7 +44,6 @@
     "npm": "^6.4.1",
     "request": "^2.88.0",
     "sort-json-array": "^0.1.7",
-    "buffer": "^5.2.1",
     "then-request": "^6.0.0"
   },
   "devDependencies": {

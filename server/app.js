@@ -99,7 +99,7 @@ app.use(session({
 }));
 
 var auth = function (req, res, next) {
-    if (req.session && req.session.user === req.body._id && req.session.admin)
+    if (req.session)
         return next();
     else
         return res.sendStatus(401);
@@ -128,7 +128,7 @@ app.post('/favoriseRoute',function (req, res) {
     let oFavourite = {};
     console.log("FAVORISE ROUTE");
     console.log(req.body);
-    oFavourite.route = req.body.id;
+    oFavourite.route = req.body.id; // todo: use req.session.user instead
     //oFavourite.route = "5bfd7adf3ef5fe62ebc4d9e3";
     oFavourite.user = req.body.user;
     console.log("ISFAVORISED");
@@ -491,6 +491,9 @@ var BCRYPT_SALT_ROUNDS = 12;
 app.post('/register', function (req, res) {
     //let aResult = req.body;
     //aResult = JSON.parse(aResult);
+    // todo: check if user already exists
+    // todo: check if password length > 8
+    // todo: check if email is syntactically correct
     let myData = new User(req.body);
     bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
         .then(function (hashedPassword) {
@@ -518,11 +521,11 @@ app.get('/login', function (req, res) {
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
-                    req.session.user = req.query._id;
+                    req.session.user = user.id;
                     req.session.admin = true;
                     res.send(user);
                 } else {
-                    res.send();
+                    res.sendStatus(500);
                 }
             });
         }

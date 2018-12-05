@@ -1,7 +1,7 @@
 // See post: http://asmaloney.com/2014/01/code/creating-an-interactive-map-with-leaflet-and-openstreetmap/
 var dLat;
 var dLng;
-var map = L.map( 'map', {
+var map = L.map('map', {
   center: [20.0, 5.0],
   minZoom: 2,
   zoom: 2
@@ -11,29 +11,45 @@ map.on('click', onMapClick);
 map.on('moveend', onMapLoad);
 
 
-L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   subdomains: ['a', 'b', 'c']
-}).addTo( map );
+}).addTo(map);
 
 map.setView([49.47748, 8.42216], 15);
 //Locate postion of user
-map.locate({setView: true, watch: true})
-.on('locationfound', function(e){})
-.on('locationerror', function(e){
+map.locate({ setView: true, watch: true })
+  .on('locationfound', function (e) { })
+  .on('locationerror', function (e) {
     console.log(e);
     alert("Location access denied.");
-});
+  });
 
+var template = 
+'<header>' +
+'<h3>Erstelle dein Highlight</h3>' +
+'</header>' +
+'<form id="popup-form">' +
+'<p>' +
+'<label for="sPName">Name:</label>' +
+'<p>' +
+'<input id="sPName" class="popup-input" type="text" />' +
+'<p>' +
+'<label for="sPDescription">Beschreibung:</label>' +
+'<p>' +
+'<textarea id="sPDescription" class="popup-textarea" type="text"></textarea>' +
+'<p>' +
+'<button id="button-submit"  onclick="newPoint()" type="button">Save</button>' +
+'<p>' +
+'</form>';
 //var myURL = jQuery( 'script[src$="createHighlights.js"]' ).attr( 'src' ).replace( 'createHighlights.js', '' )
 var popup = L.popup();
 
 function onMapClick(e) {
   popup
-      .setLatLng(e.latlng)
-      .setContent("Du hast die Map hier geklickt " + e.latlng.toString())
-      .openOn(map);
-
+    .setLatLng(e.latlng)
+    .setContent(template)
+    .openOn(map);
 
   //Save Click Coordinates in variable;
   dLat = e.latlng.lat;
@@ -41,28 +57,48 @@ function onMapClick(e) {
 
 }
 
-function newPointOfInterestMap(){
+
+function newPoint(){
   let oPoint = {};
-    oPoint.name = document.getElementById("sName").value;
-    oPoint.description = document.getElementById("sDescription").value;
-    oPoint.category = document.getElementById("sCategory").value;
-    oPoint.latitude = dLat;
-    oPoint.longitude = dLng;
-    jsonPoint = JSON.stringify(oPoint);
-    //console.log(jsonPoint);
-    $.ajax({
-        type: 'POST',
-        data: { point: jsonPoint },
-        datatype: 'json',
-        url: 'http://localhost:3001/savePoint',
-        success: function(data) {
-            console.log('saved document');
-        }
-    });
+  oPoint.name = document.getElementById("sPName").value;
+  oPoint.description = document.getElementById("sPDescription").value;
+  oPoint.latitude = dLat;
+  oPoint.longitude = dLng;
+  jsonPoint = JSON.stringify(oPoint);
+  $.ajax({
+    type: 'POST',
+    data: { point: jsonPoint },
+    datatype: 'json',
+    url: 'http://localhost:3001/savePoint',
+    success: function (data) {
+      map.closePopup();
+    }
+  });
+  
+}
+
+function newPointOfInterestMap() {
+  let oPoint = {};
+  oPoint.name = document.getElementById("sName").value;
+  oPoint.description = document.getElementById("sDescription").value;
+  oPoint.category = document.getElementById("sCategory").value;
+  oPoint.latitude = dLat;
+  oPoint.longitude = dLng;
+  jsonPoint = JSON.stringify(oPoint);
+  //console.log(jsonPoint);
+  $.ajax({
+    type: 'POST',
+    data: { point: jsonPoint },
+    datatype: 'json',
+    url: 'http://localhost:3001/savePoint',
+    success: function (data) {
+      console.log('saved document');
+    }
+  });
 }
 
 async function onMapLoad(e) {
-  await getLocalPointsOfInterest();  
+  await getLocalPointsOfInterest();
 }
 
 function getLocalPointsOfInterest() {
@@ -71,19 +107,19 @@ function getLocalPointsOfInterest() {
   oBorder.dMaxLong = map.getBounds().getEast();
   oBorder.dMinLong = map.getBounds().getWest();
   oBorder.dMaxLat = map.getBounds().getNorth();
-  oBorder. dMinLat = map.getBounds().getSouth();
+  oBorder.dMinLat = map.getBounds().getSouth();
   $.ajax({
-     type: 'GET',
-      url: 'http://localhost:3001/getLocalPoints',
-      dataType: "json",
-      data: {border: oBorder},
-      success: function(data) {
-          console.log("success");
-          displayPoints(data);
-      },
-      error: function(err) {
-         console.log(err);
-      }
+    type: 'GET',
+    url: 'http://localhost:3001/getLocalPoints',
+    dataType: "json",
+    data: { border: oBorder },
+    success: function (data) {
+      console.log("success");
+      displayPoints(data);
+    },
+    error: function (err) {
+      console.log(err);
+    }
   });
 }
 
@@ -91,22 +127,23 @@ function getLocalPointsOfInterest() {
 
 function displayPoints(arrayPoints) {
   for (let i in arrayPoints) {
-      let mark = L.marker([
-          parseFloat(arrayPoints[i].latitude),
-          parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
-        );
-      mark.addTo(map);
-      console.log(arrayPoints[i]);
-  }}
+    let mark = L.marker([
+      parseFloat(arrayPoints[i].latitude),
+      parseFloat(arrayPoints[i].longitude)], { title: arrayPoints[i].name }
+    );
+    mark.addTo(map);
+    console.log(arrayPoints[i]);
+  }
+}
 
 function saveImage() {
-  
+
   $.ajax({
     type: 'POST',
     //data: {route: {name: 'test'}},
     //datatype: 'json',
     url: '/saveDocument',
-});
+  });
 
 }
 
