@@ -40,11 +40,13 @@ export function onInit() {
 
     L.easyButton('fa-times', function () {
         deleteFunction();
-    }, "Letzten Punkt löschen").addTo(map);
+    }, "Delete last point").addTo(map);
 
     L.easyButton('fa-star', function () {
         //;
-    }, "Neuer Point of Interest").addTo(map);
+    }, "New Point of Interest").addTo(map);
+
+
 
     map.setView([49.47748, 8.42216], 15);
 
@@ -237,3 +239,23 @@ function getRoutes() {
         console.log(error);
     });
 }
+ /** Nikola tried
+export function getLocationFromIP() {
+    axios.get('http://gd.geobytes.com/GetCityDetails',  {
+        // mode: 'no-cors',
+
+        /**headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        },
+        proxyHeaders: false,
+        credentials: false})
+        .then((response) => {
+            console.log(response);
+            return response.geobytescity;
+        }).catch((error) => {
+            console.log(error);
+            return null;
+    })
+
+} **/

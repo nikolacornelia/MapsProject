@@ -23,6 +23,7 @@ class MyReviews extends Component {
         this.state = {
             routes: mockData
         };
+        this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
     /**
@@ -36,7 +37,11 @@ class MyReviews extends Component {
      * Requests the data for my reviews.
      */
     getMyReviews = () => {
-        axios.get("http://localhost:3001/getMyReviews").then((response) => this.setState({routes: response.data}));
+        axios.get("http://localhost:3001/reviewedRoutes", {
+            params: {
+                user: this.user._id
+            }
+        }).then((response) => this.setState({routes: response.data}));
     };
 
 
@@ -45,6 +50,11 @@ class MyReviews extends Component {
      * @param i - i-th review to be deleted
      */
     handleDelete = (i) => {
+        axios.delete('http://localhost:3001/Rating', {
+            params: {
+                _id: i,
+            }
+        }).then(() => this.getMyReviews());
 
     };
 
@@ -78,7 +88,7 @@ class MyReviews extends Component {
         let route = this.state.routes[i];
 
         // todo: check if ok?
-        axios.post('http://lcoalhost:3001/review', {
+        axios.post('http://localhost:3001/review', {
             routeId: route._id,
             review: route.comments[0]
         }).then(this.getMyReviews);
@@ -102,8 +112,8 @@ class MyReviews extends Component {
                                         <Item.Image size='small' src={route.image}/>
 
                                         <Item.Content>
-                                            <Item.Header as='h4'> {route.name} </Item.Header>
-                                            <Item.Meta>{route.address}</Item.Meta>
+                                            <Item.Header as='h4'> {route.title} </Item.Header>
+                                            <Item.Meta>{route.location}</Item.Meta>
                                             <Item.Description>
                                                 <div>Distance: {route.distance} km</div>
                                                 <div>Difficulty: {route.difficulty}</div>
@@ -124,17 +134,17 @@ class MyReviews extends Component {
                                             <Comment.Content>
                                                 <Comment.Author as='b'>{route.comments[0].author}</Comment.Author>
                                                 <Comment.Metadata>
-                                                    <span>{route.comments[0].datetime}</span>
+                                                    <span>{route.comments[0].created}</span>
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
                                                         ? <TextArea style={{width: "100%"}}
-                                                            onChange={this.handleChangeComment}>{route.comments[0].text}</TextArea>
-                                                        : (route.comments[0].text)
+                                                                    onChange={this.handleChangeComment}>{route.comments[0].comment}</TextArea>
+                                                        : (route.comments[0].comment)
                                                     }
                                                 </Comment.Text>
                                                 <Comment.Actions>
-                                                    <Rating as='a' icon='star' defaultRating={route.comments[0].stars}
+                                                    <Rating as='a' icon='star' defaultRating={route.comments[0].rating}
                                                             maxRating={5} disabled={!route.edit}
                                                             onChange={this.handleChangeComment}
                                                     />
@@ -145,7 +155,7 @@ class MyReviews extends Component {
 
                                     {!route.edit ? <div>
                                         <Button floated='right' compact
-                                                onClick={() => this.handleDelete(i)}>
+                                                onClick={() => this.handleDelete(route.comments[0]._id)}>
                                             Delete
                                         </Button>
                                         <Button floated='right' primary compact

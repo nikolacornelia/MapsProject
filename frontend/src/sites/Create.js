@@ -72,7 +72,6 @@ class Create extends Component {
 
         // create a function that is called after image file is read
         let createRoute = (e) => {
-            console.log(oRoute.points);
             if (oRoute.points.length === 0) {
                 //todo: display error message instead of success?
                 alert('Please select points for your route in the map');
@@ -80,7 +79,6 @@ class Create extends Component {
             }
             let image = e && e.target.result; // sends the image as base64
             image.toString();
-            console.log(image);
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.name,
                 description: this.state.description,

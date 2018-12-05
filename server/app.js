@@ -30,6 +30,7 @@ let session = require('express-session');
 
 
 
+
 let schemaPoint = new mongoose.Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
 });
@@ -57,21 +58,13 @@ let schemaRoute = new mongoose.Schema({
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
 
-
-// Comment
-let schemaComment = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
-    created: { type: Date, default: Date.now },
-    comment: String
-})
-let Comment = mongoose.model("Comment", schemaComment);
-
 //Rating
 let schemaRating = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
     created: { type: Date, default: Date.now },
+    comment: String,
+    image: String,
     rating: Number,
 })
 let Rating = mongoose.model("Rating", schemaRating);
@@ -131,7 +124,7 @@ mongoose.connection.once('open', function () {
     console.log('connected');
 });
 
-app.post('/favoriseRoute', auth, function (req, res) {
+app.post('/favoriseRoute',function (req, res) {
     let oFavourite = {};
     console.log("FAVORISE ROUTE");
     console.log(req.body);
@@ -161,7 +154,7 @@ app.post('/favoriseRoute', auth, function (req, res) {
     }
 });
 
-app.post('/savePoint', auth, function (req, res) {
+app.post('/savePoint', function (req, res) {
     console.log(req.body.point);
     let aResult = req.body.point;
     aResult = JSON.parse(aResult);
@@ -176,7 +169,7 @@ app.post('/savePoint', auth, function (req, res) {
         });
 });
 
-app.delete('/Route',auth, function (req, res) {
+app.delete('/Route', function (req, res) {
     //todo delete dependencies
     Route.findOneAndDelete(req.query, function (err, data) {
         if (err)
@@ -187,7 +180,7 @@ app.delete('/Route',auth, function (req, res) {
     });
 });
 
-app.delete('/LikedRoute', auth, function (req, res) {
+app.delete('/LikedRoute', function (req, res) {
     console.log('inseide liked route');
     console.log(req.query._id);
     let query = {};
@@ -205,7 +198,7 @@ app.delete('/LikedRoute', auth, function (req, res) {
 });
 
 
-app.post('/saveRoute', auth, function (req, res, next) {
+app.post('/saveRoute', function (req, res, next) {
     let oRoute = req.body;
 
     oRoute.user = req.body.user;
@@ -252,43 +245,38 @@ app.post('/saveRoute', auth, function (req, res, next) {
         });
 });
 
-app.post('/saveRating', auth, function (req, res) {
-    //todo get real rating
+app.post('/saveRating', function (req, res) {
+    console.log("inSaveRating");
+    //todo get rating number
     //req.body.user = "5bf86b725d5d083aea9d6093";
     //req.body.route = "5c012bb83a4ece84eeb4038f";
     //req.body.comment = "Nicht zu empfehlen";
-    req.body.rating = 3;
+    //req.body.rating = 3;
+    console.log(req);
+    console.log(req.body);
+if (req.body.route== undefined) {
+    console.log("route is null");
+    return;
+}
 
-    var oComment = {
-        user: req.body.user,
-        route: req.body.route,
-        comment: req.body.comment
-    };
-    var oRating = {
-        user: req.body.user,
-        route: req.body.route,
-        rating: req.body.rating,
-    }
-
-    let oDataComment = new Comment(oComment);
-    oDataComment.save()
+    Rating.deleteMany({ user: req.body.user, route: req.body.route })
         .then(item => {
-            console.log('comment');
-
-            Rating.deleteMany({ user: req.body.user, route: req.body.route }, function (err) {
-                if (err) throw err;
-            });
-
-            let oDataRating = new Rating(oRating);
+            console.log('deleted items');
+            let oDataRating = new Rating(req.body);
             oDataRating.save()
                 .then(item => {
-                    console.log('rating saved to database');
-                })
-            res.send("items saved to database");
+                    console.log('comment');
+
+                    res.send(item);
+                }).catch(err => {
+                console.log('unable to save');
+                res.status(400).send("unable to save to database");
+            });
+
         }).catch(err => {
-            console.log('unable to save');
-            res.status(400).send("unable to save to database");
-        });
+        console.log('unable to delete');
+        res.status(400).send("unable to delete old comment in database");
+    });
 
 });
 
@@ -308,8 +296,8 @@ app.get('/getRatings', function (req, res) {
     } **/
 });
 
-app.get('/getComments', function (req, res) {
-    Comment.find({ route: req.query.route }, function (err, data) {
+app.get('/getRatings', function (req, res) {
+    Rating.find({ route: req.query.route }, function (err, data) {
         if (err)
             throw err;
         res.send(data);
@@ -463,7 +451,7 @@ app.get('/getLocalPoints', function (req, res) {
 
 });
 
-app.post('/saveDocument', auth, function (req, res) {
+app.post('/saveDocument', function (req, res) {
 
     let oObject = req.body.object;
     oObject = 'test.jpg';
@@ -694,11 +682,117 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
 )
     ;
 
-app.post('/Review', auth, function (req, res, next) {
+app.post('/Review', function (req, res, next) {
     let oReview = req.body;
     console.log(oReview);
     //oRoute.user = req.body.user;
 });
+
+
+app.get('/reviewedRoutes', function (req, res, next) {
+        console.log('getMyReviewedRoutes');
+        let routeQuery = {};
+        routeQuery.user = req.query.user;
+        console.log(routeQuery.user);
+        Rating.find(routeQuery).exec(function (err, data) {
+            if (err)
+                throw err;
+            console.log(data);
+            req.comment = data;
+            if (data.length == 0) {
+                res.send(data);
+            }
+            next();
+        })
+    },
+    function (req, res, next) {
+        let aCommentedRoutes = req.comment;
+        console.log("ACOmmentedROutes");
+        console.log(aCommentedRoutes);
+        let oRoutes = [];
+        //amount of finished queries;
+        let iFinishedQueries = 0;
+        for (let i in aCommentedRoutes) {
+            console.log(aCommentedRoutes[i].route);
+            Route.findOne({ _id: aCommentedRoutes[i].route }).lean().exec(function (err, data) {
+                if (err)
+                    throw err;
+                if (data != null) {
+                    data.comments = req.comment;
+                    oRoutes.push(data);
+                }
+                iFinishedQueries++;
+                if (iFinishedQueries === (aCommentedRoutes.length)) {
+                    console.log("OROUTES");
+                    console.log(oRoutes);
+                    req.oRoutes = oRoutes;
+                    next();
+                }
+            });
+        }
+        ;
+
+    }
+    ,
+    function (req, res, next) {
+        let aRoutes = req.oRoutes;
+        let oRoutes = [];
+        //amount of finished queries;
+        let iFinishedQueries = 0;
+        for (let i in aRoutes) {
+            Rating.aggregate([{$match: {route: aRoutes[i]._id}}
+                , {$group: {_id: null, rating: {$avg: '$rating'}}}
+            ]).then(function (response) {
+                let oneRoute = aRoutes[i];
+                console.log("oneRoute");
+                console.log(oneRoute);
+                // one route may not have a rating yet
+                if (response.length == 0) {
+                    oneRoute.avg_rating = undefined;
+                } else {
+                    let avgRating = response[0].rating;
+                    oneRoute.avg_rating = avgRating;
+                }
+                console.log(oRoutes);
+                oRoutes.push(oneRoute);
+                iFinishedQueries++;
+                if (iFinishedQueries === (aRoutes.length)) {
+                    console.log("finishedwure");
+                    console.log(oRoutes.length);
+                    req.favRoutes = oRoutes;
+                    next();
+                }
+            });
+        }
+    },
+    function (req, res) {
+        if (req.query.sortBy != undefined) {
+            let paramSort;
+            if (req.query.sortBy == 1) {
+                //Sort by name
+                paramSort = 'title';
+            } else if (req.query.sortBy == 2) {
+                //Sort by average rating
+                paramSort = 'avg_rating';
+            } else if (req.query.sortBy == 3) {
+                //Sort by date created
+                paramSort = 'created';
+            }
+            sortJson(req.favRoutes, paramSort);
+        }
+        console.log("reqFavROutes");
+        console.log(req.favRoutes);
+        if (req.favRoutes.length === 0) {
+            console.log("res send []");
+            res.send([]);
+        } else {
+            console.log("res send");
+            console.log(req.favRoutes);
+            res.send(req.favRoutes);
+        }
+    }
+)
+;
 
 app.listen(3001, function () {
     console.log("Working on port 3001");
@@ -714,3 +808,27 @@ savePhoto = function () {
 
     category.img.data = buffer;
 }
+
+getUser = function (query) {
+    User.findOne(
+        { _id: query.id}
+    ).then(function (user) {
+        console.log("USER");
+        console.log(user);
+        return user;
+    });
+}
+
+app.delete('/Rating', function (req, res) {
+    console.log('inseide delete rating');
+    console.log(req);
+    console.log(req.query._id);
+
+    Rating.findOneAndDelete({_id: req.query._id}, function (err, data) {
+        if (err)
+            throw err;
+        console.log(data);
+        res.send('deleted Rating for Route');
+        console.log('successfully deleted Fav for Route');
+    });
+});
