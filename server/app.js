@@ -534,7 +534,7 @@ app.get('/login', function (req, res) {
                     req.session.admin = true;
                     res.send(user);
                 } else {
-                    res.send();
+                    res.sendStatus(500);
                 }
             });
         }

@@ -45,7 +45,6 @@
     "sort-json-array": "^0.1.7",
     "buffer": "^5.2.1",
     "then-request": "^6.0.0"
-
   },
   "devDependencies": {
     "eslint": "^5.9.0",
