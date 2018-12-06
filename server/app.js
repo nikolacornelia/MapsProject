@@ -53,7 +53,9 @@ let schemaRoute = new mongoose.Schema({
     location: String,
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    image: String//image: Buffer
+    features: [String],
+    image: String
+    //image: Buffer
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
 let Route = mongoose.model("Route", schemaRoute);
@@ -200,7 +202,9 @@ app.delete('/LikedRoute', function (req, res) {
 
 app.post('/saveRoute', function (req, res, next) {
     let oRoute = req.body;
-
+    req.body.image = null;
+console.log("REQ BODY");
+console.log(req.body);
     oRoute.user = req.body.user;
 
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
@@ -233,6 +237,8 @@ app.post('/saveRoute', function (req, res, next) {
 },
 
     function (req, res) {
+    console.log("ROUTE to SAVE");
+    console.log(req.oRoute);
     let oData = new Route(req.oRoute);
     oData.save()
         .then(item => {
@@ -694,10 +700,13 @@ app.get('/reviewedRoutes', function (req, res, next) {
         let routeQuery = {};
         routeQuery.user = req.query.user;
         console.log(routeQuery.user);
-        Rating.find(routeQuery).exec(function (err, data) {
+        Rating.find(routeQuery).populate('user').exec(function (err, data) {
             if (err)
                 throw err;
-            console.log(data);
+            console.log(data.user);
+            data.forEach(function(data) {
+                data.user.password = null;
+            });
             req.comment = data;
             if (data.length == 0) {
                 res.send(data);
@@ -809,15 +818,7 @@ savePhoto = function () {
     category.img.data = buffer;
 }
 
-getUser = function (query) {
-    User.findOne(
-        { _id: query.id}
-    ).then(function (user) {
-        console.log("USER");
-        console.log(user);
-        return user;
-    });
-}
+
 
 app.delete('/Rating', function (req, res) {
     console.log('inseide delete rating');

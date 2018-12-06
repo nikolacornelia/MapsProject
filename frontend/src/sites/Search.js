@@ -120,6 +120,7 @@ class Search extends Component {
                 searched: true,
                 routes: response.data
             });
+
         });
 
     };

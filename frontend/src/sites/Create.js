@@ -81,14 +81,14 @@ class Create extends Component {
                 title: this.state.name,
                 description: this.state.description,
                 difficulty: this.state.difficulty,
+                features: this.state.features,
                 points: oRoute.points,
                 highlights: oRoute.highlights,
                 images: image,
                 distance: oRoute.distance,
                 //sobald session im backend existiert, kommt die Zeile weg
                 user: this.user._id,
-                //Wofür files?
-                files: this.state.files
+               //todo correct? files: this.state.files
             }).then((response) => {
                 console.log(this.user._id);
                 this.setState({routeCreated: true});
