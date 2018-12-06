@@ -310,13 +310,14 @@ app.get('/getRatings', function (req, res) {
 });
 
 app.get('/getRoutes', function (req, res, next) {
-    console.log(req.query.sortBy);
+    console.log(req.query.routeLength);
     let paramText = req.query.search;
     let paramDifficulty = req.query.difficulty;
+    let paramDistance = Number(req.query.routeLength);
     let routeQuery;
 
-    if (paramText == '' && paramDifficulty == undefined) {
-        routeQuery = {};
+    if (paramText == '' && paramDifficulty == undefined && req.query.features == undefined) {
+        routeQuery = {distance: {$lt: paramDistance}};
     }
     else {
         routeQuery = { $and: [] };
@@ -345,10 +346,19 @@ app.get('/getRoutes', function (req, res, next) {
                 }
                 routeQuery.$and.push(difficultyParam);
             }
-            //todo distance as parameter
+
         }
+
+        if(req.query.features != undefined) {
+            req.query.features.forEach(function(element) {
+                routeQuery.$and.push({ features: element});
+            });
+        }
+
+        routeQuery.$and.push({distance: {$lt: req.query.distance}});
     }
     ;
+    console.log(routeQuery);
     Route.find(routeQuery).lean().exec(function (err, data) {
         if (err)
             throw err;
