@@ -130,7 +130,7 @@ app.post('/favoriseRoute',function (req, res) {
     let oFavourite = {};
     console.log("FAVORISE ROUTE");
     console.log(req.body);
-    oFavourite.route = req.body.id; // todo: use req.session.user instead
+    oFavourite.route = req.body.route; // todo: use req.session.user instead
     //oFavourite.route = "5bfd7adf3ef5fe62ebc4d9e3";
     oFavourite.user = req.body.user;
     console.log("ISFAVORISED");
@@ -565,6 +565,8 @@ app.get('/getMyRoutes', function (req, res, next) {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
                 }
+                if(oneRoute.distance  > 0)
+                    oneRoute.distance = Math.round(oneRoute.distance * 100) / 100;
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
                 if (iFinishedQueries === (aRoutes.length)) {
@@ -710,6 +712,9 @@ app.get('/reviewedRoutes', function (req, res, next) {
             });
             req.comment = data;
             if (data.length == 0) {
+                console.log("DATA1");
+                console.log(data);
+
                 res.send(data);
             }
             next();
@@ -731,6 +736,8 @@ app.get('/reviewedRoutes', function (req, res, next) {
                     data.comments = req.comment;
                     oRoutes.push(data);
                 }
+                if(data.distance > 0)
+                    data.distance = Math.round(data.distance * 100) / 100;
                 iFinishedQueries++;
                 if (iFinishedQueries === (aCommentedRoutes.length)) {
                     console.log("OROUTES");

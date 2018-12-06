@@ -165,12 +165,7 @@ class Search extends Component {
     onChangeSort = (key) => this.setState({sortBy: key}, this.onSearch);
 
     onSubmitReview = () => {
-console.log("onsubmiteeview");
-console.log(this.state.showDetail);
         let _submitReview = (e) => {
-            console.log("inside submit review");
-            console.log(this.state.rating);
-            console.log(this.state.comments)
             let image = e && e.target.result; // sends the image as base64
             axios.post('http://localhost:3001/saveRating', {
                 route: this.state.showDetail,
@@ -231,17 +226,23 @@ console.log(this.state.showDetail);
 
 
     toggleFavorite = () => {
-        let isFavorised = !this.state.isFavorised;
+        console.log("beginning");
+        console.log(isFavorised);
+        //let isFavorised = !this.state.isFavorised;
+        let isFavorised = !this.state.isFavorised; //state is favorised is new state
 
         // send request to toggle favorite
         axios.post('http://localhost:3001/favoriseRoute', {
-            id: this.state.showDetail,  // currently selected routeid
+            route: this.state.showDetail,  // currently selected routeid
             isFavorised: isFavorised,
             user: this.user._id
         }).then((response) => {
             // toggle status (or is the new status in response.data?)
             this.setState({isFavorised: isFavorised});
+            //todo update this.state.routes change is Favorised for Route which status got changed -> heart is changing directly
+
         });
+
     };
 
 
