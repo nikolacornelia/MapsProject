@@ -155,8 +155,6 @@ app.post('/favoriseRoute',function (req, res) {
 });
 
 app.post('/savePoint', function (req, res) {
-    console.log(req.body);
-    console.log(typeof req.body);
     console.log(req.body.data.point);
     let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
@@ -291,20 +289,17 @@ app.get('/getData', function (req, res) {
     });
 });
 
-app.get('/getRatings', function (req, res) {
-    /** var paramLength = req.body.length;
-     if (paramLength!=''){
-        param.length = paramLength;
-    } **/
-});
 
 app.get('/getRatings', function (req, res) {
-    Rating.find({ route: req.query.route }, function (err, data) {
+    Rating.find({ route: req.query.route }).populate('user').exec(function (err, data) {
         if (err)
             throw err;
+        // don't send password to FrontEnd
+        data.forEach(function(element) {
+            element.user.password = null;
+        });
         res.send(data);
     });
-
 });
 
 app.get('/getRoutes', function (req, res, next) {

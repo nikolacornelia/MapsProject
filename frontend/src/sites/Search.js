@@ -139,12 +139,13 @@ class Search extends Component {
 
         // request comments for selected route
         if(id !== -1) {
-            axios.get('http://localhost:3001/getComments', {
+            axios.get('http://localhost:3001/getRatings', {
                 params: {
                     route: id
                 }
             }).then((response) => {
                 // returns object of all comments created
+                console.log(response.data);
                 this.setState({comments: response.data});
             });
         }
@@ -448,13 +449,13 @@ class Search extends Component {
                                             : this.state.comments.map((comment) => <Comment>
                                                 <Comment.Avatar src='./static/media/avatar-1.png'/>
                                                 <Comment.Content>
-                                                    <Comment.Author as='b'>{comment.author}</Comment.Author>
+                                                    <Comment.Author as='b'>{comment.user.username}</Comment.Author>
                                                     <Comment.Metadata>
-                                                        <span>{comment.datetime}</span>
+                                                        <span>{comment.created}</span>
                                                     </Comment.Metadata>
-                                                    <Comment.Text><p>{comment.text}</p></Comment.Text>
+                                                    <Comment.Text><p>{comment.comment}</p></Comment.Text>
                                                     <Comment.Actions>
-                                                        <Rating as='a' icon='star' defaultRating={comment.stars}
+                                                        <Rating as='a' icon='star' defaultRating={comment.rating}
                                                                 maxRating={5} disabled/>
                                                     </Comment.Actions>
                                                 </Comment.Content>
