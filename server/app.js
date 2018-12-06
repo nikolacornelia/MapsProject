@@ -207,6 +207,7 @@ console.log("REQ BODY");
 console.log(req.body);
     oRoute.user = req.body.user;
 
+
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
         url: url,
@@ -216,6 +217,7 @@ console.log(req.body);
         res.body = JSON.parse(res.body);
         console.log(res.body.address);
         console.log("Stadt");
+        try {
         if (res.body.address.city != undefined) {
             console.log(res.body.address.city);
             oRoute.location = res.body.address.city;
@@ -223,6 +225,9 @@ console.log(req.body);
         else {
             console.log(res.body.address.town);
             oRoute.location = res.body.address.town;
+        }}
+        catch (e) {
+            console.log("access location failed");
         }
 
         //todo save image as Buffer?
@@ -313,11 +318,12 @@ app.get('/getRoutes', function (req, res, next) {
     console.log(req.query.routeLength);
     let paramText = req.query.search;
     let paramDifficulty = req.query.difficulty;
+    console.log(req.query.features);
     let paramDistance = Number(req.query.routeLength);
     let routeQuery;
 
-    if (paramText == '' && paramDifficulty == undefined && req.query.features == undefined) {
-        routeQuery = {distance: {$lt: paramDistance}};
+    if (paramText === '' && paramDifficulty === undefined && req.query.features === undefined) {
+        //routeQuery = {distance: {$lt: paramDistance}};
     }
     else {
         routeQuery = { $and: [] };
@@ -331,8 +337,7 @@ app.get('/getRoutes', function (req, res, next) {
                 }, { location: { $regex: paramText, $options: "i" } }]
             });
         }
-
-        //difficulty kann mehrer Filter enthalten --> Array
+        //difficulty kann mehrere Filter enthalten => Array
         console.log(paramDifficulty);
         if (paramDifficulty != undefined) {
             if (paramDifficulty.length == 1) {
@@ -344,31 +349,32 @@ app.get('/getRoutes', function (req, res, next) {
                     console.log(paramDifficulty[i]);
                     difficultyParam.$or.push({ difficulty: paramDifficulty[i] });
                 }
+                console.log(difficultyParam);
                 routeQuery.$and.push(difficultyParam);
             }
-
         }
 
         if(req.query.features != undefined) {
-            req.query.features.forEach(function(element) {
-                routeQuery.$and.push({ features: element});
-            });
+                routeQuery.$and.push({ features: { $all : req.query.features }});
         }
-
-        routeQuery.$and.push({distance: {$lt: req.query.distance}});
-    }
-    ;
+        //routeQuery.$and.push({distance: {$lt: req.query.distance}});
+    };
+    console.log("ROUTEQUERY");
     console.log(routeQuery);
-    Route.find(routeQuery).lean().exec(function (err, data) {
-        if (err)
-            throw err;
+    Route.find(routeQuery).lean().then(function (data) {
         //no route was found for query
+        console.log("findRoute");
+        console.log(data.length);
         if (data.length === 0) {
             res.send(data);
         }
         req.routes = data;
         next();
-    });
+    }).catch(function (error) {
+        console.log("Error getting user: ");
+        console.log(error);
+        next();
+    });;
 }
     ,
 
