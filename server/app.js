@@ -259,6 +259,7 @@ app.post('/saveRating', function (req, res) {
     //req.body.comment = "Nicht zu empfehlen";
     //req.body.rating = 3;
     console.log(req);
+    console.log("REYBODY");
     console.log(req.body);
 if (req.body.route== undefined) {
     console.log("route is null");

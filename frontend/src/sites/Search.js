@@ -165,11 +165,15 @@ class Search extends Component {
     onChangeSort = (key) => this.setState({sortBy: key}, this.onSearch);
 
     onSubmitReview = () => {
-
+console.log("onsubmiteeview");
+console.log(this.state.showDetail);
         let _submitReview = (e) => {
+            console.log("inside submit review");
+            console.log(this.state.rating);
+            console.log(this.state.comments)
             let image = e && e.target.result; // sends the image as base64
             axios.post('http://localhost:3001/saveRating', {
-                routeId: this.state.showDetail,
+                route: this.state.showDetail,
                 rating: this.state.rating,
                 // todo: never pass the userid as an identification in the backend
                 //       because it can easily be manipulated. Use backend session as reference for user id
@@ -179,6 +183,16 @@ class Search extends Component {
             }).then(() => {
                 // close the dialog & refresh
                 this.toggleReviewDialog();
+                axios.get('http://localhost:3001/getRatings', {
+                    params: {
+                        route: this.state.showDetail
+                    }
+                }).then((response) => {
+                    // returns object of all comments created
+                    this.setState({comments: response.data});
+
+                });
+                // todo nstelle von this.onSearch nur DetailRoute updaten? --> refresh DetailRoute
                 this.onSearch();
             });
         };
@@ -419,11 +433,11 @@ class Search extends Component {
 
                                                                     <Form.Field><Rating icon='star' size='huge'
                                                                                         name='rating' clearable
-                                                                                        onRate={this.onChangeReview}
+                                                                                        onRate={this.onChangeReviewRating}
                                                                                         maxRating={5}/></Form.Field>
                                                                     <Form.TextArea autoHeight
                                                                                    name='commentText'
-                                                                                   onChange={this.onChangeReview}
+                                                                                   onChange={this.onChangeReviewText}
                                                                                    placeholder='Enter your review'/>
                                                                     <Form.Input type='file' fluid label='Image'
                                                                                 placeholder='Upload image file'
@@ -439,7 +453,7 @@ class Search extends Component {
                                             </Modal.Content>
                                             <Modal.Actions>
                                                 <Button onClick={this.toggleReviewDialog}>Cancel</Button>
-                                                <Button primary onClick={this.onSubmitReview(this.state.showDetail)}>Submit</Button>
+                                                <Button primary onClick={this.onSubmitReview}>Submit</Button>
                                             </Modal.Actions>
                                         </Modal>
 
