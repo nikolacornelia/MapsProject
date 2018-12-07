@@ -232,7 +232,6 @@ function displayPoints(arrayPoints) {
         );
         mark.bindPopup("Test");//Hier würden wir gerne den Namen darstellen
         cities.addLayer(mark);
-        console.log(arrayPoints[i]);
     }
     cities.addTo(map);
 
@@ -252,18 +251,36 @@ function displayPoints(arrayPoints) {
 //die funktion funktioniert noch nicht
 function getDistance(origin, destination) {
     // return distance in meters
-    var lon1 = toRadian(origin.lng),
-        lat1 = toRadian(origin.lat),
-        lon2 = toRadian(destination.lng),
-        lat2 = toRadian(destination.lat);
-
+    if (origin.lat == null){
+        var lon1 = toRadian(origin[0]),
+        lat1 = toRadian(origin[1]);
+        if (destination.lat == null){
+            var lon2 = toRadian(destination[0]),
+                lat2 = toRadian(destination[1]);
+        }else{
+            var lon2 = toRadian(destination.lng),
+                lat2 = toRadian(destination.lat);
+        }
+    }else{
+        var lon1 = toRadian(origin.lat),
+            lat1 = toRadian(origin.lat);
+            if (destination.lat == null){
+                var lon2 = toRadian(destination[0]),
+                    lat2 = toRadian(destination[1]);
+            }else{
+                var lon2 = toRadian(destination.lng),
+                    lat2 = toRadian(destination.lat);
+            }
+    }
     var deltaLat = lat2 - lat1;
     var deltaLon = lon2 - lon1;
 
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
-    return (Math.round(c * EARTH_RADIUS * 10) / 10);
+    var distance = Math.round((c * EARTH_RADIUS)/10000 * 10) / 10;
+    distance = Math.round(distance*10)/10;
+    return distance;
     
 }
 function toRadian(degree) {

@@ -4,7 +4,7 @@ import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
     Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
 } from 'semantic-ui-react'
-import * as CreateMap from './maps/createRoute';
+import * as CreateMap from './maps/CreateRoute';
 import {mockFeatures} from "../mockData";
 
 class Create extends Component {

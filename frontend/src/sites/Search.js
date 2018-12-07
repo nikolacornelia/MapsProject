@@ -31,7 +31,7 @@ import {Slider} from 'react-semantic-ui-range';
 import {mockData, mockFeatures} from '../mockData';
 import axios from "axios";
 import validator from 'validator';
-import * as ShowRoute from './maps/showRoute';
+import * as ShowRoute from './maps/ShowRoute';
 
 
 class Search extends Component {
