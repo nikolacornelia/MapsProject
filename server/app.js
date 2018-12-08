@@ -455,14 +455,7 @@ app.get('/getRoutes', function (req, res, next) {
 
 
 app.get('/getLocalPoints', function (req, res) {
-    let oBorder = JSON.parse(req.query.border);
-
-    let dMinLat = Number(oBorder.dMinLat);
-    let dMaxLat = Number(oBorder.dMaxLat);
-    let dMinLong = Number(oBorder.dMinLong);
-    let dMaxLong = Number(oBorder.dMaxLong);
-
-    Point.find({ latitude: { $gt: dMinLat, $lt: dMaxLat } }, function (err, data) {
+    Point.find({}, function (err, data) {
         if (err) {
             throw err;
         }

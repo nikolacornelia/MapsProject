@@ -120,7 +120,7 @@ class Search extends Component {
                 searched: true,
                 routes: response.data
             });
-
+            ShowRoute.displayRoutes(response.data);
         });
 
     };

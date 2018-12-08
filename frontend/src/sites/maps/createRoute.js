@@ -88,7 +88,7 @@ export function onInit() {
 
     stateChangingButton.addTo(map);
 
-    map.setView([49.47748, 8.42216], 15);
+    //map.setView([49.47748, 8.42216], 15);
 
     map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
         .on('locationfound', function (e) {
@@ -204,19 +204,12 @@ function deleteFunction() {
 }
 
 async function onMapLoad(e) {
-    await getLocalPointsOfInterest();
+    await getPointsOfInterest();
 }
 
-function getLocalPointsOfInterest() {
+function getPointsOfInterest() {
     //only get points that are in the bounds of the map
-    var oBorder = {};
-    oBorder.dMaxLong = map.getBounds().getEast();
-    oBorder.dMinLong = map.getBounds().getWest();
-    oBorder.dMaxLat = map.getBounds().getNorth();
-    oBorder.dMinLat = map.getBounds().getSouth();
-    axios.get('http://localhost:3001/getLocalPoints', {
-        params: {border: oBorder}
-    }).then(function (response) {
+    axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
         console.log("success");
         displayPoints(response.data);
     }).catch(function (err) {
