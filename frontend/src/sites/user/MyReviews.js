@@ -109,7 +109,7 @@ class MyReviews extends Component {
                             <Grid.Column>
                                 <Item.Group>
                                     <Item>
-                                        <Item.Image size='small' src={route.image}/>
+                                        <Item.Image size='small' src={route.image.imageData}/>
 
                                         <Item.Content>
                                             <Item.Header as='h4'> {route.title} </Item.Header>

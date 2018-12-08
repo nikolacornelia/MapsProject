@@ -74,6 +74,8 @@ class Create extends Component {
                 alert('Please select points for your route in the map');
                 return;
             }
+            console.log("EEE");
+            console.log(e);
             let image = e && e.target.result; // sends the image as base64
             //image.toString();
 
@@ -106,6 +108,7 @@ class Create extends Component {
             let fileReader = new FileReader();
             fileReader.onload = _createRoute;
             fileReader.readAsDataURL(this.state.files[0]);
+
         } else {
             _createRoute();
         }

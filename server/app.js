@@ -27,9 +27,12 @@ let user = "5bf86b725d5d083aea9d6090";
 //let Buffer = require('buffer/').Buffer;
 var cors = require('cors');
 let session = require('express-session');
+let Binary = require('mongodb').Binary;
 
 
-
+let schemaImage = new mongoose.Schema({
+    created: {type: Date, default: Date.now}, imageData: String, imageType: String});
+let Image = mongoose.model('Image', schemaImage);
 
 let schemaPoint = new mongoose.Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
@@ -54,7 +57,7 @@ let schemaRoute = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     features: [String],
-    image: String
+    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' }
     //image: Buffer
 });
 //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
@@ -66,7 +69,7 @@ let schemaRating = new mongoose.Schema({
     route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
     created: { type: Date, default: Date.now },
     comment: String,
-    image: String,
+    image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     rating: Number,
 })
 let Rating = mongoose.model("Rating", schemaRating);
@@ -222,22 +225,41 @@ console.log(req.body);
             console.log(res.body.address.city);
             oRoute.location = res.body.address.city;
         }
-        else {
+        else if (res.body.address.town != undefined) {
             console.log(res.body.address.town);
             oRoute.location = res.body.address.town;
+        }
+        else if (res.body.address.village != undefined)
+        {
+            console.log(res.body.address.village);
+            oRoute.location = res.body.address.village;
         }}
         catch (e) {
             console.log("access location failed");
         }
 
+        let oImage = new Image();
+        oImage.imageData = req.body.images;
+        oImage.save()
+            .then(item => {
+                console.log('image saved to database');
+                oRoute.image = item._id;
+                req.oRoute = oRoute;
+                next();
+
+            })
+
+
         //todo save image as Buffer?
         //oRoute.image = new Buffer(req.body.images.split(",")[1],"base64");
-        oRoute.image = req.body.images;
+       // oRoute.image = req.body.images;
+
+
         //oRoute.image = new Buffer(req.body.images, 'binary').toString('base64');
 
         //oRoute.image = new Buffer(req.body.images);
-        req.oRoute = oRoute;
-        next();
+        //req.oRoute = oRoute;
+        //next();
     });
 },
 
@@ -248,6 +270,7 @@ console.log(req.body);
     oData.save()
         .then(item => {
             console.log('item saved to database');
+
             res.send("item saved to database");
         })
         .catch(err => {
@@ -389,7 +412,7 @@ app.get('/getRoutes', function (req, res, next) {
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
                 if(oneRoute.image != undefined)
-                    oneRoute.image.toString('base64');
+                    // todo oneRoute.image.toString('base64');
                 // one route may not have a rating yet
                 if (response.length == 0) {
                     oneRoute.avg_rating = undefined;
@@ -418,10 +441,7 @@ app.get('/getRoutes', function (req, res, next) {
                 } else {
                     oneFav.isFavorised = true;
                 }
-                //oneFav.image = new Buffer(oneFav.image).toString('base64');
-                if (oneFav.image != undefined) {
-                //oneFav.image = new Buffer(oneFav.image, 'base64').toString('binary');
-                }
+
                 oRoutes.push(oneFav);
                 iFinishedQueries++;
                 if (iFinishedQueries === (req.oRoutes.length)) {
@@ -544,6 +564,19 @@ app.get('/login', function (req, res) {
         }
     });
 });
+
+app.get('/Image', function (req, res, next) {
+    console.log('getMyRoutes');
+    let routeQuery = {};
+    //routeQuery.user = "5bf86b725d5d083aea9d6090";
+    routeQuery.user = req.query.user;
+    Image.findOne({_id: req.query.id}).lean().exec(function (err, data) {
+        if (err)
+            throw err;
+        res.send(data.imageData);
+    })
+});
+
 
 app.get('/getMyRoutes', function (req, res, next) {
     console.log('getMyRoutes');

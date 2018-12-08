@@ -334,7 +334,7 @@ class Search extends Component {
                                     {this.state.searched && this.state.routes.map((route) =>
                                         <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
                                             <Item.Image size='small' rounded
-                                                        src={route.image || '/static/media/route-noimage.png'}/>
+                                                        src={'http://localhost:3001/Image?id=' + route.image || '/static/media/route-noimage.png'}/>
                                             <Item.Content>
                                                 <Item.Header as='h4'> {route.title} </Item.Header>
                                                 <Item.Meta>{route.address}</Item.Meta>
@@ -379,7 +379,9 @@ class Search extends Component {
                                 <Segment.Group className='basic'>
                                     <Segment basic>
                                         <Image centered fluid rounded
-                                               src={detailRoute.image || '/static/media/route-noimage.png'}/>
+                                               //src={detailRoute.image.imageData || '/static/media/route-noimage.png'}
+                                                src = {'http://localhost:3001/Image?id=' + detailRoute.image || '/static/media/route-noimage.png'}
+                                        />
                                     </Segment>
 
                                     <Segment.Group className='basic' horizontal textAlign='center'>

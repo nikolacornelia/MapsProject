@@ -143,7 +143,7 @@ app.post('/saveDocument', function (req, res) {
 
 app.get('/getDocument', function (req, res) {
     //important: there must be only one file with this filename, otherwise no photo gets displayed
-    let filename = 'test.jpg';
+    let filename = req.query.id;
     gfs.exist({ filename: filename }, (err, file) => {
         if (err || !file) {
             res.status(404).send('File not Found');
@@ -241,3 +241,9 @@ app.get('/', function (req, res) {
 app.listen(3001, function () {
     console.log("Working on port 3001");
 });
+
+/** app.post('/Image', function (req, res) {
+    let img = req.body.image;
+   let newImage =
+
+}); **/
