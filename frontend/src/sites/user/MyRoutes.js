@@ -154,7 +154,8 @@ class MyRoutes extends Component {
                 <Item.Group divided link>
                     {this.state.routes.map((result) =>
                         <Item>
-                            <Item.Image size='small' src={result.image.imageData} />
+                            <Item.Image size='small'
+                                        src={result.image ? 'http://localhost:3001/Image?id=' + result.image : '/static/media/route-noimage.png'} />
 
 
                             <Item.Content>
