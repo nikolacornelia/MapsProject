@@ -146,7 +146,9 @@ function newPoint(){
     }).catch(function (err) {
         console.log(err);
     });
-    L.marker([dLatH, dLngH]).addTo(map);
+    L.marker([dLatH, dLngH]).bindPopup(oPoint.name+"</br>"+oPoint.description).on('mouseover', function(){
+        this.openPopup();
+    }).addTo(map);
     connectHighlight([dLatH, dLngH]);
     bHighlight = false;
     map.closePopup();
@@ -223,7 +225,7 @@ function displayPoints(arrayPoints) {
             parseFloat(arrayPoints[i].latitude),
             parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
-        mark.bindPopup("Test");//Hier würden wir gerne den Namen darstellen
+        mark.bindPopup(arrayPoints[i].name +"</br>"+arrayPoints[i].description);
         cities.addLayer(mark);
     }
     cities.addTo(map);

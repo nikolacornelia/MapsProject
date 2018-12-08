@@ -66,6 +66,7 @@ function getPointsOfInterest() {
     axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
         console.log("success");
         displayPoints(response.data);
+        console.log(response.data);
     }).catch(function (err) {
         console.log(err);
     });
@@ -78,7 +79,7 @@ function displayPoints(arrayPoints) {
             parseFloat(arrayPoints[i].latitude),
             parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
-        mark.bindPopup("Test");//Hier würden wir gerne den Namen darstellen
+        mark.bindPopup(arrayPoints[i].name +"</br>"+arrayPoints[i].description);//Hier würden wir gerne den Namen darstellen
         cities.addLayer(mark);
     }
     cities.addTo(map);
