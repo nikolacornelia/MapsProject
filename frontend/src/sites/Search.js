@@ -31,7 +31,7 @@ import {Slider} from 'react-semantic-ui-range';
 import {mockData, mockFeatures} from '../mockData';
 import axios from "axios";
 import validator from 'validator';
-import * as ShowRoute from './maps/ShowRoute';
+import * as ShowRoute from './maps/showRoute';
 
 
 class Search extends Component {
@@ -81,9 +81,9 @@ class Search extends Component {
             params: {
                 search: this.state.searchText,
                 difficulty: this.state.difficulty,  // array
-                routeLength: this.state.routeLength,
+                distance: this.state.routeLength,
                 features: this.state.features,      // array
-                sortBy: this.state.sortBy
+                sortBy: this.state.sortBy,
             }
         }).then((response) => {
 
