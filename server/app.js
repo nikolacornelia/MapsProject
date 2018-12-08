@@ -571,6 +571,7 @@ app.get('/login', function (req, res) {
     ).then(function (user) {
         if (!user) {
             console.log("User nicht vorhanden");
+            res.sendStatus(500);
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
@@ -591,9 +592,18 @@ app.get('/Image', function (req, res, next) {
     //routeQuery.user = "5bf86b725d5d083aea9d6090";
     routeQuery.user = req.query.user;
     Image.findOne({_id: req.query.id}).lean().exec(function (err, data) {
-        if (err)
-            throw err;
-        res.send(data.imageData);
+        if (err) {
+            res.sendStatus(404);
+        }else {
+            let img = Buffer.from(data.imageData.split(',')[1], 'base64');
+            res.writeHead(200, {
+                'Content-Type': 'image/jpg',
+                'Content-Length': img.length,
+                'Cache-Control': 'public, max-age=2592000',
+                'Expires': new Date(Date.now() + 2592000000).toUTCString()
+            });
+            res.end(img);
+        }
     })
 });
 

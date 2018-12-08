@@ -334,7 +334,7 @@ class Search extends Component {
                                     {this.state.searched && this.state.routes.map((route) =>
                                         <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
                                             <Item.Image size='small' rounded
-                                                        src={'http://localhost:3001/Image?id=' + route.image || '/static/media/route-noimage.png'}/>
+                                                        src={route.image ? 'http://localhost:3001/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
                                             <Item.Content>
                                                 <Item.Header as='h4'> {route.title} </Item.Header>
                                                 <Item.Meta>{route.address}</Item.Meta>
