@@ -253,18 +253,18 @@ function getDistance(origin, destination) {
             var lon2 = toRadian(destination[0]),
                 lat2 = toRadian(destination[1]);
         }else{
-            var lon2 = toRadian(destination.lng),
-                lat2 = toRadian(destination.lat);
+            var lon2 = toRadian(destination.lat),
+                lat2 = toRadian(destination.lng);
         }
     }else{
         var lon1 = toRadian(origin.lat),
-            lat1 = toRadian(origin.lat);
+            lat1 = toRadian(origin.lng);
             if (destination.lat == null){
                 var lon2 = toRadian(destination[0]),
                     lat2 = toRadian(destination[1]);
             }else{
-                var lon2 = toRadian(destination.lng),
-                    lat2 = toRadian(destination.lat);
+                var lon2 = toRadian(destination.lat),
+                    lat2 = toRadian(destination.lng);
             }
     }
     var deltaLat = lat2 - lat1;
@@ -273,7 +273,7 @@ function getDistance(origin, destination) {
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
-    var distance = Math.round((c * EARTH_RADIUS)/10000 * 10) / 10;
+    var distance = (c * EARTH_RADIUS) ;
     distance = Math.round(distance*10)/10;
     return distance;
     
