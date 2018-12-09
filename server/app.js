@@ -289,7 +289,7 @@ app.post('/saveRating', auth, function (req, res, next) {
         return;
     }
     if (req.body.image != undefined) {
-        let oImage = new Image();
+        let oImage = new Schema.Image();
         oImage.imageData = req.body.image;
         oImage.save()
             .then(item => {
@@ -307,7 +307,7 @@ app.post('/saveRating', auth, function (req, res, next) {
 
 }, function (req, res) {
 
-    Rating.deleteMany({user: req.body.user, route: req.body.route})
+    Schema.Rating.deleteMany({user: req.body.user, route: req.body.route})
         .then(item => {
             console.log('deleted items');
             let oDataRating = new Schema.Rating(req.body);
@@ -598,6 +598,7 @@ app.get('/Image', function (req, res, next) {
     let routeQuery = {};
     routeQuery.user = req.query.user;
     Schema.Image.findOne({_id: req.query.id}).lean().exec(function (err, data) {
+        console.log(data);
         if (err) {
             res.sendStatus(404).send("error while finding image");
         } else {

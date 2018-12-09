@@ -134,6 +134,7 @@ class Search extends Component {
 
     onSubmitReview = () => {
         let _submitReview = (e) => {
+            console.log("submitReview");
             let image = e && e.target.result; // sends the image as base64
             axios.post('http://localhost:3001/saveRating', {
                 route: this.state.showDetail,
