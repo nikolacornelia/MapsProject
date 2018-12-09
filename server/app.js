@@ -22,7 +22,6 @@ let async = require('async');
 let request = require('request');
 let thenquest = require('then-request');
 let sortJson = require('sort-json-array');
-let user = "5bf86b725d5d083aea9d6090";
 //let Buffer = require('buffer/').Buffer;
 var cors = require('cors');
 let session = require('express-session');
@@ -88,13 +87,25 @@ app.use(bodyParser.json({limit: '50mb'}));
 //app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 app.use(methodOverride());
-app.use(cors());
 
 app.use('/', express.static(`${__dirname}/public/html`));
 
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    // allow cors for dev/testing purposes
+    res.header("Access-Control-Allow-Origin", req.get("origin"));
+    res.header("Access-Control-Allow-Credentials", true);
+    let headers = [
+        "authorization", "withcredentials", "x-requested-with", "x-forwarded-for", "x-real-ip", "x-customheader",
+        "user-agent", "keep-alive", "host", "accept", "connection", "upgrade", "content-type", "dnt", "if-modified-since", "cache-control"
+    ];
+    res.header("Access-Control-Allow-Headers", headers.join(','));
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Max-Age", 0);
+
+    // browser caches the request (e.g. getRoutes) if these headers aren't set
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
     next();
 });
 
@@ -105,10 +116,11 @@ app.use(session({
 }));
 
 var auth = function (req, res, next) {
-    if (req.session)
+    if (req.session && req.session.userid) {
         return next();
-    else
+    } else {
         return res.sendStatus(401);
+    }
 };
 //connect for image upload (Grid creation)
 let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
@@ -130,17 +142,17 @@ mongoose.connection.once('open', function () {
     console.log('connected');
 });
 
-app.post('/favoriseRoute', function (req, res) {
+app.post('/favoriseRoute', auth, function (req, res) {
     let oFavourite = {};
-    console.log(req.body);
-    oFavourite.route = req.body.route; // todo: use req.session.user instead
-    oFavourite.user = req.body.user;
+    oFavourite.route = req.body.route;
+    oFavourite.user = req.session.userid;
 
     if (req.body.isFavorised == false) {
         //todo at the moment
         Schema.Favourite.deleteMany(oFavourite, function (err) {
             if (err) throw (err);
             console.log('deleted successful');
+            res.status(200).send();
         });
 
     } else {
@@ -156,7 +168,7 @@ app.post('/favoriseRoute', function (req, res) {
     }
 });
 
-app.post('/savePoint', function (req, res) {
+app.post('/savePoint', auth, function (req, res) {
     console.log(req.body.data.point);
     let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
@@ -171,7 +183,7 @@ app.post('/savePoint', function (req, res) {
         });
 });
 
-app.delete('/Route', function (req, res) {
+app.delete('/Route', auth, function (req, res) {
     //todo delete dependencies
     Schema.Route.findOneAndDelete(req.query, function (err, data) {
         if (err) {
@@ -183,7 +195,7 @@ app.delete('/Route', function (req, res) {
     });
 });
 
-app.delete('/LikedRoute', function (req, res) {
+app.delete('/LikedRoute', auth, function (req, res) {
     console.log('inseide liked route');
     console.log(req.query._id);
     let query = {};
@@ -202,7 +214,7 @@ app.delete('/LikedRoute', function (req, res) {
 });
 
 
-app.post('/saveRoute', function (req, res, next) {
+app.post('/saveRoute', auth, function (req, res, next) {
         let oRoute = req.body;
         //todo round distance
         //console.log(oRoute.distance);
@@ -270,7 +282,7 @@ app.post('/saveRoute', function (req, res, next) {
             });
     });
 
-app.post('/saveRating', function (req, res, next) {
+app.post('/saveRating', auth, function (req, res, next) {
     if (req.body.route == undefined || req.body.user == undefined) {
         console.log("route or user is null");
         res.status(400).send("error while saving rating because route/user is undefined");
@@ -329,7 +341,7 @@ app.get('/getData', function (req, res) {
 
 app.get('/getRatings', function (req, res) {
     Schema.Rating.find({route: req.query.route}).populate('user').exec(function (err, data) {
-        if (err){
+        if (err) {
             res.status(404).send("unable to get ratings");
             throw err;
         }
@@ -431,14 +443,15 @@ app.get('/getRoutes', function (req, res, next) {
                 console.log("Error while accessing rating");
                 res.status(400).send("error while accessing rating");
 
-            });;
+            });
+            ;
         }
     },
     function (req, res, next) {
         let oRoutes = [];
         let iFinishedQueries = 0;
         for (let i in req.oRoutes) {
-            Schema.Favourite.findOne({$and: [{route: req.oRoutes[i]._id}, {user: user}]}, function (err, obj) {
+            Schema.Favourite.findOne({$and: [{route: req.oRoutes[i]._id}, {user: req.session.userid}]}, function (err, obj) {
                 if (err) {
                     res.status(404).send("unable to find favourites");
                     throw err;
@@ -493,7 +506,7 @@ app.get('/getLocalPoints', function (req, res) {
 });
 
 /**
-app.post('/saveDocument', function (req, res) {
+ app.post('/saveDocument', function (req, res) {
     let oObject = req.body.object;
     oObject = 'test.jpg';
     let source = fs.createReadStream(oObject);
@@ -504,7 +517,7 @@ app.post('/saveDocument', function (req, res) {
     source.pipe(target);
 });
 
-app.get('/getDocument', function (req, res) {
+ app.get('/getDocument', function (req, res) {
     //important: there must be only one file with this filename, otherwise no photo gets displayed
     let filename = 'test.jpg';
     gfs.exist({filename: filename}, (err, file) => {
@@ -553,7 +566,6 @@ app.post('/register', function (req, res) {
 app.get('/login', function (req, res) {
     let aResult = req.query;
     Schema.User.findOne(
-        //     {$or: [{email: aResult.email}, {username: aResult.username}]}
         {$or: [{email: aResult.user}, {username: aResult.user}]}
     ).then(function (user) {
         if (!user) {
@@ -562,8 +574,7 @@ app.get('/login', function (req, res) {
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
                 if (result == true) {
-                    req.session.user = user.id;
-                    req.session.admin = true;
+                    req.session.userid = user._id;
                     res.send(user);
                 } else {
                     res.sendStatus(500);
@@ -576,6 +587,12 @@ app.get('/login', function (req, res) {
     });
 });
 
+app.get('/logout', function (req, res) {
+    if (req.session)
+        req.session.destroy();
+    res.send(200);
+});
+
 app.get('/Image', function (req, res, next) {
     console.log('getMyRoutes');
     let routeQuery = {};
@@ -585,19 +602,22 @@ app.get('/Image', function (req, res, next) {
             res.sendStatus(404).send("error while finding image");
         } else {
             let img = Buffer.from(data.imageData.split(',')[1], 'base64');
-            res.writeHead(200, {
-                'Content-Type': 'image/jpg',
-                'Content-Length': img.length,
-                'Cache-Control': 'public, max-age=2592000',
-                'Expires': new Date(Date.now() + 2592000000).toUTCString()
-            });
+
+            res.header('Content-Type', 'image/jpg');
+            res.header('Content-Length', img.length);
+
+            // allow browser caching for Images
+            res.header('Cache-Control', 'public, max-age=2592000',);
+            res.header('Expires', new Date(Date.now() + 2592000000).toUTCString());
+            res.header('Pragma', 'no-cache');
+
             res.end(img);
         }
     })
 });
 
 
-app.get('/getMyRoutes', function (req, res, next) {
+app.get('/getMyRoutes', auth, function (req, res, next) {
         console.log('getMyRoutes');
         let routeQuery = {};
         //routeQuery.user = "5bf86b725d5d083aea9d6090";
@@ -665,7 +685,7 @@ app.get('/getMyRoutes', function (req, res, next) {
 )
 ;
 
-app.get('/getMyLikedRoutes', function (req, res, next) {
+app.get('/getMyLikedRoutes', auth, function (req, res, next) {
         console.log('getMyLikedRoutes');
         let routeQuery = {};
         //routeQuery.user = user;
@@ -674,7 +694,8 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
         Schema.Favourite.find(routeQuery).exec(function (err, data) {
             if (err) {
                 res.status(404).send("error while finding favourite");
-                throw err;}
+                throw err;
+            }
             req.fav = data;
             if (data.length == 0) {
                 res.send(data);
@@ -691,9 +712,10 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
         for (let i in aFavRoutes) {
             console.log(aFavRoutes[i].route);
             Schema.Route.findOne({_id: aFavRoutes[i].route}).lean().exec(function (err, data) {
-                if (err){
+                if (err) {
                     res.status(404).send("error while finding route");
-                    throw err;}
+                    throw err;
+                }
                 if (data != null) {
                     oRoutes.push(data);
                 }
@@ -761,17 +783,18 @@ app.get('/getMyLikedRoutes', function (req, res, next) {
 )
 ;
 
-app.get('/reviewedRoutes', function (req, res, next) {
+app.get('/reviewedRoutes', auth, function (req, res, next) {
         console.log('getMyReviewedRoutes');
         let routeQuery = {};
         routeQuery.user = req.query.user;
         console.log(routeQuery.user);
         Schema.Rating.find(routeQuery).populate('user').exec(function (err, data) {
-            if (err){
+            if (err) {
                 console.log("Error while finding rating");
                 res.status(404).send("error while finding rating");
                 throw err;
-            };
+            }
+            ;
 
             console.log(data.user);
             data.forEach(function (data) {
@@ -883,7 +906,7 @@ app.listen(3001, function () {
     console.log("Working on port 3001");
 });
 
-app.delete('/Rating', function (req, res) {
+app.delete('/Rating', auth, function (req, res) {
     Schema.Rating.findOneAndDelete({_id: req.query._id}, function (err, data) {
         if (err) {
             console.log("Error while finding and deleting rating");

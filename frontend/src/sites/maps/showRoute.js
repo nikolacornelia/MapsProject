@@ -54,7 +54,7 @@ function displayRoute (aPoint, aHighlight){
        if (!aHighlight[i]) {
             aLayers.addLayer(new L.marker([aPoint[i].lat,aPoint[i].lng],{icon: yellowWaypoint}));
        }
-       if (i > 1){
+       if (i > 0){
         aLayers.addLayer(L.polyline([[aPoint[i].lat,aPoint[i].lng], [aPoint[i-1].lat,aPoint[i-1].lng]],{color: sColor, weight: 3, dashArray: '20,15',smoothFactor: 1}));
        }
     }

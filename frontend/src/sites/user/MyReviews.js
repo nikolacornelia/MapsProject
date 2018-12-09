@@ -21,7 +21,7 @@ class MyReviews extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            routes: mockData
+            routes: [] //mockData
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -134,7 +134,7 @@ class MyReviews extends Component {
                                             <Comment.Content>
                                                 <Comment.Author as='b'>{route.comments[0].author}</Comment.Author>
                                                 <Comment.Metadata>
-                                                    <span>{route.comments[0].created}</span>
+                                                    <span>{new Date(route.comments[0].created).toLocaleString()}</span>
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
