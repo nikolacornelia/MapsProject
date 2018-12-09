@@ -27,6 +27,7 @@ let user = "5bf86b725d5d083aea9d6090";
 var cors = require('cors');
 let session = require('express-session');
 let Binary = require('mongodb').Binary;
+let round = require('math-round');
 
 /**
  let schemaImage = new mongoose.Schema({
@@ -203,8 +204,10 @@ app.delete('/LikedRoute', function (req, res) {
 
 app.post('/saveRoute', function (req, res, next) {
         let oRoute = req.body;
-        req.body.image = null;
-        oRoute.user = req.body.user;
+        //todo round distance
+        //console.log(oRoute.distance);
+       // oRoute.distance = round(oRoute.distance,1);
+        //console.log(oRoute.distance);
         let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
         request({
             url: url,
