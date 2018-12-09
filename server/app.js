@@ -217,7 +217,7 @@ app.delete('/LikedRoute', auth, function (req, res) {
 app.post('/saveRoute', auth, function (req, res, next) {
         let oRoute = req.body;
         //todo round distance
-        //console.log(oRoute.distance);
+        console.log(oRoute);
        // oRoute.distance = round(oRoute.distance,1);
         //console.log(oRoute.distance);
         let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
@@ -264,6 +264,8 @@ app.post('/saveRoute', auth, function (req, res, next) {
                     });
             } else {
                 //no image was sent
+                oRoute.image = null;
+                req.oRoute = oRoute;
                 next();
             }
         });
@@ -271,6 +273,8 @@ app.post('/saveRoute', auth, function (req, res, next) {
 
     function (req, res) {
         let oData = new Schema.Route(req.oRoute);
+        console.log("req.oROute");
+        console.log(req.oRoute);
         oData.save()
             .then(item => {
                 console.log('route saved to database');
@@ -600,7 +604,8 @@ app.get('/Image', function (req, res, next) {
     Schema.Image.findOne({_id: req.query.id}).lean().exec(function (err, data) {
         console.log(data);
         if (err) {
-            res.sendStatus(404).send("error while finding image");
+            console.log('error');
+            //res.sendStatus(404).send("error while finding image");
         } else {
             let img = Buffer.from(data.imageData.split(',')[1], 'base64');
 
@@ -614,6 +619,7 @@ app.get('/Image', function (req, res, next) {
 
             res.end(img);
         }
+
     })
 });
 
