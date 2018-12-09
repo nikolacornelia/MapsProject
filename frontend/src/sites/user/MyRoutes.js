@@ -13,7 +13,7 @@ import {
     Item,
     Dropdown,
     Statistic, Tab, Menu,
-    Label, Rating
+    Label, Rating, Confirm
 } from 'semantic-ui-react';
 import {mockData} from '../../mockData';
 import axios from 'axios';
@@ -26,6 +26,7 @@ class MyRoutes extends Component {
             routes: [],
             tab: 'created',
             sortBy: 1,
+            confirmDelete: false
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -110,13 +111,7 @@ class MyRoutes extends Component {
                 }
             }).then(() => this.getMyRoutes());
         }
-/**
-        // http verb "DELETE" (similar to get)
-        axios.delete('http://localhost:3001/myRoutes', {
-            params: {
-                _id: id
-            }
-        }).then(() => this.getMyRoutes()); **/
+        this.setState({confirmDelete: false});
     };
 
     render() {
@@ -144,9 +139,12 @@ class MyRoutes extends Component {
                             <Dropdown.Menu>
                                 <Dropdown.Header icon='sort' content='Sort by'/>
                                 <Dropdown.Divider/>
-                                <Dropdown.Item active={this.state.sortBy === 1} text='Name' onClick={()=>this.onSortChange(1)}/>
-                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular' onClick={()=>this.onSortChange(2)}/>
-                                <Dropdown.Item active={this.state.sortBy === 3} text='Most recently created' onClick={()=>this.onSortChange(3)}/>
+                                <Dropdown.Item active={this.state.sortBy === 1} text='Name'
+                                               onClick={() => this.onSortChange(1)}/>
+                                <Dropdown.Item active={this.state.sortBy === 2} text='Most popular'
+                                               onClick={() => this.onSortChange(2)}/>
+                                <Dropdown.Item active={this.state.sortBy === 3} text='Most recently created'
+                                               onClick={() => this.onSortChange(3)}/>
                             </Dropdown.Menu>
                         </Dropdown>
                     </Grid.Column>
@@ -167,9 +165,14 @@ class MyRoutes extends Component {
                                 </Item.Description>
                                 <Item.Extra>
                                     <Rating icon='star' defaultRating={result.avg_rating} maxRating={5} disabled/>
-                                    <Button floated='right' compact onClick={() => this.handleDelete(result._id)}>
+                                    <Button floated='right' compact
+                                            onClick={() => this.setState({confirmDelete: true})}>
                                         Delete
                                     </Button>
+                                    <Confirm open={this.state.confirmDelete}
+                                             onCancel={() => this.setState({confirmDelete: false})}
+                                             onConfirm={() => this.handleDelete(result._id)}
+                                             content='Are you sure you want to delete this Route?'/>
                                 </Item.Extra>
                             </Item.Content>
                         </Item>

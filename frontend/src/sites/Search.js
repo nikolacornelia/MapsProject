@@ -46,7 +46,6 @@ class Search extends Component {
             searched: false,
             showDetail: -1,
             reviewIsOpen: false,
-            isFavorised: false,
             comments: [],
             files: []
         };
@@ -76,8 +75,8 @@ class Search extends Component {
      * Sends a search for routes request
      */
     onSearch = () => {
-        // todo: check if features are supposed to be sent as strings?
         axios.get('http://localhost:3001/getRoutes', {
+            withCredentials: true,
             params: {
                 search: this.state.searchText,
                 difficulty: this.state.difficulty,  // array
@@ -87,39 +86,16 @@ class Search extends Component {
             }
         }).then((response) => {
 
-            // todo: it would be better to provide URLs for the images (put urls in response body, not image data)
-            //       then the search response is smaller (because not every image is in there) & quicker.
-            //       The browser can then send requests for each <img src="..."> asynchronously
-
             for (let i = 0; i < response.data.length; i++) {
-
-                if(response.data[i].distance && response.data[i].distance > 0)
+                if (response.data[i].distance && response.data[i].distance > 0)
                     response.data[i].distance = Math.round(response.data[i].distance * 100) / 100;
-                // response.data[i].image = new Buffer( response.data[i].image, 'base64').toString('binary');
-                // response.data[i].image = Buffer.from(response.data[i].image, 'base64');
-                if (response.data[i].image != undefined) {
-                    //response.data[i].image.toString();
-                    //response.data[i].image = "data:image/jpeg;base64,/9j" + response.data[i].image;
-                    response.data[i].image.toString();
-
-                    console.log(response.data[i].image);
-                    //response.data[i].image.toString();
-                    //response.data[i].image = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCADqATkDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EACQQAQEBAAIBBAMBAQEBAAAAAAABESExQQISUXFhgZGxocHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAAAEQH/2gAMAwEAAhEDEQA/AMriLyCKgg1gQwCgs4FTMOdutepjQak+FzMSVqgxZdRdPPIIvH5WzzGdBriphtTeAXg2ZjKA1pqKDUGZca3foBek8gFv8Ie3fKdA1qb8s7hoL6eLVt51FsAnql3Ut1M7AWbflLMDkEMX/F6/YjK/pADFQAUNA6alYagKk72m/j9p4Bq2fDDSYKLNXPNLoHE/NT6RYC31cJxZ3yWVM+aBYi/S2ZgiAsnYJx5D21vPmqrm3PTfpQQwyAC8JZvSKDni41ZrMuUVVl+Uz9w9v/1QWrZsZ5nFPHYH+JZyureQSF5M+fJ0CAfwRAVRBQA1DAWVUayoJUWoDpsxntPsueBV4+VxhdyAtv8AjOLGpIDMLbeGvbF4iozJfr/WukAVABAXAQXEAAASzVAZdO2WNordm+emFl7XcQSNZiFtv0C9w90nhJf4mA1u+GcJFwIyAqL/AOovwgGNfSRqdIrNa29M0gKCAojU9PAMjWXpckEJFNFEAAXEUBABYz6rZ0ureQc9vyt9XxDF2QAXtABcQAs0AZywkvluJbyipifas52DcyxjlZweAO0xri/hc+wZOEKIu6nSyeToVZyWXwvCg53gW81QQ7aTNAn5dGZJPs1UXURQAUEMCXQLZE93PRZ5hPTgNMrbIzKCm52LZwCs+2M8w2g3sjPuZAXb4IsMAUACzVUGM4/K+md6vEXUUyM5PDR0IxYe6ramih0VNBrS4xoqN8Q1BFQk3yqyAsioioAAKgDSJL4/jQIn5igLrPqtOuf6oOaxbMoAltUAhhIoJiiggrPu+AaOIxtAX3JbaAIaLwi4t9X4T3fg2AFtqcrUUarP20zUDAmqoE0WRBZPNVUVEAAAAVAC8kvih2DSKxOdBqs7Z0l0gI0mKAC4AuHE7ZtBriM+744QAAAAABAFsveIttBICyaikvy1+r/Cen5rWQHIBQa4rIDRqSl5qDWqziqgAAAATA7BpGdqXb2C2+J/UgAtRQBSQtkBWb6vhLbQAAAAAEBRAAAAAUbm+GZNdPxAP+ql2Tjwx7/wIgZ8iKvBk+CJoCXii9gaqZ/qqihAAAEVABGkBFUwBftNkZ3QW34QAAABFAQAVAAAAAARVkl8gs/43sk1jL45LvHArepk+E9XTG35oLqsmIKmLAEygKg0y1AFQBUXwgAAAoBC34S3UAAABAVAAAAAABAUQAVABdRQa1PcYyit2z58M8C4ouM2NXpOEGeWtNZUatiAIoAKIoCoAoG4C9MW6dgIoAIAAAAAAACKWAgL0CAAAALiANCKioNLgM1CrLihmTafkt1EF3SZ5ZVUW4mnIKvAi5fhEURVDWVQBRAAAAAAAAQFRVyAyulgAqCKlF8IqLsEgC9mGoC+IusqCrv5ZEUVOk1RuJfwSLOOkGFi4XPCoYYrNiKauosBGi9ICstM1UAAAAAAFQ0VcTBAXUGgIqGoKhKAzRRUQUAwxoSrGRpkQA/qiosOL9oJptMRRVZa0VUqSiChE6BqMgCwqKqIogAIAqKCKgKoogg0lBFuIKgAAAKNRlf2gqsftsEtZWoAAqAACKoMqAAeSoqp39kL2AqLOlE8rEBFQARYALhigrNC9gGmooLp4TweEQFFBFAECgIoAu0ifIAqAAA//9k=";
-                    /**
-                     response.data[i].image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==";
-                     console.log(response.data[i].image);
-                     } **/
-
-            } else {
-                    response.data[i].image = undefined;
-                } }
-
-            console.log(response.data);
+            }
 
             this.setState({
                 searched: true,
                 routes: response.data
             });
+
             ShowRoute.displayRoutes(response.data);
         });
 
@@ -130,16 +106,11 @@ class Search extends Component {
      * @param {string} id - the id of the route to be displayed (or -1 if back)
      */
     onShowDetail = (id) => {
-        let isFavorised = id !== -1
-            ? this.state.routes.find((route) => route._id === id).isFavorised
-            : false;
-
         // scroll to top
-
         document.getElementsByClassName('sidebar')[0].scrollTop = 0;
 
         // request comments for selected route
-        if(id !== -1) {
+        if (id !== -1) {
             axios.get('http://localhost:3001/getRatings', {
                 params: {
                     route: id
@@ -152,10 +123,7 @@ class Search extends Component {
         }
 
         // navigate internally to details view
-        this.setState({
-            showDetail: id,
-            isFavorised: isFavorised
-        });
+        this.setState({ showDetail: id });
     };
 
     /**
@@ -203,7 +171,13 @@ class Search extends Component {
     };
 
     /* Functions for review dialog */
-    toggleReviewDialog = () => this.setState({reviewIsOpen: !this.state.reviewIsOpen});
+    toggleReviewDialog = () => {
+        if(this.user) {
+            this.setState({reviewIsOpen: !this.state.reviewIsOpen});
+        } else {
+            window.location = '/#/login';
+        }
+    };
 
     onChangeReviewText = (e, {name, value}) => this.setState({[name]: value});
     onChangeReviewRating = (e, {name, rating}) => this.setState({[name]: rating});
@@ -225,41 +199,23 @@ class Search extends Component {
     };
 
 
-    toggleFavorite = () => {
-        console.log("beginning");
-        console.log(isFavorised);
-        //let isFavorised = !this.state.isFavorised;
-        let isFavorised = !this.state.isFavorised; //state is favorised is new state
+    toggleFavorite = (isFavorised) => {
+        //isFavorised = new state
 
         // send request to toggle favorite
         axios.post('http://localhost:3001/favoriseRoute', {
             route: this.state.showDetail,  // currently selected routeid
             isFavorised: isFavorised,
-            user: this.user._id
+            user: this.user._id             // todo: remove - insecure  ! use userid from session
         }).then((response) => {
-            // toggle status (or is the new status in response.data?)
-            this.setState({isFavorised: isFavorised});
-            //todo update this.state.routes change is Favorised for Route which status got changed -> heart is changing directly
-
+            // refresh
+            this.onSearch();
         });
-
     };
 
 
     render() {
-        /*
-                var searchResults = [];
-                if (this.state.searched) {
-                    console.log(this.state.routes);
-                    this.state.routes.forEach((route) => {
-                        searchResults.push(
-                            //route._id is the right name to get id from mongo db
-
-                        )
-                    });
-                }*/
         var detailRoute;
-
         if (this.state.showDetail !== -1) {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
         }
@@ -365,9 +321,9 @@ class Search extends Component {
                                         {detailRoute.title}
                                         <span style={{float: 'right'}}>
                                         <Popup
-                                            trigger={<Icon name={this.state.isFavorised ? 'heart' : 'heart outline'}
-                                                           link color='red' onClick={this.toggleFavorite}/>}
-                                            content={this.state.isFavorised
+                                            trigger={<Icon name={detailRoute.isFavorised ? 'heart' : 'heart outline'}
+                                                           link color='red' onClick={() => this.toggleFavorite(!detailRoute.isFavorised)}/>}
+                                            content={detailRoute.isFavorised
                                                 ? 'Remove this route from your favorites.'
                                                 : 'Add this route to your favorites.'}
                                             size='tiny' position='bottom right'/>
@@ -379,8 +335,8 @@ class Search extends Component {
                                 <Segment.Group className='basic'>
                                     <Segment basic>
                                         <Image centered fluid rounded
-                                               //src={detailRoute.image.imageData || '/static/media/route-noimage.png'}
-                                                src = {'http://localhost:3001/Image?id=' + detailRoute.image || '/static/media/route-noimage.png'}
+                                            //src={detailRoute.image.imageData || '/static/media/route-noimage.png'}
+                                               src={'http://localhost:3001/Image?id=' + detailRoute.image || '/static/media/route-noimage.png'}
                                         />
                                     </Segment>
 
@@ -421,6 +377,7 @@ class Search extends Component {
                                                     onClick={this.toggleReviewDialog} floated="right" compact/>
                                             <Header.Content>Reviews</Header.Content>
                                         </Header>
+                                        {this.user &&
                                         <Modal open={this.state.reviewIsOpen} closeOnEscape={false}
                                                closeOnDimmerClick={false} size='small' centered>
                                             <Modal.Header>New Review for {detailRoute.title}</Modal.Header>
@@ -459,7 +416,7 @@ class Search extends Component {
                                                 <Button primary onClick={this.onSubmitReview}>Submit</Button>
                                             </Modal.Actions>
                                         </Modal>
-
+                                        }
                                         {(!this.state.comments || this.state.comments.length === 0)
                                             ? <Container textAlign='center'>
                                                 <i>No comments available. Be the first one to comment!</i>
@@ -469,7 +426,7 @@ class Search extends Component {
                                                 <Comment.Content>
                                                     <Comment.Author as='b'>{comment.user.username}</Comment.Author>
                                                     <Comment.Metadata>
-                                                        <span>{comment.created}</span>
+                                                        <span>{new Date(comment.created).toLocaleString()}</span>
                                                     </Comment.Metadata>
                                                     <Comment.Text><p>{comment.comment}</p></Comment.Text>
                                                     <Comment.Actions>

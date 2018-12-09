@@ -7,6 +7,7 @@ import Home from "./sites/Home";
 import MyRoutes from "./sites/user/MyRoutes";
 import MyReviews from "./sites/user/MyReviews";
 import Settings from "./sites/user/Settings";
+import axios from "axios";
 
 import {Button, Container, Menu, Grid, Icon, Responsive, Segment, Dropdown, Label, Header} from "semantic-ui-react";
 import {Route, HashRouter as Router, NavLink, Redirect} from "react-router-dom";
@@ -15,19 +16,34 @@ class Website extends Component {
 
     constructor(props) {
         super(props);
+
+        axios.defaults.withCredentials = true;
+        // if there is an response code for "unauthorized" (= not logged in), then navigate accordingly
+        axios.interceptors.response.use((resp) => { return resp }, (error) => {
+            if (error.response.status === 401) {
+                alert('You are not logged in anymore. Please login again.');
+                sessionStorage.clear();
+                this.updateLoginStatus();
+            }
+            return Promise.reject(error);
+        });
+
         this.state = {
-            loggedIn: sessionStorage.getItem("loggedIn")
+            loggedIn: sessionStorage.getItem("user")
         }
     };
 
     updateLoginStatus = () => {
-        this.setState({loggedIn: sessionStorage.getItem("loggedIn")});
+        let loggedIn = false;
+        if(sessionStorage.getItem("user"))
+            loggedIn = true;
+        this.setState({loggedIn: loggedIn});
     };
 
     render() {
         const PrivateRoute = ({component: Component, ...rest}) =>
             <Route {...rest} render={props => (
-                sessionStorage.getItem('loggedIn')
+                sessionStorage.getItem('user')
                     ? <Component {...props} />
                     : <Redirect to={{
                         pathname: '/login',
@@ -74,6 +90,7 @@ class Website extends Component {
                                     <Dropdown.Item icon='settings' text='Settings' as={NavLink} exact to='/settings'/>
                                     <Dropdown.Item icon='logout' text='Logout' as={NavLink} exact to='/login' active={false}
                                                    onClick={() => {
+                                                       axios.get("http://localhost:3001/logout");
                                                        sessionStorage.clear();
                                                        this.updateLoginStatus();
                                                    }}/>
