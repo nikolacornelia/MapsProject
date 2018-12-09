@@ -20,7 +20,7 @@ class Website extends Component {
         axios.defaults.withCredentials = true;
         // if there is an response code for "unauthorized" (= not logged in), then navigate accordingly
         axios.interceptors.response.use((resp) => { return resp }, (error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
                 alert('You are not logged in anymore. Please login again.');
                 sessionStorage.clear();
                 this.updateLoginStatus();
