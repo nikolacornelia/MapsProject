@@ -25,11 +25,11 @@ var template =
 '<form id="popup-form">' +
 '<p>' +
 '<label for="sPName">Name:</label>' +
-'<p>' +
+'</br>' +
 '<input id="sPName" class="popup-input" type="text" />' +
 '<p>' +
 '<label for="sPDescription">Beschreibung:</label>' +
-'<p>' +
+'</br>' +
 '<textarea id="sPDescription" class="popup-textarea" type="text"></textarea>' +
 '<p>' +
 '<button id="button-submit" type="button">Save</button>' +
