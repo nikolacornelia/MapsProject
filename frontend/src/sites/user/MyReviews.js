@@ -134,7 +134,7 @@ class MyReviews extends Component {
                                             <Comment.Content>
                                                 <Comment.Author as='b'>{route.comments[i].author}</Comment.Author>
                                                 <Comment.Metadata>
-                                                    <span>{new Date(route.comments[i].created).toUTCString()}</span>
+                                                    <span>{new Date(route.comments[i].created).toLocaleString()}</span>
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
