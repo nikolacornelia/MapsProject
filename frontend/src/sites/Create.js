@@ -4,7 +4,7 @@ import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
     Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
 } from 'semantic-ui-react'
-import * as CreateMap from './maps/createRoute';
+import * as CreateMap from './maps/CreateRoute';
 import {mockFeatures} from "../mockData";
 
 class Create extends Component {
@@ -65,8 +65,12 @@ class Create extends Component {
         //get current leaflet route information
         let oRoute = CreateMap.getRouteMapData();
 
-        // create a function that is called after image file is read
+        if(!this.state.difficulty) {
+            alert("Please select a difficulty first!");
+            return;
+        }
 
+        // create a function that is called after image file is read
         let _createRoute = (e) => {
             console.log(oRoute.points);
             if (oRoute.points.length === 0) {
@@ -74,6 +78,8 @@ class Create extends Component {
                 alert('Please select points for your route in the map');
                 return;
             }
+            console.log("EEE");
+            console.log(e);
             let image = e && e.target.result; // sends the image as base64
             //image.toString();
 
@@ -106,6 +112,7 @@ class Create extends Component {
             let fileReader = new FileReader();
             fileReader.onload = _createRoute;
             fileReader.readAsDataURL(this.state.files[0]);
+
         } else {
             _createRoute();
         }
@@ -152,7 +159,7 @@ class Create extends Component {
                                         icon={<Icon name='add' link inverted color='black'/>}/>
 
                             <Form.Group inline>
-                                <label>Difficulty</label>
+                                <label>Difficulty <span style={{color: "#db2828"}}>*</span></label>
 
                                 <Form.Radio
                                     label='easy'

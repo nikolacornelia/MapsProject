@@ -109,8 +109,8 @@ class MyReviews extends Component {
                             <Grid.Column>
                                 <Item.Group>
                                     <Item>
-                                        <Item.Image size='small' src={route.Image} />
-
+                                        <Item.Image size='small'
+                                                    src={route.image ? 'http://localhost:3001/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
                                         <Item.Content>
                                             <Item.Header as='h4'> {route.title} </Item.Header>
                                             <Item.Meta>{route.location}</Item.Meta>

@@ -88,7 +88,7 @@ export function onInit() {
 
     stateChangingButton.addTo(map);
 
-    map.setView([49.47748, 8.42216], 15);
+    //map.setView([49.47748, 8.42216], 15);
 
     map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
         .on('locationfound', function (e) {
@@ -146,7 +146,9 @@ function newPoint(){
     }).catch(function (err) {
         console.log(err);
     });
-    L.marker([dLatH, dLngH]).addTo(map);
+    L.marker([dLatH, dLngH]).bindPopup(oPoint.name+"</br>"+oPoint.description).on('mouseover', function(){
+        this.openPopup();
+    }).addTo(map);
     connectHighlight([dLatH, dLngH]);
     bHighlight = false;
     map.closePopup();
@@ -204,19 +206,12 @@ function deleteFunction() {
 }
 
 async function onMapLoad(e) {
-    await getLocalPointsOfInterest();
+    await getPointsOfInterest();
 }
 
-function getLocalPointsOfInterest() {
+function getPointsOfInterest() {
     //only get points that are in the bounds of the map
-    var oBorder = {};
-    oBorder.dMaxLong = map.getBounds().getEast();
-    oBorder.dMinLong = map.getBounds().getWest();
-    oBorder.dMaxLat = map.getBounds().getNorth();
-    oBorder.dMinLat = map.getBounds().getSouth();
-    axios.get('http://localhost:3001/getLocalPoints', {
-        params: {border: oBorder}
-    }).then(function (response) {
+    axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
         console.log("success");
         displayPoints(response.data);
     }).catch(function (err) {
@@ -230,9 +225,8 @@ function displayPoints(arrayPoints) {
             parseFloat(arrayPoints[i].latitude),
             parseFloat(arrayPoints[i].longitude)], {title: arrayPoints[i].name}
         );
-        mark.bindPopup("Test");//Hier würden wir gerne den Namen darstellen
+        mark.bindPopup(arrayPoints[i].name +"</br>"+arrayPoints[i].description);
         cities.addLayer(mark);
-        console.log(arrayPoints[i]);
     }
     cities.addTo(map);
 
@@ -252,18 +246,36 @@ function displayPoints(arrayPoints) {
 //die funktion funktioniert noch nicht
 function getDistance(origin, destination) {
     // return distance in meters
-    var lon1 = toRadian(origin.lng),
-        lat1 = toRadian(origin.lat),
-        lon2 = toRadian(destination.lng),
-        lat2 = toRadian(destination.lat);
-
+    if (origin.lat == null){
+        var lon1 = toRadian(origin[0]),
+        lat1 = toRadian(origin[1]);
+        if (destination.lat == null){
+            var lon2 = toRadian(destination[0]),
+                lat2 = toRadian(destination[1]);
+        }else{
+            var lon2 = toRadian(destination.lat),
+                lat2 = toRadian(destination.lng);
+        }
+    }else{
+        var lon1 = toRadian(origin.lat),
+            lat1 = toRadian(origin.lng);
+            if (destination.lat == null){
+                var lon2 = toRadian(destination[0]),
+                    lat2 = toRadian(destination[1]);
+            }else{
+                var lon2 = toRadian(destination.lat),
+                    lat2 = toRadian(destination.lng);
+            }
+    }
     var deltaLat = lat2 - lat1;
     var deltaLon = lon2 - lon1;
 
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
-    return (Math.round(c * EARTH_RADIUS * 10) / 10);
+    var distance = (c * EARTH_RADIUS) ;
+    distance = Math.round(distance*10)/10;
+    return distance;
     
 }
 function toRadian(degree) {
