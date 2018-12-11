@@ -120,6 +120,15 @@ class Search extends Component {
                 console.log(response.data);
                 this.setState({comments: response.data});
             });
+            var routeData = this.state.routes.find((route) => route._id === id);
+            console.log(routeData);
+            ShowRoute.displayOneRoute(routeData);
+        
+        }
+        if (id == -1){
+            var routeData = this.state.routes;
+            console.log (routeData);
+            ShowRoute.displayRoutes(routeData);
         }
 
         // navigate internally to details view

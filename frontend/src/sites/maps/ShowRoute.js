@@ -38,6 +38,7 @@ export function onInit(){
     getPointsOfInterest();
 }
 export function displayRoutes(data){
+    console.log(data);
     aLayers.clearLayers();
     if (data.length > 1){
         sColor = 'blue';
@@ -50,6 +51,11 @@ export function displayRoutes(data){
       }
 }
 
+export function displayOneRoute(data){
+    sColor = 'yellow';
+    aLayers.clearLayers();
+    displayRoute(data.points,data.highlights);
+}
 function displayRoute (aPoint, aHighlight){
     for (var i=0, len = aHighlight.length; i < len; i++){
        if (!aHighlight[i]) {
