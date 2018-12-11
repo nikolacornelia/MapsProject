@@ -2,10 +2,12 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
-    Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown
-} from 'semantic-ui-react'
+    Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown, Dimmer, Loader
+} from 'semantic-ui-react';
 import * as CreateMap from './maps/CreateRoute';
 import {mockFeatures} from "../mockData";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Create extends Component {
 
@@ -24,6 +26,9 @@ class Create extends Component {
             lat: 51.505,
             lng: -0.09,
             zoom: 13,
+            hasRouteError: false,
+            hasRouteDistanceError: false,
+            loading:false
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -62,6 +67,7 @@ class Create extends Component {
     };
 
     onSubmitRoute = (e) => {
+        this.setState({routeCreated: false});
         //get current leaflet route information
         let oRoute = CreateMap.getRouteMapData();
 
@@ -69,15 +75,25 @@ class Create extends Component {
 
         let _createRoute = (e) => {
             console.log(oRoute.points);
-            if (oRoute.points.length === 0) {
-                //todo: display error message instead of success?
-                alert('Please select points for your route in the map');
+            if (oRoute.points.length === 0 || oRoute.points.length === 1) {
+                this.setState({hasRouteError: true});
                 return;
             }
-            console.log("EEE");
-            console.log(e);
+            if (oRoute.distance >=25) {
+                this.setState({hasRouteDistanceError: true});
+                return;
+            } else {
+                this.setState({hasRouteError: false});
+            }
+            if (oRoute.distance === null) {
+                //todo: display error message instead of success?
+                alert('error because of distance');
+                return;
+            }
+
             let image = e && e.target.result; // sends the image as base64
             //image.toString();
+            this.setState({loading: true});
 
             axios.post('http://localhost:3001/saveRoute', {
                 title: this.state.name,
@@ -92,11 +108,13 @@ class Create extends Component {
                 user: this.user._id,
                //todo correct? files: this.state.files
             }).then((response) => {
+                this.setState({hasRouteError: false});
+                this.setState({loading: false});
                 console.log(this.user._id);
                 this.setState({routeCreated: true});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
-                CreateMap.resetArrays();
+                oRoute = CreateMap.resetArrays();
 
             }).catch((error) => {
                 // possible?
@@ -136,8 +154,17 @@ class Create extends Component {
                 </Grid.Column>
                 <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
                     <div className='sidebar'>
+
                         {this.state.routeCreated &&
                         <Message success header='The route has successfully been created!'/>}
+                        {this.state.hasRouteError &&
+                        <Message attached error
+                                 header='Invalid route, please check your route consists of at least 2 points.'/>
+                        }
+                        {this.state.hasRouteDistanceError &&
+                        <Message attached error
+                                 header='This route is too long, please only create routes up to a distance of 25 km.'/>
+                        }
                         <Form size='large' onSubmit={this.onSubmitRoute}>
                             <Header as='h2'>
                                 Create new route
@@ -145,7 +172,7 @@ class Create extends Component {
                             </Header>
 
                             <Form.Input fluid label='Name' placeholder='Name of the route' required
-                                        name='name' onChange={this.handleChange}/>
+                                        name='name' onChange={this.handleChange} ref='inputText'/>
                             <Form.TextArea fluid label='Description' placeholder='Description of the route'
                                            name='description' onChange={this.handleChange}/>
 
@@ -185,6 +212,9 @@ class Create extends Component {
                             />
 
                             <Form.Button type='submit' color='blue'>Save</Form.Button>
+                                <Dimmer active={this.state.loading}>
+                                    <Loader />
+                                </Dimmer>
                         </Form>
                     </div>
                 </Grid.Column>

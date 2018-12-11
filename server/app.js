@@ -217,30 +217,29 @@ app.delete('/LikedRoute', auth, function (req, res) {
 app.post('/saveRoute', auth, function (req, res, next) {
         let oRoute = req.body;
         //todo round distance
-        console.log(oRoute);
-       // oRoute.distance = round(oRoute.distance,1);
-        //console.log(oRoute.distance);
+
         let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
         request({
             url: url,
             method: 'GET'
-        }, function (err, res, body) {
+        }, function (err, response, body) {
             if (err) {
                 res.status(404).send("unable to get start location for route");
                 throw err;
             }
-            res.body = JSON.parse(res.body);
+            console.log(response);
+            response.body = JSON.parse(res.body);
 
             try {
-                if (res.body.address.city != undefined) {
+                if (response.body.address.city != undefined) {
                     console.log(res.body.address.city);
                     oRoute.location = res.body.address.city;
                 }
-                else if (res.body.address.town != undefined) {
+                else if (response.body.address.town != undefined) {
                     console.log(res.body.address.town);
                     oRoute.location = res.body.address.town;
                 }
-                else if (res.body.address.village != undefined) {
+                else if (response.body.address.village != undefined) {
                     console.log(res.body.address.village);
                     oRoute.location = res.body.address.village;
                 }
@@ -827,8 +826,11 @@ app.get('/reviewedRoutes', auth, function (req, res, next) {
         for (let i in aCommentedRoutes) {
             console.log(aCommentedRoutes[i].route);
             Schema.Route.findOne({_id: aCommentedRoutes[i].route}).lean().exec(function (err, data) {
-                if (err)
-                    throw err;
+                if (err) {
+                    console.log("Error while finding route");
+                    res.status(404).send("error while finding route");
+                }
+
                 if (data != null) {
                     data.comments = req.comment;
                     oRoutes.push(data);
@@ -842,9 +844,6 @@ app.get('/reviewedRoutes', auth, function (req, res, next) {
                     req.oRoutes = oRoutes;
                     next();
                 }
-            }).catch(function (error) {
-                console.log("Error while finding route");
-                res.status(404).send("error while finding route");
             });
         }
         ;

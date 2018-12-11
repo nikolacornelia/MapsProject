@@ -15,14 +15,15 @@
     "react-semantic-ui-range": "^0.6.2",
     "semantic-ui-react": "^0.82.5",
     "validator": "^10.9.0",
-    "leaflet-ais-tracksymbol-search": "^1.0.0"
+    "leaflet-ais-tracksymbol-search": "^1.0.0",
+    "react-toastify": "^4.4.3"
   },
   "devDependencies": {
     "react-testing-library": "^5.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && npm run clean-after-build",
+    "build": "react-scripts build && npm run cl,ean-after-build",
     "clean-after-build": "cd build && del /f manifest.json && del /f service-worker.js && del /f precache-manifest* && del /f asset-manifest.json",
     "test": "react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject"
