@@ -27,6 +27,8 @@ var cors = require('cors');
 let session = require('express-session');
 let Binary = require('mongodb').Binary;
 let round = require('math-round');
+let lodash = require('lodash.sortby');
+let _ = require('underscore');
 
 /**
  let schemaImage = new mongoose.Schema({
@@ -430,15 +432,15 @@ app.get('/getRoutes', function (req, res, next) {
                 , { $group: { _id: null, rating: { $avg: '$rating' } } }
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
-                if (oneRoute.image != undefined)
-                    // todo oneRoute.image.toString('base64');
                     // one route may not have a rating yet
                     if (response.length == 0) {
-                        oneRoute.avg_rating = undefined;
+                        //zero if undefined
+                        oneRoute.avg_rating = 0;
                     } else {
                         let avgRating = response[0].rating;
                         oneRoute.avg_rating = avgRating;
                     }
+                    oneRoute.created = Date(oneRoute.created);
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
                 if (iFinishedQueries === (aRoutes.length)) {
@@ -482,19 +484,39 @@ app.get('/getRoutes', function (req, res, next) {
     function (req, res) {
         if (req.query.sortBy != undefined) {
             let paramSort;
+            let paramOrder;
             if (req.query.sortBy == 1) {
                 //Sort by name
                 paramSort = 'title';
+                paramOrder = 'asc';
+                sortJson(req.oRoutes, paramSort, paramOrder);
+                console.log(paramSort);
             } else if (req.query.sortBy == 2) {
                 //Sort by average rating
                 paramSort = 'avg_rating';
+                paramOrder = 'des';
+                sortJson(req.oRoutes, paramSort, paramOrder);
+                console.log(paramSort);
             } else if (req.query.sortBy == 3) {
                 //Sort by date created
-                paramSort = 'created';
+               /** req.oRoutes.sort(function sortFunction(a,b){
+                    var dateA = (a.created).getTime();
+                    var dateB = (b.created).getTime();
+                    return dateA > dateB ? 1 : -1;
+                } ); **/
+               // req.oRoutes = _.sortBy(req.oRoutes, req.oRoutes.created);
+               sortJson(req.oRoutes, 'created');
+               // req.oRoutes.reverse();
+              //  req.oRoutes = lodash.sortBy(req.oRoutes, [req.oRoutes.created]);
+                console.log("date");
+              //  paramSort = 'created';
+               // paramOrder = 'desc';
+               // oRoutes.sort(function(a, b){
+                //    return oRoutes.created-b.created
+                //})
             }
-            sortJson(req.oRoutes, paramSort);
         }
-
+        console.log(req.oRoutes);
         res.send(req.oRoutes);
     }
 );
