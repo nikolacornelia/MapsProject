@@ -306,7 +306,7 @@ export function resetArrays() {
         map.removeLayer(aPoly[i]);
     }
     for (var i=0, len = aMarker.length; i < len; i++){
-        if (!aMarker[i]){
+        if (aMarker[i] != undefined){
             map.removeLayer(aMarker[i]);
         }
     }

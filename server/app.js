@@ -768,6 +768,12 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
             });
         }
     },
+    function (req,res, next){
+        let aRoutes = req.oRoutes;
+        for (let i in aRoutes) {
+            aRoutes[i].distance = Math.round(aRoutes[i].distance * 100) / 100;
+        }
+    },
     function (req, res) {
         if (req.query.sortBy != undefined) {
             let paramSort;
@@ -797,7 +803,7 @@ app.get('/reviewedRoutes', function (req, res, next) {
     let routeQuery = {};
     routeQuery.user = req.query.user;
     console.log(routeQuery.user);
-    Schema.Rating.find(routeQuery).populate('user').exec(function (err, data) {
+    Schema.Rating.find(routeQuery).lean().populate('user').exec(function (err, data) {
         if (err) {
             console.log("Error while finding rating");
             res.status(404).send("error while finding rating");
@@ -834,7 +840,6 @@ app.get('/reviewedRoutes', function (req, res, next) {
                     console.log("Error while finding route");
                     res.status(404).send("error while finding route");
                 }
-
 
                 if (data != null) {
                     data.comments = req.comment;
