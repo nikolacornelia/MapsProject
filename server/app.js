@@ -218,8 +218,6 @@ app.post('/saveRoute', auth, function (req, res, next) {
 
         let oRoute = req.body;
         //todo round distance
-    let oRoute = req.body;
-    //todo round distance
     console.log(oRoute);
     // oRoute.distance = round(oRoute.distance,1);
     //console.log(oRoute.distance);

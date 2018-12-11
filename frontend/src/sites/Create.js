@@ -83,6 +83,9 @@ class Create extends Component {
                 this.setState({hasRouteError: true});
                 return;
             }
+            else {
+                this.setState({hasRouteError: false});
+            }
             if (oRoute.distance >=25) {
                 this.setState({hasRouteDistanceError: true});
                 return;
