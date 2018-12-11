@@ -790,12 +790,6 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
             });
         }
     },
-    function (req,res, next){
-        let aRoutes = req.oRoutes;
-        for (let i in aRoutes) {
-            aRoutes[i].distance = Math.round(aRoutes[i].distance * 100) / 100;
-        }
-    },
     function (req, res) {
         if (req.query.sortBy != undefined) {
             let paramSort;
