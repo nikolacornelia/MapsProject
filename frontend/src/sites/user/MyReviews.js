@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Container,
     Header,
@@ -15,13 +15,13 @@ import {
     Item
 } from 'semantic-ui-react';
 import axios from 'axios';
-import {mockData} from '../../mockData';
+import { mockData } from '../../mockData';
 
 class MyReviews extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            routes: [] //mockData
+            routes: []
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -41,7 +41,7 @@ class MyReviews extends Component {
             params: {
                 user: this.user._id
             }
-        }).then((response) => this.setState({routes: response.data}));
+        }).then((response) => this.setState({ routes: response.data }));
     };
 
 
@@ -66,7 +66,7 @@ class MyReviews extends Component {
     handleEdit = (i) => {
         let routes = this.state.routes;
         routes[i].edit = true;
-        this.setState({routes: routes});
+        this.setState({ routes: routes });
     };
 
     /**
@@ -76,7 +76,7 @@ class MyReviews extends Component {
     handleCancel = (i) => {
         let routes = this.state.routes;
         routes[i].edit = false;
-        this.setState({routes: routes});
+        this.setState({ routes: routes });
     };
 
 
@@ -98,7 +98,7 @@ class MyReviews extends Component {
         return (
             <Container as={Segment} basic padded>
                 <Header as='h2' dividing>
-                    <Icon name='globe'/>
+                    <Icon name='globe' />
                     <Header.Content>My Reviews
                         <Header.Subheader as='h3'> Reviews you have created</Header.Subheader>
                     </Header.Content>
@@ -120,7 +120,7 @@ class MyReviews extends Component {
                                             </Item.Description>
                                             <Item.Extra>
                                                 <Rating icon='star' defaultRating={route.avg_rating} maxRating={5}
-                                                        disabled/>
+                                                    disabled />
                                             </Item.Extra>
                                         </Item.Content>
                                     </Item>
@@ -130,23 +130,23 @@ class MyReviews extends Component {
                                 {route.comments.length > 0 && <div>
                                     <Comment.Group size='large'>
                                         <Comment>
-                                            <Comment.Avatar src='./static/media/avatar-1.png'/>
+                                            <Comment.Avatar src='./static/media/avatar-1.png' />
                                             <Comment.Content>
-                                                <Comment.Author as='b'>{route.comments[0].author}</Comment.Author>
+                                                <Comment.Author as='b'>{route.comments[i].author}</Comment.Author>
                                                 <Comment.Metadata>
-                                                    <span>{new Date(route.comments[0].created).toLocaleString()}</span>
+                                                    <span>{new Date(route.comments[i].created).toLocaleString()}</span>
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
-                                                        ? <TextArea style={{width: "100%"}}
-                                                                    onChange={this.handleChangeComment}>{route.comments[0].comment}</TextArea>
-                                                        : (route.comments[0].comment)
+                                                        ? <TextArea style={{ width: "100%" }}
+                                                            onChange={this.handleChangeComment}>{route.comments[i].comment}</TextArea>
+                                                        : (route.comments[i].comment)
                                                     }
                                                 </Comment.Text>
                                                 <Comment.Actions>
-                                                    <Rating as='a' icon='star' defaultRating={route.comments[0].rating}
-                                                            maxRating={5} disabled={!route.edit}
-                                                            onChange={this.handleChangeComment}
+                                                    <Rating as='a' icon='star' defaultRating={route.comments[i].rating}
+                                                        maxRating={5} disabled={!route.edit}
+                                                        onChange={this.handleChangeComment}
                                                     />
                                                 </Comment.Actions>
                                             </Comment.Content>
@@ -155,22 +155,22 @@ class MyReviews extends Component {
 
                                     {!route.edit ? <div>
                                         <Button floated='right' compact
-                                                onClick={() => this.handleDelete(route.comments[0]._id)}>
+                                            onClick={() => this.handleDelete(route.comments[0]._id)}>
                                             Delete
                                         </Button>
                                         <Button floated='right' primary compact
-                                                onClick={() => this.handleEdit(i)}>
+                                            onClick={() => this.handleEdit(i)}>
                                             Edit
                                         </Button>
                                     </div> : <div>
-                                        <Button floated='right' compact onClick={() => this.handleCancel(i)}>
-                                            Cancel
+                                            <Button floated='right' compact onClick={() => this.handleCancel(i)}>
+                                                Cancel
                                         </Button>
-                                        <Button floated='right' primary compact
+                                            <Button floated='right' primary compact
                                                 onClick={() => this.handleSave(i)}>
-                                            Save
+                                                Save
                                         </Button>
-                                    </div>
+                                        </div>
                                     }
                                 </div>}
                             </Grid.Column>

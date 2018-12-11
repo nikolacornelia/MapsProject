@@ -71,8 +71,12 @@ class Create extends Component {
         //get current leaflet route information
         let oRoute = CreateMap.getRouteMapData();
 
-        // create a function that is called after image file is read
+        if(!this.state.difficulty) {
+            alert("Please select a difficulty first!");
+            return;
+        }
 
+        // create a function that is called after image file is read
         let _createRoute = (e) => {
             console.log(oRoute.points);
             if (oRoute.points.length === 0 || oRoute.points.length === 1) {
@@ -182,7 +186,7 @@ class Create extends Component {
                                         icon={<Icon name='add' link inverted color='black'/>}/>
 
                             <Form.Group inline>
-                                <label>Difficulty</label>
+                                <label>Difficulty <span style={{color: "#db2828"}}>*</span></label>
 
                                 <Form.Radio
                                     label='easy'

@@ -95,23 +95,26 @@ class MyRoutes extends Component {
      * Deletes a route
      * @param id - route id to be deleted
      */
-    handleDelete = (id) => {
+    handleDelete = () => {
+        if(!this.state.confirmDeleteId)
+            return;
+        let id = this.state.confirmDeleteId;
         if (this.state.tab == 'created') {
             axios.delete('http://localhost:3001/Route', {
                 params: {
                     _id: id,
-                    user: this.user._id
+                    user: this.user._id // todo: remove userid, use session
                 }
             }).then(() => this.getMyRoutes());
         } else if (this.state.tab == 'liked') {
             axios.delete('http://localhost:3001/LikedRoute', {
                 params: {
                     _id: id,
-                    user: this.user._id
+                    user: this.user._id // todo: remove userid, use session
                 }
             }).then(() => this.getMyRoutes());
         }
-        this.setState({confirmDelete: false});
+        this.setState({confirmDelete: false, confirmDeleteId: undefined});
     };
 
     render() {
@@ -166,18 +169,18 @@ class MyRoutes extends Component {
                                 <Item.Extra>
                                     <Rating icon='star' defaultRating={result.avg_rating} maxRating={5} disabled/>
                                     <Button floated='right' compact
-                                            onClick={() => this.setState({confirmDelete: true})}>
+                                            onClick={() => this.setState({confirmDelete: true, confirmDeleteId: result._id})}>
                                         Delete
                                     </Button>
-                                    <Confirm open={this.state.confirmDelete}
-                                             onCancel={() => this.setState({confirmDelete: false})}
-                                             onConfirm={() => this.handleDelete(result._id)}
-                                             content='Are you sure you want to delete this Route?'/>
                                 </Item.Extra>
                             </Item.Content>
                         </Item>
                     )}
                 </Item.Group>
+                <Confirm open={this.state.confirmDelete}
+                         onCancel={() => this.setState({confirmDelete: false})}
+                         onConfirm={this.handleDelete}
+                         content='Are you sure you want to delete this Route?'/>
             </Container>
 
         )

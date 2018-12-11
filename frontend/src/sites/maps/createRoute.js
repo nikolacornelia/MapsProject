@@ -25,11 +25,11 @@ var template =
 '<form id="popup-form">' +
 '<p>' +
 '<label for="sPName">Name:</label>' +
-'<p>' +
+'</br>' +
 '<input id="sPName" class="popup-input" type="text" />' +
 '<p>' +
 '<label for="sPDescription">Beschreibung:</label>' +
-'<p>' +
+'</br>' +
 '<textarea id="sPDescription" class="popup-textarea" type="text"></textarea>' +
 '<p>' +
 '<button id="button-submit" type="button">Save</button>' +
@@ -149,7 +149,7 @@ function newPoint(){
     L.marker([dLatH, dLngH]).bindPopup(oPoint.name+"</br>"+oPoint.description).on('mouseover', function(){
         this.openPopup();
     }).addTo(map);
-    connectHighlight([dLatH, dLngH]);
+    connectHighlight({lat:dLatH, lng:dLngH});
     bHighlight = false;
     map.closePopup();
     stateChangingButton.state('ButtonOff');
@@ -175,6 +175,7 @@ function connectPoint(e) {
 
 function connectHighlight(koordinaten) {
     aHighlight.push(1);
+    console.log(koordinaten);
     aPoints.push(koordinaten);
     aMarker[aMarker.length] = null;
     aPoly[aPoly.length] = L.polyline(aPoints, {
@@ -192,16 +193,19 @@ function connectHighlight(koordinaten) {
 function deleteFunction() {
     if (aPoints.length > 1) {
         iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        map.removeLayer(aPoly[aPoly.length - 1]);
+        aPoly.splice(aPoly.length - 1, 1);
         console.log(iDistance);
     }
     if (aHighlight[aHighlight.length - 1] == 0) {
         map.removeLayer(aMarker[aMarker.length - 1]);
     }
-    map.removeLayer(aPoly[aPoly.length - 1]);
-    aMarker.splice(aMarker.length - 1, 1);
-    aPoints.splice(aPoints.length - 1, 1);
-    aPoly.splice(aPoly.length - 1, 1);
-    aHighlight.splice(aHighlight.length - 1);
+    if (aMarker.length>0){
+        aMarker.splice(aMarker.length - 1, 1);
+        aPoints.splice(aPoints.length - 1, 1);
+        aHighlight.splice(aHighlight.length - 1);
+    }
+
 
 }
 
@@ -232,6 +236,7 @@ function displayPoints(arrayPoints) {
 
     cities.eachLayer(function(layer) {
         layer.on('click', function(){
+            console.log(this.getLatLng);
             connectHighlight(this.getLatLng());
         });
     });
@@ -289,6 +294,7 @@ export function getRouteMapData() {
     oRoute.highlights = aHighlight;
     oRoute.distance = iDistance;
     console.log(oRoute);
+
     return oRoute;
 }
 
@@ -296,10 +302,18 @@ export function getRouteMapData() {
 
 //reset array after route was created successfully
 export function resetArrays() {
-    var aPoints = [];
-    var aMarker = [];
-    var aPoly = [];
-    var aHighlight = []; // Boolean
+    for (var i=0, len = aPoly.length; i < len; i++){
+        map.removeLayer(aPoly[i]);
+    }
+    for (var i=0, len = aMarker.length; i < len; i++){
+        if (!aMarker[i]){
+            map.removeLayer(aMarker[i]);
+        }
+    }
+    aPoints = [];
+    aMarker = [];
+    aPoly = [];
+    aHighlight = []; // Boolean
 }
 
 function getRoutes() {
