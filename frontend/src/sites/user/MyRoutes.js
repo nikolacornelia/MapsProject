@@ -88,6 +88,7 @@ class MyRoutes extends Component {
      * @param name - name of the tab to be selected
      */
     handleTabNavigation = (e, {name}) => {
+        this.setState({routes: []});
         this.setState({tab: name}, this.getMyRoutes);
     };
 

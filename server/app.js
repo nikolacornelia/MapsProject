@@ -218,8 +218,8 @@ app.delete('/LikedRoute', auth, function (req, res) {
 
 app.post('/saveRoute', auth, function (req, res, next) {
 
-        let oRoute = req.body;
-        //todo round distance
+    let oRoute = req.body;
+    //todo round distance
     console.log(oRoute);
     // oRoute.distance = round(oRoute.distance,1);
     //console.log(oRoute.distance);
@@ -432,15 +432,15 @@ app.get('/getRoutes', function (req, res, next) {
                 , { $group: { _id: null, rating: { $avg: '$rating' } } }
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
-                    // one route may not have a rating yet
-                    if (response.length == 0) {
-                        //zero if undefined
-                        oneRoute.avg_rating = 0;
-                    } else {
-                        let avgRating = response[0].rating;
-                        oneRoute.avg_rating = avgRating;
-                    }
-                    oneRoute.created = Date(oneRoute.created);
+                // one route may not have a rating yet
+                if (response.length == 0) {
+                    //zero if undefined
+                    oneRoute.avg_rating = 0;
+                } else {
+                    let avgRating = response[0].rating;
+                    oneRoute.avg_rating = avgRating;
+                }
+                oneRoute.created = Date(oneRoute.created);
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
                 if (iFinishedQueries === (aRoutes.length)) {
@@ -499,19 +499,19 @@ app.get('/getRoutes', function (req, res, next) {
                 console.log(paramSort);
             } else if (req.query.sortBy == 3) {
                 //Sort by date created
-               /** req.oRoutes.sort(function sortFunction(a,b){
-                    var dateA = (a.created).getTime();
-                    var dateB = (b.created).getTime();
-                    return dateA > dateB ? 1 : -1;
-                } ); **/
-               // req.oRoutes = _.sortBy(req.oRoutes, req.oRoutes.created);
-               sortJson(req.oRoutes, 'created');
-               // req.oRoutes.reverse();
-              //  req.oRoutes = lodash.sortBy(req.oRoutes, [req.oRoutes.created]);
+                /** req.oRoutes.sort(function sortFunction(a,b){
+                     var dateA = (a.created).getTime();
+                     var dateB = (b.created).getTime();
+                     return dateA > dateB ? 1 : -1;
+                 } ); **/
+                // req.oRoutes = _.sortBy(req.oRoutes, req.oRoutes.created);
+                sortJson(req.oRoutes, 'created');
+                // req.oRoutes.reverse();
+                //  req.oRoutes = lodash.sortBy(req.oRoutes, [req.oRoutes.created]);
                 console.log("date");
-              //  paramSort = 'created';
-               // paramOrder = 'desc';
-               // oRoutes.sort(function(a, b){
+                //  paramSort = 'created';
+                // paramOrder = 'desc';
+                // oRoutes.sort(function(a, b){
                 //    return oRoutes.created-b.created
                 //})
             }
@@ -747,6 +747,8 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
                     res.status(404).send("error while finding route");
                     throw err;
                 }
+                if (data.distance > 0)
+                    data.distance = Math.round(data.distance * 100) / 100;
                 if (data != null) {
                     oRoutes.push(data);
                 }
@@ -851,7 +853,7 @@ app.get('/reviewedRoutes', function (req, res, next) {
         for (let i in aCommentedRoutes) {
             console.log(aCommentedRoutes[i].route);
 
-            Schema.Route.findOne({_id: aCommentedRoutes[i].route}).lean().exec(function (err, data) {
+            Schema.Route.findOne({ _id: aCommentedRoutes[i].route }).lean().exec(function (err, data) {
                 if (err) {
                     console.log("Error while finding route");
                     res.status(404).send("error while finding route");
