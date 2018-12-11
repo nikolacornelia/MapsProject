@@ -45,6 +45,7 @@ export function displayRoutes(data){
         sColor = 'yellow';
     }
     for (var i = 0, len = data.length; i < len; i++) {
+        console.log(data[i].points);
         displayRoute(data[i].points,data[i].highlights);
       }
 }
@@ -55,6 +56,8 @@ function displayRoute (aPoint, aHighlight){
             aLayers.addLayer(new L.marker([aPoint[i].lat,aPoint[i].lng],{icon: yellowWaypoint}));
        }
        if (i > 0){
+        console.log(aPoint[i].lat);
+        console.log(aPoint[i-1].lat);
         aLayers.addLayer(L.polyline([[aPoint[i].lat,aPoint[i].lng], [aPoint[i-1].lat,aPoint[i-1].lng]],{color: sColor, weight: 3, dashArray: '20,15',smoothFactor: 1}));
        }
     }
