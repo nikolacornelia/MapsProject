@@ -163,7 +163,7 @@ class MyRoutes extends Component {
                                 <Item.Header as='h4'> {result.title} </Item.Header>
                                 <Item.Meta>{result.location}</Item.Meta>
                                 <Item.Description>
-                                    <div>Distance:{result.distance} km</div>
+                                    <div>Distance: {result.distance} km</div>
                                     <div>Difficulty: {result.difficulty}</div>
                                 </Item.Description>
                                 <Item.Extra>
