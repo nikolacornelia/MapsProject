@@ -12,8 +12,7 @@ var sColor;
 export function onInit(){
     map = L.map( 'map', {
         center: [20.0, 5.0],
-        minZoom: 2,
-        zoom: 2
+        minZoom: 2
     });
     //map.on('load', onMapLoad);
 
@@ -28,23 +27,19 @@ export function onInit(){
         subdomains: ['a', 'b', 'c']
     }).addTo( map );
 
-    map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
-    .on('locationfound', function (e) {
-    })
-    .on('locationerror', function (e) {
-        console.log(e);
-        alert("Location access denied.");
-    });
+    map.setView([49.47745177227496,8.422132675113554],16); //fake 
+    // map.locate({setView: true, maxZoom: 16}).on('locationerror', function (e) {
+    //     console.log("Location Acces denied");
+    //     map.setView([49.47745177227496,8.422132675113554],16); 
+    // });
+
     getPointsOfInterest();
 }
 export function displayRoutes(data){
     console.log(data);
     aLayers.clearLayers();
-    if (data.length > 1){
-        sColor = 'blue';
-    }else{
-        sColor = 'yellow';
-    }
+    map.flyTo(data[0].points[0],16);
+    sColor = 'blue';
     for (var i = 0, len = data.length; i < len; i++) {
         console.log(data[i].points);
         displayRoute(data[i].points,data[i].highlights);
@@ -52,8 +47,9 @@ export function displayRoutes(data){
 }
 
 export function displayOneRoute(data){
-    sColor = 'yellow';
+    sColor = 'green';
     aLayers.clearLayers();
+    map.flyTo(data.points[0],16);
     displayRoute(data.points,data.highlights);
 }
 function displayRoute (aPoint, aHighlight){

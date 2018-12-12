@@ -2,6 +2,7 @@
 import L from 'leaflet';
 import 'leaflet-easybutton';
 import axios from "axios";
+import { modelNames } from 'mongoose';
 
 var dLat;
 var dLng;
@@ -62,8 +63,7 @@ var stateChangingButton = L.easyButton({
 export function onInit() {
     map = L.map('map', {
         center: [20.0, 5.0],
-        minZoom: 2,
-        zoom: 2
+        minZoom: 2
     });
     yellowWaypoint = L.icon({
         iconUrl: './static/media/pin48Waypoint.png',
@@ -87,19 +87,12 @@ export function onInit() {
     }, "Delete last point").addTo(map);
 
     stateChangingButton.addTo(map);
-
-    //map.setView([49.47748, 8.42216], 15);
-
-    map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
-        .on('locationfound', function (e) {
-        })
-        .on('locationerror', function (e) {
-            console.log(e);
-            alert("Location access denied.");
-        });
-
-    map.on('click', onMapClick);
-
+    
+    map.setView([49.47745177227496,8.422132675113554],16); // fake 
+    // map.locate({setView: true, maxZoom: 16}).on('locationerror', function (e) {
+    //     map.setView([49.47745177227496,8.422132675113554],16);
+    //     console.log("Location Acces denied"); 
+    // });
 }
 
 function onMapClick(e) {
