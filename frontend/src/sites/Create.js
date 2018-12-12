@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
     Container, Header, Button, Divider, Grid, Image, Sidebar, Visibility, Message,
     Responsive, Segment, Menu, Icon, Input, Checkbox, Accordion, Form, Radio, Dropdown, Dimmer, Loader
-} from 'semantic-ui-react';
+} from 'semantic-ui-react'
 import * as CreateMap from './maps/CreateRoute';
 import {mockFeatures} from "../mockData";
 import { toast, ToastContainer } from 'react-toastify';
@@ -118,7 +118,7 @@ class Create extends Component {
                 this.setState({hasRouteError: false});
                 this.setState({loading: false});
                 console.log(this.user._id);
-                this.setState({routeCreated: true});
+                this.setState({routeCreated: true, name: ''});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
                 oRoute = CreateMap.resetArrays();
@@ -178,7 +178,7 @@ class Create extends Component {
                                 <Header.Subheader>Enter route information</Header.Subheader>
                             </Header>
 
-                            <Form.Input fluid label='Name' placeholder='Name of the route' required
+                            <Form.Input fluid label='Name' placeholder='Name of the route' required value={this.state.name}
                                         name='name' onChange={this.handleChange} ref='inputText'/>
                             <Form.TextArea fluid label='Description' placeholder='Description of the route'
                                            name='description' onChange={this.handleChange}/>

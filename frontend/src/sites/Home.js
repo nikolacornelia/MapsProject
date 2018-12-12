@@ -12,21 +12,14 @@ class Home extends Component {
             <Container fluid data-testid='siteHome'>
                 <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows showThumbs={false}>
                     <div>
-                        <img src='./static/media/RiceTerraces.JPG'/>
+                        <img src='./static/media/Bild1.JPG'/>
                     </div>
                     <div>
-                        <img src='./static/media/EndChineseWall.JPG'/>
-                        <p className="legend">Wanderweg Chinesische Mauer</p>
+                        <img src='./static/media/Bild2.JPG'/>
                     </div>
                     <div>
-                        <img src='./static/media/RiceTerraces.JPG'/>
-                        <p className="legend">Wanderweg durch die Reisterrassen</p>
+                        <img src='./static/media/Bild3.JPG'/>
                     </div>
-                    <div>
-                        <img src='./static/media/EndChineseWall.JPG'/>
-                        <p className="legend">Chinesische Mauer</p>
-                    </div>
-
                 </Carousel>
             </Container>
         )
