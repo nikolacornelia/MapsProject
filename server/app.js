@@ -440,7 +440,7 @@ app.get('/getRoutes', function (req, res, next) {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
                 }
-                oneRoute.created = Date(oneRoute.created);
+                //oneRoute.created = Date(oneRoute.created);
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
                 if (iFinishedQueries === (aRoutes.length)) {
@@ -482,42 +482,9 @@ app.get('/getRoutes', function (req, res, next) {
         ;
     },
     function (req, res) {
-        if (req.query.sortBy != undefined) {
-            let paramSort;
-            let paramOrder;
-            if (req.query.sortBy == 1) {
-                //Sort by name
-                paramSort = 'title';
-                paramOrder = 'asc';
-                sortJson(req.oRoutes, paramSort, paramOrder);
-                console.log(paramSort);
-            } else if (req.query.sortBy == 2) {
-                //Sort by average rating
-                paramSort = 'avg_rating';
-                paramOrder = 'des';
-                sortJson(req.oRoutes, paramSort, paramOrder);
-                console.log(paramSort);
-            } else if (req.query.sortBy == 3) {
-                //Sort by date created
-                /** req.oRoutes.sort(function sortFunction(a,b){
-                     var dateA = (a.created).getTime();
-                     var dateB = (b.created).getTime();
-                     return dateA > dateB ? 1 : -1;
-                 } ); **/
-                // req.oRoutes = _.sortBy(req.oRoutes, req.oRoutes.created);
-                sortJson(req.oRoutes, 'created');
-                // req.oRoutes.reverse();
-                //  req.oRoutes = lodash.sortBy(req.oRoutes, [req.oRoutes.created]);
-                console.log("date");
-                //  paramSort = 'created';
-                // paramOrder = 'desc';
-                // oRoutes.sort(function(a, b){
-                //    return oRoutes.created-b.created
-                //})
-            }
-        }
-        console.log(req.oRoutes);
-        res.send(req.oRoutes);
+    let aResult = sortRoutes(req.oRoutes, req.query.sortBy);
+
+        res.send(aResult);
     }
 );
 
@@ -695,23 +662,12 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
     }
     ,
     function (req, res) {
-        if (req.query.sortBy != undefined) {
-            let paramSort;
-            if (req.query.sortBy == 1) {
-                //Sort by name
-                paramSort = 'title';
-            } else if (req.query.sortBy == 2) {
-                //Sort by average rating
-                paramSort = 'avg_rating';
-            } else if (req.query.sortBy == 3) {
-                //Sort by date created
-                paramSort = 'created';
-            }
-
-            sortJson(req.oRoutes, paramSort);
-
+        if (req.oRoutes.length == 0) {
+            res.send([]);
+        } else {
+            let aResult = sortRoutes(req.oRoutes, req.query.sortBy);
+            res.send(aResult);
         }
-        res.send(req.oRoutes);
     }
 )
     ;
@@ -793,24 +749,11 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
         }
     },
     function (req, res) {
-        if (req.query.sortBy != undefined) {
-            let paramSort;
-            if (req.query.sortBy == 1) {
-                //Sort by name
-                paramSort = 'title';
-            } else if (req.query.sortBy == 2) {
-                //Sort by average rating
-                paramSort = 'avg_rating';
-            } else if (req.query.sortBy == 3) {
-                //Sort by date created
-                paramSort = 'created';
-            }
-            sortJson(req.favRoutes, paramSort);
-        }
         if (req.favRoutes.length == 0) {
             res.send([]);
         } else {
-            res.send(req.favRoutes);
+            let aResult = sortRoutes(req.favRoutes, req.query.sortBy);
+            res.send(aResult);
         }
     }
 )
@@ -918,24 +861,11 @@ app.get('/reviewedRoutes', function (req, res, next) {
         }
     },
     function (req, res) {
-        if (req.query.sortBy != undefined) {
-            let paramSort;
-            if (req.query.sortBy == 1) {
-                //Sort by name
-                paramSort = 'title';
-            } else if (req.query.sortBy == 2) {
-                //Sort by average rating
-                paramSort = 'avg_rating';
-            } else if (req.query.sortBy == 3) {
-                //Sort by date created
-                paramSort = 'created';
-            }
-            sortJson(req.favRoutes, paramSort);
-        }
-        if (req.favRoutes.length === 0) {
+        if (req.favRoutes.length == 0) {
             res.send([]);
         } else {
-            res.send(req.favRoutes);
+            let aResult = sortRoutes(req.favRoutes, req.query.sortBy);
+            res.send(aResult);
         }
     }
 )
@@ -956,3 +886,37 @@ app.delete('/Rating', auth, function (req, res) {
         console.log('successfully deleted Fav for Route');
     });
 });
+
+function sortRoutes(aRoutes, iSortBy) {
+    if (iSortBy == 1) {
+        //Sort by name
+        sortJson(aRoutes, 'title', 'asc');
+    } else if (iSortBy == 2) {
+        //Sort by average rating
+        sortJson(aRoutes, 'avg_rating', 'des');
+    } else if (iSortBy == 3) {
+        aRoutes = sortByDate(aRoutes);
+    }
+    return aRoutes;
+}
+
+
+function sortByDate(aRoutes) {
+    if (aRoutes.length <= 1) {
+        return aRoutes;
+    } else {
+        let left = [];
+        let right = [];
+        let aResult = [];
+        let pivotElement = aRoutes.pop();
+        let pivotDate = new Date(pivotElement.created).getTime();
+        for (let i = 0; i < aRoutes.length; i++) {
+            if (new Date(aRoutes[i].created).getTime() >= pivotDate) {
+                left.push(aRoutes[i]);
+            } else {
+                right.push(aRoutes[i]);
+            }
+        }
+        return aResult.concat(sortByDate(left), pivotElement, sortByDate(right));
+    }
+}
