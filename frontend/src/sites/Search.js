@@ -409,12 +409,6 @@ class Search extends Component {
                                                                                    name='commentText'
                                                                                    onChange={this.onChangeReviewText}
                                                                                    placeholder='Enter your review'/>
-                                                                    <Form.Input type='file' fluid label='Image'
-                                                                                placeholder='Upload image file'
-                                                                                iconPosition='left'
-                                                                                onChange={this.onChangeReviewImage}
-                                                                                icon={<Icon name='add' link inverted
-                                                                                            color='black'/>}/>
                                                                 </Comment.Text>
                                                             </Comment.Content>
                                                         </Comment>
