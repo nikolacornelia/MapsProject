@@ -20,6 +20,12 @@ L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   subdomains: ['a', 'b', 'c']
 }).addTo( map );
 
+L.Control.geocoder({
+    defaultMarkGeocode: false
+  }).on('markgeocode', function(e) {
+    map.flyTo(e.geocode.center,16);
+  }).addTo(map);
+
 map.setView([49.47748, 8.42216], 15);
 
 map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */

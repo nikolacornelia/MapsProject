@@ -1,6 +1,7 @@
 // See post: http://asmaloney.com/2014/01/code/creating-an-interactive-map-with-leaflet-and-openstreetmap/
 import L from 'leaflet';
 import 'leaflet-easybutton';
+import 'leaflet-control-geocoder';
 import axios from "axios";
 import { modelNames } from 'mongoose';
 
@@ -81,6 +82,12 @@ export function onInit() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         subdomains: ['a', 'b', 'c']
     }).addTo(map);
+
+    L.Control.geocoder({
+        defaultMarkGeocode: false
+      }).on('markgeocode', function(e) {
+        map.flyTo(e.geocode.center,16);
+      }).addTo(map);
 
     L.easyButton('fa-times', function () {
         deleteFunction();

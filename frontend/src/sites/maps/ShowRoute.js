@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import axios from 'axios';
+import 'leaflet-control-geocoder';
 
 var map;
 var yellowWaypoint;
@@ -26,6 +27,12 @@ export function onInit(){
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         subdomains: ['a', 'b', 'c']
     }).addTo( map );
+
+    L.Control.geocoder({
+        defaultMarkGeocode: false
+      }).on('markgeocode', function(e) {
+        map.flyTo(e.geocode.center,16);
+      }).addTo(map);
 
     map.setView([49.47745177227496,8.422132675113554],16); //fake 
     // map.locate({setView: true, maxZoom: 16}).on('locationerror', function (e) {
