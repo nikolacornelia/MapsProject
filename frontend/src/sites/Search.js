@@ -123,7 +123,7 @@ class Search extends Component {
             var routeData = this.state.routes.find((route) => route._id === id);
             console.log(routeData);
             ShowRoute.displayOneRoute(routeData);
-        
+
         }
         if (id == -1){
             var routeData = this.state.routes;
@@ -163,7 +163,6 @@ class Search extends Component {
                 }).then((response) => {
                     // returns object of all comments created
                     this.setState({comments: response.data});
-
                 });
                 // todo nstelle von this.onSearch nur DetailRoute updaten? --> refresh DetailRoute
                 this.onSearch();
@@ -211,7 +210,10 @@ class Search extends Component {
 
     toggleFavorite = (isFavorised) => {
         //isFavorised = new state
-
+        if (this.user === null) {
+            window.location = '/#/login';
+            return;
+        }
         // send request to toggle favorite
         axios.post('http://localhost:3001/favoriseRoute', {
             route: this.state.showDetail,  // currently selected routeid
@@ -228,6 +230,7 @@ class Search extends Component {
         var detailRoute;
         if (this.state.showDetail !== -1) {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
+            console.log(detailRoute);
         }
         return (
             <Grid stackable columns={2} className='map' data-testid='siteSearch'>
@@ -409,6 +412,12 @@ class Search extends Component {
                                                                                    name='commentText'
                                                                                    onChange={this.onChangeReviewText}
                                                                                    placeholder='Enter your review'/>
+                                                                    <Form.Input type='file' fluid label='Image'
+                                                                                placeholder='Upload image file'
+                                                                                iconPosition='left'
+                                                                                onChange={this.onChangeReviewImage}
+                                                                                icon={<Icon name='add' link inverted
+                                                                                            color='black'/>}/>
                                                                 </Comment.Text>
                                                             </Comment.Content>
                                                         </Comment>
