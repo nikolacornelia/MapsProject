@@ -9,7 +9,7 @@ import MyReviews from "./sites/user/MyReviews";
 import Settings from "./sites/user/Settings";
 import axios from "axios";
 
-import {Button, Container, Menu, Grid, Icon, Responsive, Segment, Dropdown, Label, Header} from "semantic-ui-react";
+import {Button, Container, Image, Menu, Grid, Icon, Responsive, Segment, Dropdown, Label, Header} from "semantic-ui-react";
 import {Route, HashRouter as Router, NavLink, Redirect} from "react-router-dom";
 
 class Website extends Component {
@@ -70,8 +70,11 @@ class Website extends Component {
                         </Menu.Item>
 
                         <Header style={{paddingLeft: "1rem"}}>
-                            <Icon name='tree'/>
-                            <Header.Content> Wanderlust</Header.Content>
+
+                            <img src='./static/media/Logo.PNG' style={{width: "5.5em"}}/>
+                            <Header.Content>
+                            </Header.Content>
+
                         </Header>
                         {!this.state.loggedIn ?
                             <Menu.Item position='right' name='user' as={NavLink} exact to='/login'>

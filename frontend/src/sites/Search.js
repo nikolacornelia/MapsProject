@@ -123,7 +123,7 @@ class Search extends Component {
             var routeData = this.state.routes.find((route) => route._id === id);
             console.log(routeData);
             ShowRoute.displayOneRoute(routeData);
-        
+
         }
         if (id == -1){
             var routeData = this.state.routes;
