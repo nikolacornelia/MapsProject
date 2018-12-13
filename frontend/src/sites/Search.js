@@ -163,7 +163,6 @@ class Search extends Component {
                 }).then((response) => {
                     // returns object of all comments created
                     this.setState({comments: response.data});
-
                 });
                 // todo nstelle von this.onSearch nur DetailRoute updaten? --> refresh DetailRoute
                 this.onSearch();
@@ -228,6 +227,7 @@ class Search extends Component {
         var detailRoute;
         if (this.state.showDetail !== -1) {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
+            console.log(detailRoute);
         }
         return (
             <Grid stackable columns={2} className='map' data-testid='siteSearch'>
