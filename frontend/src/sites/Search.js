@@ -210,7 +210,10 @@ class Search extends Component {
 
     toggleFavorite = (isFavorised) => {
         //isFavorised = new state
-
+        if (this.user === null) {
+            window.location = '/#/login';
+            return;
+        }
         // send request to toggle favorite
         axios.post('http://localhost:3001/favoriseRoute', {
             route: this.state.showDetail,  // currently selected routeid
@@ -409,6 +412,12 @@ class Search extends Component {
                                                                                    name='commentText'
                                                                                    onChange={this.onChangeReviewText}
                                                                                    placeholder='Enter your review'/>
+                                                                    <Form.Input type='file' fluid label='Image'
+                                                                                placeholder='Upload image file'
+                                                                                iconPosition='left'
+                                                                                onChange={this.onChangeReviewImage}
+                                                                                icon={<Icon name='add' link inverted
+                                                                                            color='black'/>}/>
                                                                 </Comment.Text>
                                                             </Comment.Content>
                                                         </Comment>
