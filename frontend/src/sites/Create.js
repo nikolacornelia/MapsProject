@@ -118,7 +118,7 @@ class Create extends Component {
                 this.setState({hasRouteError: false});
                 this.setState({loading: false});
                 console.log(this.user._id);
-                this.setState({routeCreated: true, name: ''});
+                this.setState({routeCreated: true, name: '', description: '', features: ''});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
                 oRoute = CreateMap.resetArrays();
@@ -180,7 +180,7 @@ class Create extends Component {
 
                             <Form.Input fluid label='Name' placeholder='Name of the route' required value={this.state.name}
                                         name='name' onChange={this.handleChange} ref='inputText'/>
-                            <Form.TextArea fluid label='Description' placeholder='Description of the route'
+                            <Form.TextArea fluid label='Description' placeholder='Description of the route' value={this.state.description}
                                            name='description' onChange={this.handleChange}/>
 
                             <Form.Input type='file' fluid label='Image' placeholder='Upload image file'
@@ -213,7 +213,7 @@ class Create extends Component {
                                     onChange={this.handleChange}
                                 />
                             </Form.Group>
-                            <Form.Dropdown name='features' label='Features' placeholder='Route features'
+                            <Form.Dropdown name='features' label='Features' placeholder='Route features' value={this.state.features}
                                            fluid multiple search selection options={mockFeatures}
                                            onChange={this.handleChange}
                             />
