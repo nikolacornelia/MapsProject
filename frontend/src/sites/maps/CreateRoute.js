@@ -22,19 +22,19 @@ var bHighlight = false;
 
 var template = 
 '<header>' +
-'<h3>Erstelle dein Highlight</h3>' +
+'<h3>Create Highlight</h3>' +
 '</header>' +
 '<form id="popup-form">' +
 '<p>' +
 '<label for="sPName">Name:</label>' +
 '</br>' +
-'<input id="sPName" class="popup-input" type="text" />' +
+'<input id="sPName" class="popup-input" type="text" required/>' +
 '<p>' +
-'<label for="sPDescription">Beschreibung:</label>' +
+'<label for="sPDescription">Description:</label>' +
 '</br>' +
-'<textarea id="sPDescription" class="popup-textarea" type="text"></textarea>' +
+'<textarea id="sPDescription" class="popup-textarea" type="text" required></textarea>' +
 '<p>' +
-'<button id="button-submit" type="button">Save</button>' +
+'<button id="button-submit" type="submit">Save</button>' +
 '<p>' +
 '</form>';
 
@@ -135,6 +135,9 @@ function newPoint(){
     let oPoint = {};
     oPoint.name = document.getElementById("sPName").value;
     oPoint.description = document.getElementById("sPDescription").value;
+    if (oPoint.name==='' || oPoint.description==='') {
+        return;
+    }
     oPoint.latitude = dLatH;
     oPoint.longitude = dLngH;
     var jsonPoint = JSON.stringify(oPoint);
