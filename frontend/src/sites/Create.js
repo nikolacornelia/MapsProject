@@ -78,7 +78,6 @@ class Create extends Component {
 
         // create a function that is called after image file is read
         let _createRoute = (e) => {
-            console.log(oRoute.points);
             if (oRoute.points.length === 0 || oRoute.points.length === 1) {
                 this.setState({hasRouteError: true});
                 return;
@@ -117,12 +116,11 @@ class Create extends Component {
             }).then((response) => {
                 this.setState({hasRouteError: false});
                 this.setState({loading: false});
-                console.log(this.user._id);
                 this.setState({routeCreated: true, name: '', description: '', features: ''});
                 //reset created route points
                 //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
                 oRoute = CreateMap.resetArrays();
-
+                this.setState({name: null, description: null, difficulty: null, features: null, points: [], images: null, distance: null});
             }).catch((error) => {
                 // possible?
             });

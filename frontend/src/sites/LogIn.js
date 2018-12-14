@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Container,
     Header,
@@ -35,12 +35,15 @@ class LogIn extends Component {
     }
 
     onChangeInput = (e) => {
-        this.setState({[e.target.name]: e.target.value});
+        if (this.state.hasError) {
+            this.setState({ hasError: false });
+        }
+        this.setState({ [e.target.name]: e.target.value });
     };
 
     navigateInternally = (e, page) => {
         e.preventDefault();
-        this.setState({page: page, formErrors: []});
+        this.setState({ page: page, formErrors: [] });
     };
 
     onSubmitLogin = () => {
@@ -58,13 +61,13 @@ class LogIn extends Component {
                 referrTo = this.props.location.state.from;
                 this.props.location.state.updateLoginStatus();
             } else {
-                referrTo = {pathname: "/"};
+                referrTo = { pathname: "/" };
                 this.props.updateLoginStatus();
             }
             this.props.history.push(referrTo);
         }).catch((error) => {
             // error routine (http response status 4xx)
-            this.setState({hasError: true});
+            this.setState({ hasError: true });
         });
     };
 
@@ -79,50 +82,50 @@ class LogIn extends Component {
             password: this.state.password
         }).then((response) => {
             // successfully registered
-            this.setState({registerSuccess: true});
+            this.setState({ registerSuccess: true });
         }).catch((error) => {
             // error routine (http response status 4xx)
-            this.setState({hasError: true});
+            this.setState({ hasError: true });
         });
     };
 
     validateRegisterForm = () => {
         let formErrors = [];
         if (!validator.isEmail(this.state.email))
-            formErrors.push({field: 'email', text: 'Please enter a valid email.'});
+            formErrors.push({ field: 'email', text: 'Please enter a valid email.' });
         if (this.state.password.length < 6)
-            formErrors.push({field: 'password', text: 'Your password is too short.'});
+            formErrors.push({ field: 'password', text: 'Your password is too short.' });
         if (!this.state.password || this.state.password !== this.state.password_repeat)
-            formErrors.push({field: 'password', text: 'Your passwords do not match.'});
+            formErrors.push({ field: 'password', text: 'Your passwords do not match.' });
 
-        this.setState({formErrors: formErrors});
+        this.setState({ formErrors: formErrors });
         return formErrors.length === 0;
     };
 
     render() {
         return (
-            <Grid textAlign='center' style={{height: '100%'}} verticalAlign='middle'>
-                <Grid.Column style={{maxWidth: 450}}>
+            <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
+                <Grid.Column style={{ maxWidth: 450 }}>
                     {this.state.page === 'login' && <div>
                         <Header as='h2' color='blue' textAlign='center'>
                             Login to your account
                         </Header>
                         {this.state.hasError &&
-                        <Message attached error header='Invalid login data!'
-                                 content='Please check your email or password.'/>
+                            <Message attached error header='Invalid login data!'
+                                content='Please check your email or password.' />
                         }
                         {this.props.location.state &&
-                        <Message attached warning header='You must login to access this page!'
-                                 content='Please login first. You will then be redirected.'/>
+                            <Message attached warning header='You must login to access this page!'
+                                content='Please login first. You will then be redirected.' />
                         }
                         <Form size='large' onSubmit={this.onSubmitLogin} className='attached fluid segment'>
 
                             <Form.Input fluid icon='user' name='user' iconPosition='left'
-                                        placeholder='Email address or user name' onChange={this.onChangeInput}
-                                        required/>
+                                placeholder='Email address or user name' onChange={this.onChangeInput}
+                                required />
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
-                                        placeholder='Password' onChange={this.onChangeInput}
-                                        type='password' required/>
+                                placeholder='Password' onChange={this.onChangeInput}
+                                type='password' required />
                             <Form.Field>
                                 <a href='#' onClick={(e) => this.navigateInternally(e, 'forgotPassword')}>Forgot your
                                     password?</a>
@@ -142,37 +145,37 @@ class LogIn extends Component {
                             Register a new account
                         </Header>
                         {this.state.registerSuccess &&
-                        <Message attached success header='Your account was successfully registered.'>
-                            You can now <a href='#' onClick={(e) => this.navigateInternally(e, 'login')}>login here</a>.
+                            <Message attached success header='Your account was successfully registered.'>
+                                You can now <a href='#' onClick={(e) => this.navigateInternally(e, 'login')}>login here</a>.
                         </Message>
                         }
                         {this.state.formErrors.length > 0 &&
-                        <Message attached error>
-                            <Message.Header content='Your form has errors. You must correct them first!'/>
-                            <Message.List>
-                                {this.state.formErrors.map((error) => <Message.Item content={error.text}/>)}
-                            </Message.List>
-                        </Message>
+                            <Message attached error>
+                                <Message.Header content='Your form has errors. You must correct them first!' />
+                                <Message.List>
+                                    {this.state.formErrors.map((error) => <Message.Item content={error.text} />)}
+                                </Message.List>
+                            </Message>
                         }
                         {this.state.hasError &&
-                        <Message attached error header='Your account was not created!'
-                                 content='This user already exists.'/>
+                            <Message attached error header='Your account was not created!'
+                                content='This user already exists.' />
                         }
                         <Form size='large' onSubmit={this.onSubmitRegister} className='attached fluid segment'>
 
                             <Form.Input fluid icon='mail' name='email' iconPosition='left'
-                                        error={this.state.formErrors.find((error) => error.field === 'email')}
-                                        placeholder='E-Mail address' onChange={this.onChangeInput} required/>
+                                error={this.state.formErrors.find((error) => error.field === 'email')}
+                                placeholder='E-Mail address' onChange={this.onChangeInput} required />
                             <Form.Input fluid icon='user' name='username' iconPosition='left'
-                                        placeholder='User name' onChange={this.onChangeInput} required/>
+                                placeholder='User name' onChange={this.onChangeInput} required />
                             <Form.Input fluid icon='lock' name='password' iconPosition='left'
-                                        placeholder='Password' onChange={this.onChangeInput}
-                                        error={this.state.formErrors.find((error) => error.field === 'password')}
-                                        type='password' required/>
+                                placeholder='Password' onChange={this.onChangeInput}
+                                error={this.state.formErrors.find((error) => error.field === 'password')}
+                                type='password' required />
                             <Form.Input fluid icon='lock' name='password_repeat' iconPosition='left'
-                                        placeholder='Repeat Password' onChange={this.onChangeInput}
-                                        error={this.state.formErrors.find((error) => error.field === 'password')}
-                                        type='password' required/>
+                                placeholder='Repeat Password' onChange={this.onChangeInput}
+                                error={this.state.formErrors.find((error) => error.field === 'password')}
+                                type='password' required />
 
                             <Button color='blue' fluid size='large'>
                                 Register
