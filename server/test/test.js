@@ -5,26 +5,58 @@ let chai = require('chai');
 let chaiHTTP = require ('chai-http');
 let server = 'http://localhost:3001';
 let should = chai.should();
+const mongoose = require('mongoose');
+const request = require("request");
 
-mocha.describe('Maps', () => {
-    mocha.beforeEach((done) => { //Before each test we empty the database
-        Schema.Route.remove({}, (err) => {
+
+mocha.before((done) => {
+    mongoose.connect('mongodb://localhost/maps_test');
+    mongoose.connection
+        .once('open', () => {
             done();
+        })
+        .on('error', (error) => {
+            console.warn('Error', error);
+        });
+});
+
+mocha.beforeEach((done) => {
+    const {users, routes, ratings, images, favourites, points} = mongoose.connection.collections;
+    users.drop(() => {
+        routes.drop(() => {
+            ratings.drop(() => {
+                images.drop(() => {
+                    favourites.drop(() => {
+                        points.drop(() => {
+                            done();
+                        });
+                    });
+
+                });
+            });
         });
     });
-    /*
-      * Test the /GET route
-      */
+});
+
+
+mocha.describe('Maps', () => {
+
     mocha.describe('/GET routes', () => {
         mocha.it('it should GET all the routes', (done) => {
-            chai.request(server)
-                .get('/getRoutes')
+            request('http://localhost:3001/getRoutes', function(error, response, body) {
+                console.log(response);
+                response.should.be.a('array');
+               // chai.expect(response.statusCode).to.equal(200);
+                done();
+            });
+            /**chai.request(server)
+                .get('http://localhost:3001/getRoutes')
                 .end((err, res) => {
-                    res.should.have.status(200);
+                    //res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.length.should.be.eql(0);
                     done();
-                });
+                }); **/
         });
     });
 
@@ -50,9 +82,9 @@ mocha.describe('saving records', function() {
             });
 
 
-        route.save().then(function()
+        route.save().then(function(done)
         {
-            assert(char.isNew === false);
+            assert(route.isNew === false);
             done();
         })
     });

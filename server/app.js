@@ -264,7 +264,7 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.post('/saveRating', auth, function (req, res, next) {
-    if (req.body.route == undefined || req.body.user == undefined) {
+    if (req.body.route == undefined || req.body.user ==  undefined || req.body.user == null) {
         res.status(400).send("error while saving rating because route/user is undefined");
         return;
     }
@@ -313,6 +313,7 @@ app.get('/getData', function (req, res) {
 
 app.get('/getRatings', function (req, res) {
     Schema.Rating.find({ route: req.query.route }).populate('user').exec(function (err, data) {
+        console.log(data);
         if (err) {
             res.status(404).send("unable to get ratings");
             throw err;

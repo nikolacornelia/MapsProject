@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app",
     "debug": "node %NODE_DEBUG_OPTION% app.js",
-    "test": "mocha"
+    "test": "nodemon --exec  './node_modules/.bin/mocha --reporter spec --no-timeouts'"
   },
   "repository": {
     "type": "git",
@@ -51,7 +51,8 @@
     "sort-json-array": "^0.1.7",
     "then-request": "^6.0.0",
     "lodash": "^4.17.11",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "request":"^2.88.0"
   },
   "devDependencies": {
     "eslint": "^5.9.0",
