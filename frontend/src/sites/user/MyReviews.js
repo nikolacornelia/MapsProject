@@ -37,11 +37,7 @@ class MyReviews extends Component {
      * Requests the data for my reviews.
      */
     getMyReviews = () => {
-        axios.get("http://localhost:3001/reviewedRoutes", {
-            params: {
-                user: this.user._id
-            }
-        }).then((response) => this.setState({ routes: response.data }));
+        axios.get("/reviewedRoutes").then((response) => this.setState({ routes: response.data }));
     };
 
 
@@ -50,7 +46,7 @@ class MyReviews extends Component {
      * @param i - i-th review to be deleted
      */
     handleDelete = (i) => {
-        axios.delete('http://localhost:3001/Rating', {
+        axios.delete('/Rating', {
             params: {
                 _id: i,
             }
@@ -85,7 +81,7 @@ class MyReviews extends Component {
     };
     handleChangeRating = (e, { name, rating }) => {
         this.setState({ [name]: rating });
-    }
+    };
 
     /**
      * Saves the changes of a review.
@@ -93,21 +89,20 @@ class MyReviews extends Component {
      */
     handleSave = (i) => {
         let route = this.state.routes[i];
-        this.ctext = route.comments[i].comment;
-        this.rating = route.comments[i].rating;
+        let ctext = route.comments[i].comment;
+        let rating = route.comments[i].rating;
         if (this.state.commenttext && this.state.rating) {
-            this.ctext = this.state.commenttext;
-            this.rating = this.state.rating;
+            ctext = this.state.commenttext;
+            rating = this.state.rating;
         } else if (this.state.rating) {
-            this.rating = this.state.rating;
+            rating = this.state.rating;
         } else if (this.state.commenttext) {
-            this.ctext = this.state.commenttext;
+            ctext = this.state.commenttext;
         }
-        // todo: check if ok?
-        axios.post('http://localhost:3001/review', {
+        axios.post('/review', {
             commentId: route.comments[i]._id,
-            review: this.ctext,
-            rating: this.rating
+            review: ctext,
+            rating: rating
         }).then(() => this.getMyReviews());
     };
 
@@ -127,7 +122,7 @@ class MyReviews extends Component {
                                 <Item.Group>
                                     <Item>
                                         <Item.Image size='small'
-                                            src={route.image ? 'http://localhost:3001/Image?id=' + route.image : '/static/media/route-noimage.png'} />
+                                            src={route.image ? axios.defaults.baseURL + '/Image?id=' + route.image : '/static/media/route-noimage.png'} />
                                         <Item.Content>
                                             <Item.Header as='h4'> {route.title} </Item.Header>
                                             <Item.Meta>{route.location}</Item.Meta>
