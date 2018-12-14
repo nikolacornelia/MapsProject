@@ -153,15 +153,12 @@ app.post('/favoriseRoute', auth, function (req, res) {
         //todo at the moment
         Schema.Favourite.deleteMany(oFavourite, function (err) {
             if (err) throw (err);
-            console.log('deleted successful');
             res.status(200).send();
         });
-
     } else {
         let myData = new Schema.Favourite(oFavourite);
         myData.save()
             .then(item => {
-                console.log('savedElement');
                 res.send(item);
             })
             .catch(err => {
@@ -171,7 +168,6 @@ app.post('/favoriseRoute', auth, function (req, res) {
 });
 
 app.post('/savePoint', auth, function (req, res) {
-    console.log(req.body.data.point);
     let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
     let myData = new Schema.Point(aResult);
@@ -186,41 +182,31 @@ app.post('/savePoint', auth, function (req, res) {
 });
 
 app.delete('/Route', auth, function (req, res) {
-    //todo delete dependencies
-    Schema.Route.findOneAndDelete(req.query, function (err, data) {
-        if (err) {
-            res.status(404).send("unable to delete route to database");
-            throw err;
-        }
-        res.send('deleted Route');
-        console.log('successfully deleted Route');
+    Schema.Route.findOneAndDelete(req.query).then(item => {
+        Schema.Favourite.deleteMany({ route: req.query._id }, function (err, data) {
+        }).then(item => {
+            Schema.Rating.deleteMany({ route: req.query._id }).then(item => { res.send(); })
+        })
     });
 });
 
 app.delete('/LikedRoute', auth, function (req, res) {
-    console.log('inseide liked route');
-    console.log(req.query._id);
     let query = {};
     query.route = req.query._id;
     query.user = req.query.user;
-    console.log("QUERY");
-    console.log(query);
     Schema.Favourite.findOneAndDelete(query, function (err, data) {
         if (err) {
             res.status(404).send("unable to delete like of user for a route ");
             throw err;
         }
         res.send('deleted Fav for Route');
-        console.log('successfully deleted Fav for Route');
     });
 });
 
 
 app.post('/saveRoute', auth, function (req, res, next) {
-
     let oRoute = req.body;
     //todo round distance
-    console.log(oRoute);
     // oRoute.distance = round(oRoute.distance,1);
     //console.log(oRoute.distance);
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
@@ -236,29 +222,21 @@ app.post('/saveRoute', auth, function (req, res, next) {
 
         try {
             if (res.body.address.city != undefined) {
-                console.log(res.body.address.city);
                 oRoute.location = res.body.address.city;
-
             }
             else if (res.body.address.town != undefined) {
-                console.log(res.body.address.town);
                 oRoute.location = res.body.address.town;
             }
             else if (res.body.address.village != undefined) {
-                console.log(res.body.address.village);
                 oRoute.location = res.body.address.village;
             }
         }
-        catch (e) {
-            console.log("access location failed");
-        }
-
+        catch (e) { }
         if (req.body.images != undefined) {
             let oImage = new Schema.Image();
             oImage.imageData = req.body.images;
             oImage.save()
                 .then(item => {
-                    console.log('image saved to database');
                     oRoute.image = item._id;
                     req.oRoute = oRoute;
                     next();
@@ -274,25 +252,19 @@ app.post('/saveRoute', auth, function (req, res, next) {
         }
     });
 },
-
     function (req, res) {
         let oData = new Schema.Route(req.oRoute);
-        console.log("req.oROute");
-        console.log(req.oRoute);
         oData.save()
             .then(item => {
-                console.log('route saved to database');
                 res.send("route saved to database");
             })
             .catch(err => {
-                console.log('unable to save');
                 res.status(400).send("unable to save route to database");
             });
     });
 
 app.post('/saveRating', auth, function (req, res, next) {
     if (req.body.route == undefined || req.body.user == undefined) {
-        console.log("route or user is null");
         res.status(400).send("error while saving rating because route/user is undefined");
         return;
     }
@@ -301,40 +273,32 @@ app.post('/saveRating', auth, function (req, res, next) {
         oImage.imageData = req.body.image;
         oImage.save()
             .then(item => {
-                console.log('image saved to database');
                 req.body.image = item._id;
                 next();
             })
             .catch(err => {
-                console.log('unable to save image');
                 res.status(400).send("unable to save image");
             })
     } else {
         next();
     }
+},
+    function (req, res) {
 
-}, function (req, res) {
+        Schema.Rating.deleteMany({ user: req.body.user, route: req.body.route })
+            .then(item => {
+                let oDataRating = new Schema.Rating(req.body);
+                oDataRating.save()
+                    .then(item => {
+                        res.send('success saving new rating');
+                    }).catch(err => {
+                        res.status(400).send("unable to save rating to database");
+                    });
+            }).catch(err => {
+                res.status(400).send("unable to delete old comment in database");
+            });
 
-    Schema.Rating.deleteMany({ user: req.body.user, route: req.body.route })
-        .then(item => {
-            console.log('deleted items');
-            let oDataRating = new Schema.Rating(req.body);
-            oDataRating.save()
-                .then(item => {
-                    console.log('comment');
-                    res.send('success saving new rating');
-                }).catch(err => {
-                    console.log('unable to save');
-                    res.status(400).send("unable to save rating to database");
-                });
-
-        }).catch(err => {
-            console.log('unable to delete');
-            res.status(400).send("unable to delete old comment in database");
-        });
-
-});
-
+    });
 
 app.get('/getData', function (req, res) {
     Schema.Point.find({}, function (err, data) {
@@ -390,21 +354,16 @@ app.get('/getRoutes', function (req, res, next) {
             } else {
                 let difficultyParam = { $or: [] };
                 for (let i = 0; i < paramDifficulty.length; i++) {
-                    console.log("FOR");
-                    console.log(paramDifficulty[i]);
                     difficultyParam.$or.push({ difficulty: paramDifficulty[i] });
                 }
-                console.log(difficultyParam);
                 routeQuery.$and.push(difficultyParam);
             }
         }
-
         if (req.query.features != undefined) {
             routeQuery.$and.push({ features: { $all: req.query.features } });
         }
         routeQuery.$and.push({ distance: { $lt: req.query.distance } });
-    }
-    ;
+    };
 
     Schema.Route.find(routeQuery).lean().then(function (data) {
         //no route was found for query
@@ -414,14 +373,10 @@ app.get('/getRoutes', function (req, res, next) {
         req.routes = data;
         next();
     }).catch(function (error) {
-        console.log("Error while finding route ");
         res.status(404).send("unable to find route");
 
     });
-    ;
-}
-    ,
-
+},
     function (req, res, next) {
         let aRoutes = req.routes;
         let oRoutes = [];
@@ -448,7 +403,6 @@ app.get('/getRoutes', function (req, res, next) {
                     next();
                 }
             }).catch(function (error) {
-                console.log("Error while accessing rating");
                 res.status(400).send("error while accessing rating");
 
             });
@@ -478,15 +432,26 @@ app.get('/getRoutes', function (req, res, next) {
                     next();
                 }
             });
-        }
-        ;
+        };
     },
     function (req, res) {
-    let aResult = sortRoutes(req.oRoutes, req.query.sortBy);
-
+        let aResult = sortRoutes(req.oRoutes, req.query.sortBy);
         res.send(aResult);
-    }
-);
+    });
+
+app.get('/Favourite', function (req, res) {
+    Schema.Favourite.findOne({ $and: [{ route: req.query.id }, { user: req.session.userid }] }, function (err, obj) {
+        if (err) {
+            res.status(404).send("unable to find favourites");
+            throw err;
+        }
+        if (obj === null) {
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+    });
+});
 
 
 app.get('/getLocalPoints', function (req, res) {
@@ -499,42 +464,6 @@ app.get('/getLocalPoints', function (req, res) {
     });
 
 });
-
-/**
- app.post('/saveDocument', function (req, res) {
-    let oObject = req.body.object;
-    oObject = 'test.jpg';
-    let source = fs.createReadStream(oObject);
-    let target = gfs.createWriteStream({
-        filename: 'test.jpg',
-        reference: '12345'
-    });
-    source.pipe(target);
-});
-
- app.get('/getDocument', function (req, res) {
-    //important: there must be only one file with this filename, otherwise no photo gets displayed
-    let filename = 'test.jpg';
-    gfs.exist({filename: filename}, (err, file) => {
-        if (err || !file) {
-            res.status(404).send('File not Found');
-            return
-        }
-        let data = [];
-        let readstream = gfs.createReadStream({filename: filename});
-        readstream.on('data', function (result) {
-            data.push(result);
-        });
-        readstream.on('end', function () {
-            data = Buffer.concat(data);
-            let img = 'data:image/jpg;base64,' + Buffer(data).toString('base64');
-            res.send(img);
-        });
-        readstream.on('err', function (err) {
-            throw err;
-        })
-    })
-}); **/
 
 var BCRYPT_SALT_ROUNDS = 12;
 app.post('/register', function (req, res) {
@@ -655,7 +584,6 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
                     next();
                 }
             }).catch(function (error) {
-                console.log("Error while aggregating rating");
                 res.status(400).send("error while aggregating rating");
             });
         }
@@ -668,14 +596,10 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
             let aResult = sortRoutes(req.oRoutes, req.query.sortBy);
             res.send(aResult);
         }
-    }
-)
-    ;
+    });
 
 app.get('/getMyLikedRoutes', auth, function (req, res, next) {
-    console.log('getMyLikedRoutes');
     let routeQuery = {};
-    //routeQuery.user = user;
     routeQuery.user = req.query.user;
     console.log(routeQuery.user);
     Schema.Favourite.find(routeQuery).exec(function (err, data) {
@@ -694,10 +618,9 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
     function (req, res, next) {
         let aFavRoutes = req.fav;
         let oRoutes = [];
-        //amount of finished queries;
         let iFinishedQueries = 0;
+
         for (let i in aFavRoutes) {
-            console.log(aFavRoutes[i].route);
             Schema.Route.findOne({ _id: aFavRoutes[i].route }).lean().exec(function (err, data) {
                 if (err) {
                     res.status(404).send("error while finding route");
@@ -714,16 +637,14 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
                     next();
                 }
             });
-        }
-        ;
-
-    }
-    ,
+        };
+    },
     function (req, res, next) {
         let aRoutes = req.oRoutes;
         let oRoutes = [];
         //amount of finished queries;
         let iFinishedQueries = 0;
+
         for (let i in aRoutes) {
             Schema.Rating.aggregate([{ $match: { route: aRoutes[i]._id } }
                 , { $group: { _id: null, rating: { $avg: '$rating' } } }
@@ -743,7 +664,6 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
                     next();
                 }
             }).catch(function (error) {
-                console.log("Error while aggregating rating");
                 res.status(400).send("error while aggregating rating");
             });
         }
@@ -755,32 +675,21 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
             let aResult = sortRoutes(req.favRoutes, req.query.sortBy);
             res.send(aResult);
         }
-    }
-)
-    ;
+    });
 
 app.get('/reviewedRoutes', function (req, res, next) {
-    console.log('getMyReviewedRoutes');
     let routeQuery = {};
     routeQuery.user = req.query.user;
-    console.log(routeQuery.user);
     Schema.Rating.find(routeQuery).lean().populate('user').exec(function (err, data) {
         if (err) {
-            console.log("Error while finding rating");
             res.status(404).send("error while finding rating");
             throw err;
-        }
-        ;
-
-        console.log(data.user);
+        };
         data.forEach(function (data) {
             data.user.password = null;
         });
         req.comment = data;
         if (data.length == 0) {
-            console.log("DATA1");
-            console.log(data);
-
             res.send(data);
         }
         next();
@@ -788,20 +697,15 @@ app.get('/reviewedRoutes', function (req, res, next) {
 },
     function (req, res, next) {
         let aCommentedRoutes = req.comment;
-        console.log("ACOmmentedROutes");
-        console.log(aCommentedRoutes);
         let oRoutes = [];
         //amount of finished queries;
         let iFinishedQueries = 0;
-        for (let i in aCommentedRoutes) {
-            console.log(aCommentedRoutes[i].route);
 
+        for (let i in aCommentedRoutes) {
             Schema.Route.findOne({ _id: aCommentedRoutes[i].route }).lean().exec(function (err, data) {
                 if (err) {
-                    console.log("Error while finding route");
                     res.status(404).send("error while finding route");
                 }
-
                 if (data != null) {
                     data.comments = req.comment;
                     oRoutes.push(data);
@@ -810,34 +714,23 @@ app.get('/reviewedRoutes', function (req, res, next) {
                     data.distance = Math.round(data.distance * 100) / 100;
                 iFinishedQueries++;
                 if (iFinishedQueries === (aCommentedRoutes.length)) {
-                    console.log("OROUTES");
-                    console.log(oRoutes);
                     req.oRoutes = oRoutes;
                     next();
                 }
-
-
-            })/* .catch(function (error) {
-                console.log("Error while finding route");
-                res.status(404).send("error while finding route");
-            }); */
-        }
-        ;
-
-    }
-    ,
+            })
+        };
+    },
     function (req, res, next) {
         let aRoutes = req.oRoutes;
         let oRoutes = [];
         //amount of finished queries;
         let iFinishedQueries = 0;
+
         for (let i in aRoutes) {
             Schema.Rating.aggregate([{ $match: { route: aRoutes[i]._id } }
                 , { $group: { _id: null, rating: { $avg: '$rating' } } }
             ]).then(function (response) {
                 let oneRoute = aRoutes[i];
-                console.log("oneRoute");
-                console.log(oneRoute);
                 // one route may not have a rating yet
                 if (response.length == 0) {
                     oneRoute.avg_rating = undefined;
@@ -845,17 +738,13 @@ app.get('/reviewedRoutes', function (req, res, next) {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
                 }
-                console.log(oRoutes);
                 oRoutes.push(oneRoute);
                 iFinishedQueries++;
                 if (iFinishedQueries === (aRoutes.length)) {
-                    console.log("finishedwure");
-                    console.log(oRoutes.length);
                     req.favRoutes = oRoutes;
                     next();
                 }
             }).catch(function (error) {
-                console.log("Error while finding rating");
                 res.status(404).send("error while finding rating");
             });
         }
@@ -867,9 +756,7 @@ app.get('/reviewedRoutes', function (req, res, next) {
             let aResult = sortRoutes(req.favRoutes, req.query.sortBy);
             res.send(aResult);
         }
-    }
-)
-    ;
+    });
 
 
 app.listen(3001, function () {
@@ -879,12 +766,10 @@ app.listen(3001, function () {
 app.delete('/Rating', auth, function (req, res) {
     Schema.Rating.findOneAndDelete({ _id: req.query._id }, function (err, data) {
         if (err) {
-            console.log("Error while finding and deleting rating");
             res.status(404).send("error while finding and deleting rating");
             throw err;
         }
         res.send('deleted Rating for Route');
-        console.log('successfully deleted Fav for Route');
     });
 });
 
