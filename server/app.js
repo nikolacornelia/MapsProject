@@ -193,7 +193,7 @@ app.delete('/Route', auth, function (req, res) {
 app.delete('/LikedRoute', auth, function (req, res) {
     let query = {};
     query.route = req.query._id;
-    query.user = req.query.user;
+    query.user = req.session.userid;
     Schema.Favourite.findOneAndDelete(query, function (err, data) {
         if (err) {
             res.status(404).send("unable to delete like of user for a route ");
@@ -264,10 +264,11 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.post('/saveRating', auth, function (req, res, next) {
-    if (req.body.route == undefined || req.body.user == undefined) {
+    if (req.body.route == undefined || req.session.userid == undefined) {
         res.status(400).send("error while saving rating because route/user is undefined");
         return;
     }
+    req.body.user = req.session.userid;
     if (req.body.image != undefined) {
         let oImage = new Schema.Image();
         oImage.imageData = req.body.image;
@@ -285,7 +286,7 @@ app.post('/saveRating', auth, function (req, res, next) {
 },
     function (req, res) {
 
-        Schema.Rating.deleteMany({ user: req.body.user, route: req.body.route })
+        Schema.Rating.deleteMany({ user: req.session.userid, route: req.body.route })
             .then(item => {
                 let oDataRating = new Schema.Rating(req.body);
                 oDataRating.save()
@@ -520,7 +521,7 @@ app.get('/logout', function (req, res) {
 app.get('/Image', function (req, res, next) {
     console.log('getMyRoutes');
     let routeQuery = {};
-    routeQuery.user = req.query.user;
+    routeQuery.user = req.session.userid;
     Schema.Image.findOne({ _id: req.query.id }).lean().exec(function (err, data) {
         console.log(data);
         if (err) {
@@ -547,8 +548,7 @@ app.get('/Image', function (req, res, next) {
 app.get('/getMyRoutes', auth, function (req, res, next) {
     console.log('getMyRoutes');
     let routeQuery = {};
-    //routeQuery.user = "5bf86b725d5d083aea9d6090";
-    routeQuery.user = req.query.user;
+    routeQuery.user = req.session.userid;
     Schema.Route.find(routeQuery).lean().exec(function (err, data) {
         if (err) {
             res.sendStatus(404).send("error while finding routes");
@@ -600,8 +600,7 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
 
 app.get('/getMyLikedRoutes', auth, function (req, res, next) {
     let routeQuery = {};
-    routeQuery.user = req.query.user;
-    console.log(routeQuery.user);
+    routeQuery.user = req.session.userid;
     Schema.Favourite.find(routeQuery).exec(function (err, data) {
         if (err) {
             res.status(404).send("error while finding favourite");
@@ -679,7 +678,7 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
 
 app.get('/reviewedRoutes', function (req, res, next) {
     let routeQuery = {};
-    routeQuery.user = req.query.user;
+    routeQuery.user = req.session.userid;
     Schema.Rating.find(routeQuery).lean().populate('user').exec(function (err, data) {
         if (err) {
             res.status(404).send("error while finding rating");

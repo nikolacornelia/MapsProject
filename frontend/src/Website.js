@@ -18,6 +18,7 @@ class Website extends Component {
         super(props);
 
         axios.defaults.withCredentials = true;
+        axios.defaults.baseURL = "http://localhost:3001";
         // if there is an response code for "unauthorized" (= not logged in), then navigate accordingly
         axios.interceptors.response.use((resp) => { return resp }, (error) => {
             if (error.response && error.response.status === 401) {
