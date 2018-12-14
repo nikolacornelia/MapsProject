@@ -20,6 +20,7 @@ var popup;
 var iDistance = 0;
 var bHighlight = false;
 
+// HTML Template to create new Highlights
 var template = 
 '<header>' +
 '<h3>Create Highlight</h3>' +
@@ -38,6 +39,7 @@ var template =
 '<p>' +
 '</form>';
 
+// Button to create highlights (color switching)
 var stateChangingButton = L.easyButton({
     states: [{
       stateName: 'ButtonOff',      
@@ -61,6 +63,7 @@ var stateChangingButton = L.easyButton({
     }]
   });
 
+// inital Map Load
 export function onInit() {
     map = L.map('map', {
         center: [20.0, 5.0],
@@ -71,9 +74,9 @@ export function onInit() {
         iconSize: [29, 24],
         iconAnchor: [15, 23]
     });
+
     cities = L.layerGroup();
     popup = L.popup();
-
     map.on('load', onMapLoad);
     map.on('click', onMapClick);
     map.on('moveend', onMapLoad);
@@ -83,18 +86,19 @@ export function onInit() {
         subdomains: ['a', 'b', 'c']
     }).addTo(map);
 
+    //Search Bar
     L.Control.geocoder({
         defaultMarkGeocode: false
       }).on('markgeocode', function(e) {
         map.flyTo(e.geocode.center,16);
       }).addTo(map);
 
+    //Delete Button
     L.easyButton('fa-times', function () {
         deleteFunction();
     }, "Delete last point").addTo(map);
 
     stateChangingButton.addTo(map);
-    
     map.setView([49.47745177227496,8.422132675113554],16); // fake 
     // map.locate({setView: true, maxZoom: 16}).on('locationerror', function (e) {
     //     map.setView([49.47745177227496,8.422132675113554],16);
@@ -102,8 +106,8 @@ export function onInit() {
     // });
 }
 
+//Save Click Coordinates in variable and decide between Highlight and normal Point
 function onMapClick(e) {
-    //Save Click Coordinates in variable;
     if (!bHighlight){
         aHighlight.push(0);
         aPoints.push(e.latlng);
@@ -116,7 +120,6 @@ function onMapClick(e) {
         }).addTo(map);
         if (aPoints.length > 1) {
             iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
-            console.log(iDistance);
         }
     }
     else if (bHighlight){
@@ -131,6 +134,8 @@ function onMapClick(e) {
 
     }
 }
+
+// save new Highlight
 function newPoint(){
     let oPoint = {};
     oPoint.name = document.getElementById("sPName").value;
@@ -160,6 +165,7 @@ function newPoint(){
     
   }
 
+// connect Markers -> triggered by a event 
 function connectPoint(e) {
     aHighlight.push(0);
     aPoints.push(e.latlng);
@@ -172,13 +178,12 @@ function connectPoint(e) {
     }).addTo(map);
     if (aPoints.length > 1) {
         iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
-        console.log(iDistance);
     }
 }
 
+//connect Hihglights -> triggered manually 
 function connectHighlight(koordinaten) {
     aHighlight.push(1);
-    console.log(koordinaten);
     aPoints.push(koordinaten);
     aMarker[aMarker.length] = null;
     aPoly[aPoly.length] = L.polyline(aPoints, {
@@ -189,16 +194,15 @@ function connectHighlight(koordinaten) {
     }).addTo(map);
     if (aPoints.length > 1) {
         iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
-        console.log(iDistance);
     }
 }
 
+//deletes the lasat point/highlight and poly
 function deleteFunction() {
     if (aPoints.length > 1) {
         iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
         map.removeLayer(aPoly[aPoly.length - 1]);
         aPoly.splice(aPoly.length - 1, 1);
-        console.log(iDistance);
     }
     if (aHighlight[aHighlight.length - 1] == 0) {
         map.removeLayer(aMarker[aMarker.length - 1]);
@@ -208,14 +212,12 @@ function deleteFunction() {
         aPoints.splice(aPoints.length - 1, 1);
         aHighlight.splice(aHighlight.length - 1);
     }
-
-
 }
 
+// load Highlights from DB
 async function onMapLoad(e) {
     await getPointsOfInterest();
 }
-
 function getPointsOfInterest() {
     //only get points that are in the bounds of the map
     axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
@@ -226,6 +228,7 @@ function getPointsOfInterest() {
     });
 }
 
+// display Highlights from DB on map
 function displayPoints(arrayPoints) {
     for (let i in arrayPoints) {
         let mark = L.marker([
@@ -236,24 +239,20 @@ function displayPoints(arrayPoints) {
         cities.addLayer(mark);
     }
     cities.addTo(map);
-
     cities.eachLayer(function(layer) {
         layer.on('click', function(){
-            console.log(this.getLatLng);
             connectHighlight(this.getLatLng());
         });
     });
-
     cities.eachLayer(function(layer) {
         layer.on('mouseover', function(){
             layer.openPopup();
         });
     });
 }
-
-//die funktion funktioniert noch nicht
+// return distance in meters
 function getDistance(origin, destination) {
-    // return distance in meters
+    // choose the right array type
     if (origin.lat == null){
         var lon1 = toRadian(origin[0]),
         lat1 = toRadian(origin[1]);
@@ -277,14 +276,12 @@ function getDistance(origin, destination) {
     }
     var deltaLat = lat2 - lat1;
     var deltaLon = lon2 - lon1;
-
     var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
     var c = 2 * Math.asin(Math.sqrt(a));
     var EARTH_RADIUS = 6371;
     var distance = (c * EARTH_RADIUS) ;
     distance = Math.round(distance*10)/10;
     return distance;
-    
 }
 function toRadian(degree) {
     return degree*Math.PI/180;
@@ -296,12 +293,8 @@ export function getRouteMapData() {
     oRoute.points = aPoints;
     oRoute.highlights = aHighlight;
     oRoute.distance = iDistance;
-    console.log(oRoute);
-
     return oRoute;
 }
-
-
 
 //reset array after route was created successfully
 export function resetArrays() {
@@ -318,32 +311,3 @@ export function resetArrays() {
     aPoly = [];
     aHighlight = []; // Boolean
 }
-
-function getRoutes() {
-    axios.get('http://localhost:3001/getRoutes')
-        .then((response) => {
-            console.log(response);
-        }).catch((error) => {
-        console.log(error);
-    });
-}
- /** Nikola tried
-export function getLocationFromIP() {
-    axios.get('http://gd.geobytes.com/GetCityDetails',  {
-        // mode: 'no-cors',
-
-        /**headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-        },
-        proxyHeaders: false,
-        credentials: false})
-        .then((response) => {
-            console.log(response);
-            return response.geobytescity;
-        }).catch((error) => {
-            console.log(error);
-            return null;
-    })
-
-} **/
