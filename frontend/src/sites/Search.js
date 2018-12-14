@@ -32,7 +32,8 @@ import {mockData, mockFeatures} from '../mockData';
 import axios from "axios";
 import validator from 'validator';
 import * as ShowRoute from './maps/ShowRoute';
-
+import {Carousel} from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 class Search extends Component {
     constructor(props) {
@@ -47,7 +48,8 @@ class Search extends Component {
             showDetail: -1,
             reviewIsOpen: false,
             comments: [],
-            files: []
+            files: [],
+            routes: []
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -75,8 +77,7 @@ class Search extends Component {
      * Sends a search for routes request
      */
     onSearch = () => {
-        axios.get('http://localhost:3001/getRoutes', {
-            withCredentials: true,
+        axios.get('/getRoutes', {
             params: {
                 search: this.state.searchText,
                 difficulty: this.state.difficulty,  // array
@@ -111,28 +112,24 @@ class Search extends Component {
 
         // request comments for selected route
         if (id !== -1) {
-            axios.get('http://localhost:3001/getRatings', {
+            axios.get('/getRatings', {
                 params: {
                     route: id
                 }
             }).then((response) => {
                 // returns object of all comments created
-                console.log(response.data);
                 this.setState({comments: response.data});
             });
             var routeData = this.state.routes.find((route) => route._id === id);
-            console.log(routeData);
             ShowRoute.displayOneRoute(routeData);
-
         }
-        if (id == -1){
+        if (id == -1) {
             var routeData = this.state.routes;
-            console.log (routeData);
             ShowRoute.displayRoutes(routeData);
         }
 
         // navigate internally to details view
-        this.setState({ showDetail: id });
+        this.setState({showDetail: id});
     };
 
     /**
@@ -143,20 +140,16 @@ class Search extends Component {
 
     onSubmitReview = () => {
         let _submitReview = (e) => {
-            console.log("submitReview");
             let image = e && e.target.result; // sends the image as base64
-            axios.post('http://localhost:3001/saveRating', {
+            axios.post('/saveRating', {
                 route: this.state.showDetail,
                 rating: this.state.rating,
-                // todo: never pass the userid as an identification in the backend
-                //       because it can easily be manipulated. Use backend session as reference for user id
-                user: this.user._id,
                 comment: this.state.commentText,
                 image: image
             }).then(() => {
                 // close the dialog & refresh
                 this.toggleReviewDialog();
-                axios.get('http://localhost:3001/getRatings', {
+                axios.get('/getRatings', {
                     params: {
                         route: this.state.showDetail
                     }
@@ -181,7 +174,7 @@ class Search extends Component {
 
     /* Functions for review dialog */
     toggleReviewDialog = () => {
-        if(this.user) {
+        if (this.user) {
             this.setState({reviewIsOpen: !this.state.reviewIsOpen});
         } else {
             window.location = '/#/login';
@@ -215,10 +208,9 @@ class Search extends Component {
             return;
         }
         // send request to toggle favorite
-        axios.post('http://localhost:3001/favoriseRoute', {
+        axios.post('/favoriseRoute', {
             route: this.state.showDetail,  // currently selected routeid
-            isFavorised: isFavorised,
-            user: this.user._id             // todo: remove - insecure  ! use userid from session
+            isFavorised: isFavorised
         }).then((response) => {
             // refresh
             this.onSearch();
@@ -230,8 +222,15 @@ class Search extends Component {
         var detailRoute;
         if (this.state.showDetail !== -1) {
             detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
-            console.log(detailRoute);
         }
+
+        let images = [];
+        detailRoute && detailRoute.image && images.push(detailRoute.image);
+        for (let i = 0; i < this.state.comments.length; i++) {
+            let img = this.state.comments[i].image;
+            img && images.push(img);
+        }
+
         return (
             <Grid stackable columns={2} className='map' data-testid='siteSearch'>
                 <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
@@ -242,10 +241,14 @@ class Search extends Component {
                         /* display search form*/
                         <div class='sidebar'>
                             <Form size='large'>
-                                <Header as='h2'>Find a trail / Search for a route</Header>
+                                <Header as='h2'>Search for a route</Header>
                                 <Form.Input fluid placeholder='Enter area, city or landmark' name='searchText'
                                             onChange={this.handleChange}
-                                            action={{icon: 'search', onClick: this.onSearch}}/>
+                                            action={{
+                                                icon: 'search',
+                                                onClick: this.onSearch,
+                                                placeholder: 'searchButton'
+                                            }}/>
                                 <Header as='h4' dividing icon='filter' content='Filter'/>
                                 <Form.Group inline>
                                     <label>Difficulty</label>
@@ -278,7 +281,7 @@ class Search extends Component {
                                 {/* Search Result List */}
 
                                 <Divider/>
-                                <Grid columns='equal'>
+                                <Grid columns='equal' data-testid='searchResultList'>
                                     <Grid.Column textAlign='left'>
                                         <Icon name='list'/> {this.state.routes.length} results
                                     </Grid.Column>
@@ -303,10 +306,10 @@ class Search extends Component {
                                     {this.state.searched && this.state.routes.map((route) =>
                                         <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
                                             <Item.Image size='small' rounded
-                                                        src={route.image ? 'http://localhost:3001/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
+                                                        src={route.image ? axios.defaults.baseURL + '/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
                                             <Item.Content>
                                                 <Item.Header as='h4'> {route.title} </Item.Header>
-                                                <Item.Meta>{route.address}</Item.Meta>
+                                                <Item.Meta>{route.location}</Item.Meta>
                                                 <Item.Description>
                                                     <p/>
                                                     Distance: {route.distance} km
@@ -335,7 +338,8 @@ class Search extends Component {
                                         <span style={{float: 'right'}}>
                                         <Popup
                                             trigger={<Icon name={detailRoute.isFavorised ? 'heart' : 'heart outline'}
-                                                           link color='red' onClick={() => this.toggleFavorite(!detailRoute.isFavorised)}/>}
+                                                           link color='red'
+                                                           onClick={() => this.toggleFavorite(!detailRoute.isFavorised)}/>}
                                             content={detailRoute.isFavorised
                                                 ? 'Remove this route from your favorites.'
                                                 : 'Add this route to your favorites.'}
@@ -347,10 +351,16 @@ class Search extends Component {
 
                                 <Segment.Group className='basic'>
                                     <Segment basic>
-                                        <Image centered fluid rounded
-                                            //src={detailRoute.image.imageData || '/static/media/route-noimage.png'}
-                                               src={'http://localhost:3001/Image?id=' + detailRoute.image || '/static/media/route-noimage.png'}
-                                        />
+                                        <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows showThumbs={false}>
+                                            {images.length > 0
+                                                ? images.map((image) => <div>
+                                                    <img src={axios.defaults.baseURL + '/Image?id=' + image}/>
+                                                </div>)
+                                                : <div>
+                                                    <img src='/static/media/route-noimage.png'/>
+                                                </div>
+                                            }
+                                        </Carousel>
                                     </Segment>
 
                                     <Segment.Group className='basic' horizontal textAlign='center'>
@@ -441,7 +451,7 @@ class Search extends Component {
                                                     <Comment.Metadata>
                                                         <span>{new Date(comment.created).toLocaleString()}</span>
                                                     </Comment.Metadata>
-                                                    <Comment.Text><p>{comment.comment}</p></Comment.Text>
+                                                    <Comment.Text><p>{comment.comment ? comment.comment : <div>&nbsp;</div>}</p></Comment.Text>
                                                     <Comment.Actions>
                                                         <Rating as='a' icon='star' defaultRating={comment.rating}
                                                                 maxRating={5} disabled/>

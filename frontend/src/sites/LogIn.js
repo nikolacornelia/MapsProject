@@ -47,7 +47,7 @@ class LogIn extends Component {
     };
 
     onSubmitLogin = () => {
-        axios.get('http://localhost:3001/login', {
+        axios.get('/login', {
             params: {
                 user: this.state.user,
                 password: this.state.password
@@ -76,7 +76,7 @@ class LogIn extends Component {
             return;
 
         // send register request
-        axios.post('http://localhost:3001/register/', {
+        axios.post('/register/', {
             username: this.state.username,
             email: this.state.email,
             password: this.state.password

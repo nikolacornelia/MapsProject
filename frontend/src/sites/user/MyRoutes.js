@@ -51,11 +51,10 @@ class MyRoutes extends Component {
      */
     getMyRoutes = () => {
         if (this.state.tab == 'created') {
-            axios.get('http://localhost:3001/getMyRoutes', {
+            axios.get('/getMyRoutes', {
                 params: {
                     tab: this.state.tab,
-                    sortBy: this.state.sortBy,
-                    user: this.user._id
+                    sortBy: this.state.sortBy
                 }
             }).then((response) => {
                 this.setState({
@@ -65,11 +64,10 @@ class MyRoutes extends Component {
             });
 
         } else if (this.state.tab == 'liked') {
-            axios.get('http://localhost:3001/getMyLikedRoutes', {
+            axios.get('/getMyLikedRoutes', {
                 params: {
                     tab: this.state.tab,
-                    sortBy: this.state.sortBy,
-                    user: this.user._id
+                    sortBy: this.state.sortBy
                 }
             }).then((response) => {
                 this.setState({
@@ -101,17 +99,15 @@ class MyRoutes extends Component {
             return;
         let id = this.state.confirmDeleteId;
         if (this.state.tab == 'created') {
-            axios.delete('http://localhost:3001/Route', {
+            axios.delete('/Route', {
                 params: {
-                    _id: id,
-                    user: this.user._id // todo: remove userid, use session
+                    _id: id
                 }
             }).then(() => this.getMyRoutes());
         } else if (this.state.tab == 'liked') {
-            axios.delete('http://localhost:3001/LikedRoute', {
+            axios.delete('/LikedRoute', {
                 params: {
-                    _id: id,
-                    user: this.user._id // todo: remove userid, use session
+                    _id: id
                 }
             }).then(() => this.getMyRoutes());
         }
@@ -157,7 +153,7 @@ class MyRoutes extends Component {
                     {this.state.routes.map((result) =>
                         <Item>
                             <Item.Image size='small'
-                                        src={result.image ? 'http://localhost:3001/Image?id=' + result.image : '/static/media/route-noimage.png'} />
+                                        src={result.image ? axios.defaults.baseURL + '/Image?id=' + result.image : '/static/media/route-noimage.png'} />
 
 
                             <Item.Content>
