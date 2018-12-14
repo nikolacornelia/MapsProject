@@ -37,11 +37,7 @@ class MyReviews extends Component {
      * Requests the data for my reviews.
      */
     getMyReviews = () => {
-        axios.get("http://localhost:3001/reviewedRoutes", {
-            params: {
-                user: this.user._id
-            }
-        }).then((response) => this.setState({ routes: response.data }));
+        axios.get("/reviewedRoutes").then((response) => this.setState({ routes: response.data }));
     };
 
 
@@ -50,7 +46,7 @@ class MyReviews extends Component {
      * @param i - i-th review to be deleted
      */
     handleDelete = (i) => {
-        axios.delete('http://localhost:3001/Rating', {
+        axios.delete('/Rating', {
             params: {
                 _id: i,
             }
@@ -79,6 +75,13 @@ class MyReviews extends Component {
         this.setState({ routes: routes });
     };
 
+    handleChangeComment = (e, { name, value }) => {
+        console.log(this.state);
+        this.setState({ [name]: value });
+    };
+    handleChangeRating = (e, { name, rating }) => {
+        this.setState({ [name]: rating });
+    };
 
     /**
      * Saves the changes of a review.
@@ -86,12 +89,21 @@ class MyReviews extends Component {
      */
     handleSave = (i) => {
         let route = this.state.routes[i];
-
-        // todo: check if ok?
-        axios.post('http://localhost:3001/review', {
-            routeId: route._id,
-            review: route.comments[0]
-        }).then(this.getMyReviews);
+        let ctext = route.comments[i].comment;
+        let rating = route.comments[i].rating;
+        if (this.state.commenttext && this.state.rating) {
+            ctext = this.state.commenttext;
+            rating = this.state.rating;
+        } else if (this.state.rating) {
+            rating = this.state.rating;
+        } else if (this.state.commenttext) {
+            ctext = this.state.commenttext;
+        }
+        axios.post('/review', {
+            commentId: route.comments[i]._id,
+            review: ctext,
+            rating: rating
+        }).then(() => this.getMyReviews());
     };
 
     render() {
@@ -110,7 +122,7 @@ class MyReviews extends Component {
                                 <Item.Group>
                                     <Item>
                                         <Item.Image size='small'
-                                                    src={route.image ? 'http://localhost:3001/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
+                                            src={route.image ? axios.defaults.baseURL + '/Image?id=' + route.image : '/static/media/route-noimage.png'} />
                                         <Item.Content>
                                             <Item.Header as='h4'> {route.title} </Item.Header>
                                             <Item.Meta>{route.location}</Item.Meta>
@@ -138,15 +150,15 @@ class MyReviews extends Component {
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
-                                                        ? <TextArea style={{ width: "100%" }}
-                                                            onChange={this.handleChangeComment}>{route.comments[i].comment}</TextArea>
+                                                        ? <TextArea style={{ width: "100%" }} name="commenttext"
+                                                            onChange={this.handleChangeComment} defaultValue={route.comments[i].comment}></TextArea>
                                                         : (route.comments[i].comment)
                                                     }
                                                 </Comment.Text>
                                                 <Comment.Actions>
-                                                    <Rating as='a' icon='star' defaultRating={route.comments[i].rating}
+                                                    <Rating as='a' icon='star' name="rating" defaultRating={route.comments[i].rating}
                                                         maxRating={5} disabled={!route.edit}
-                                                        onChange={this.handleChangeComment}
+                                                        onRate={this.handleChangeRating}
                                                     />
                                                 </Comment.Actions>
                                             </Comment.Content>

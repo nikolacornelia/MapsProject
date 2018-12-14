@@ -6,8 +6,6 @@ import {
 } from 'semantic-ui-react'
 import * as CreateMap from './maps/CreateRoute';
 import {mockFeatures} from "../mockData";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 class Create extends Component {
 
@@ -19,20 +17,14 @@ class Create extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeIndex: -1,
             routeCreated: false,
             files: [],
 
-            lat: 51.505,
-            lng: -0.09,
-            zoom: 13,
             hasRouteError: false,
             hasRouteDistanceError: false,
-            loading:false
+            loading: false
         };
-        this.user = JSON.parse(sessionStorage.getItem("user"));
     }
-
 
     /**
      * Handles the change of most of the input fields
@@ -66,31 +58,30 @@ class Create extends Component {
         this.setState({files: files});
     };
 
+    /**
+     * Function that is called when the user submits a new route
+     * @param e - Event triggered by the form submit
+     */
     onSubmitRoute = (e) => {
         this.setState({routeCreated: false});
+
         //get current leaflet route information
         let oRoute = CreateMap.getRouteMapData();
 
-        if(!this.state.difficulty) {
+        if (!this.state.difficulty) {
             alert("Please select a difficulty first!");
             return;
         }
 
         // create a function that is called after image file is read
         let _createRoute = (e) => {
-            console.log(oRoute.points);
             if (oRoute.points.length === 0 || oRoute.points.length === 1) {
                 this.setState({hasRouteError: true});
                 return;
             }
-            else {
-                this.setState({hasRouteError: false});
-            }
-            if (oRoute.distance >=25) {
+            if (oRoute.distance >= 25) {
                 this.setState({hasRouteDistanceError: true});
                 return;
-            } else {
-                this.setState({hasRouteError: false});
             }
             if (oRoute.distance === null) {
                 //todo: display error message instead of success?
@@ -99,10 +90,9 @@ class Create extends Component {
             }
 
             let image = e && e.target.result; // sends the image as base64
-            //image.toString();
-            this.setState({loading: true});
+            this.setState({loading: true, hasRouteError: false});
 
-            axios.post('http://localhost:3001/saveRoute', {
+            axios.post('/saveRoute', {
                 title: this.state.name,
                 description: this.state.description,
                 difficulty: this.state.difficulty,
@@ -111,18 +101,15 @@ class Create extends Component {
                 highlights: oRoute.highlights,
                 images: image,
                 distance: oRoute.distance,
-                //sobald session im backend existiert, kommt die Zeile weg
-                user: this.user._id,
-               //todo correct? files: this.state.files
             }).then((response) => {
-                this.setState({hasRouteError: false});
-                this.setState({loading: false});
-                console.log(this.user._id);
-                this.setState({routeCreated: true, name: '', description: '', features: ''});
-                //reset created route points
-                //todo: at the moment route points only get deleted if you changed e.g. from create to search and then back to create
-                oRoute = CreateMap.resetArrays();
+                // route created - now reset input fields
+                this.setState({
+                    hasRouteError: false, loading: false,
+                    routeCreated: true, name: '', description: '', features: '', image: '', difficulty: ''
+                });
 
+                //reset created route points
+                oRoute = CreateMap.resetArrays();
             }).catch((error) => {
                 // possible?
             });
@@ -150,14 +137,11 @@ class Create extends Component {
      * Function that is being called when the component is rendered.
      */
     render() {
-        const {value} = this.state;
-        const position = [this.state.lat, this.state.lng];
 
-        // Seitenaufbau
         return (
             <Grid stackable columns={2} className='map' data-testid='siteCreate'>
                 <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
-                    <div id='map' style={{height: "100%"}}/>
+                    <div id='map' style={{height: "100%"}} data-testid='map'/>
                 </Grid.Column>
                 <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
                     <div className='sidebar'>
@@ -172,23 +156,26 @@ class Create extends Component {
                         <Message attached error
                                  header='This route is too long, please only create routes up to a distance of 25 km.'/>
                         }
-                        <Form size='large' onSubmit={this.onSubmitRoute}>
+                        <Form size='large' onSubmit={this.onSubmitRoute} data-testid='formCreate'>
                             <Header as='h2'>
                                 Create new route
                                 <Header.Subheader>Enter route information</Header.Subheader>
                             </Header>
 
-                            <Form.Input fluid label='Name' placeholder='Name of the route' required value={this.state.name}
-                                        name='name' onChange={this.handleChange} ref='inputText'/>
-                            <Form.TextArea fluid label='Description' placeholder='Description of the route' value={this.state.description}
+                            <Form.Input fluid label='Name' placeholder='Name of the route' required
+                                        value={this.state.name}
+                                        name='name' onChange={this.handleChange}/>
+                            <Form.TextArea fluid label='Description' placeholder='Description of the route'
+                                           value={this.state.description}
                                            name='description' onChange={this.handleChange}/>
 
                             <Form.Input type='file' fluid label='Image' placeholder='Upload image file'
                                         name='image' iconPosition='left' onChange={this.handleChangeFile}
-                                        accept="image/*"
+                                        accept="image/*" value={this.state.image}
                                         icon={<Icon name='add' link inverted color='black'/>}/>
 
-                            <Form.Group inline>
+
+                            <Form.Group inline value={this.state.difficulty}>
                                 <label>Difficulty <span style={{color: "#db2828"}}>*</span></label>
 
                                 <Form.Radio
@@ -197,6 +184,7 @@ class Create extends Component {
                                     name='difficulty'
                                     checked={this.state.difficulty === 'easy'}
                                     onChange={this.handleChange}
+                                    data-testid='radioEasy'
                                 />
                                 <Form.Radio
                                     label='moderate'
@@ -204,6 +192,7 @@ class Create extends Component {
                                     name='difficulty'
                                     checked={this.state.difficulty === 'moderate'}
                                     onChange={this.handleChange}
+                                    data-testid='radioModerate'
                                 />
                                 <Form.Radio
                                     label='difficult'
@@ -211,17 +200,19 @@ class Create extends Component {
                                     name='difficulty'
                                     checked={this.state.difficulty === 'difficult'}
                                     onChange={this.handleChange}
+                                    data-testid='radioDifficult'
                                 />
                             </Form.Group>
-                            <Form.Dropdown name='features' label='Features' placeholder='Route features' value={this.state.features}
+                            <Form.Dropdown name='features' label='Features' placeholder='Route features'
+                                           value={this.state.features}
                                            fluid multiple search selection options={mockFeatures}
                                            onChange={this.handleChange}
                             />
 
                             <Form.Button type='submit' color='blue'>Save</Form.Button>
-                                <Dimmer active={this.state.loading}>
-                                    <Loader />
-                                </Dimmer>
+                            <Dimmer active={this.state.loading}>
+                                <Loader/>
+                            </Dimmer>
                         </Form>
                     </div>
                 </Grid.Column>
