@@ -758,6 +758,10 @@ app.get('/reviewedRoutes', function (req, res, next) {
         }
     });
 
+app.post('/review', auth, function (req, res) {
+    Schema.Rating.findOneAndUpdate({ _id: req.body.commentId }, { comment: req.body.review, rating: req.body.rating }, { upsert: true }).then(item => { res.send() });
+});
+
 
 app.listen(3001, function () {
     console.log("Working on port 3001");
