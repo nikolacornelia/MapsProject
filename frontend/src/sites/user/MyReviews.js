@@ -94,15 +94,19 @@ class MyReviews extends Component {
         if (this.state.commenttext && this.state.rating) {
             ctext = this.state.commenttext;
             rating = this.state.rating;
+            this.date = new Date();
         } else if (this.state.rating) {
             rating = this.state.rating;
+            this.date = new Date();
         } else if (this.state.commenttext) {
             ctext = this.state.commenttext;
+            this.date = new Date();
         }
         axios.post('/review', {
             commentId: route.comments[i]._id,
             review: ctext,
-            rating: rating
+            rating: rating, 
+            date: this.date
         }).then(() => this.getMyReviews());
     };
 

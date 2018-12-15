@@ -348,7 +348,6 @@ class Search extends Component {
                                         <Header.Subheader as='h4'>{detailRoute.location}</Header.Subheader>
                                     </Header.Content>
                                 </Header>
-
                                 <Segment.Group className='basic'>
                                     <Segment basic>
                                         <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows showThumbs={false}>
@@ -362,7 +361,6 @@ class Search extends Component {
                                             }
                                         </Carousel>
                                     </Segment>
-
                                     <Segment.Group className='basic' horizontal textAlign='center'>
                                         <Segment basic>
                                             <Statistic horizontal size='mini' label='km'>
