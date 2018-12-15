@@ -142,6 +142,7 @@ app.delete('/LikedRoute', auth, function (req, res) {
 
 app.post('/saveRoute', auth, function (req, res, next) {
     let oRoute = req.body;
+    req.body.user = req.session.userid;
     //todo round distance
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
