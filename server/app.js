@@ -503,7 +503,7 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
                 let oneRoute = aRoutes[i];
                 // one route may not have a rating yet
                 if (response.length == 0) {
-                    oneRoute.avg_rating = undefined;
+                    oneRoute.avg_rating = 0;
                 } else {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
@@ -584,7 +584,7 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
                 let oneRoute = aRoutes[i];
                 // one route may not have a rating yet
                 if (response.length == 0) {
-                    oneRoute.avg_rating = undefined;
+                    oneRoute.avg_rating = 0;
                 } else {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
@@ -665,7 +665,7 @@ app.get('/reviewedRoutes', function (req, res, next) {
                 let oneRoute = aRoutes[i];
                 // one route may not have a rating yet
                 if (response.length == 0) {
-                    oneRoute.avg_rating = undefined;
+                    oneRoute.avg_rating = 0;
                 } else {
                     let avgRating = response[0].rating;
                     oneRoute.avg_rating = avgRating;
