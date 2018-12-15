@@ -43,7 +43,7 @@ class MyRoutes extends Component {
      */
     onSortChange = (key) => {
         // change sort and afterwards trigger an update
-        this.setState({sortBy: key}, this.getMyRoutes());
+        this.setState({sortBy: key}, this.getMyRoutes);
     };
 
     /**
@@ -86,8 +86,7 @@ class MyRoutes extends Component {
      * @param name - name of the tab to be selected
      */
     handleTabNavigation = (e, {name}) => {
-        this.setState({routes: []});
-        this.setState({tab: name}, this.getMyRoutes);
+        this.setState({tab: name, routes: []}, this.getMyRoutes);
     };
 
     /**
@@ -164,7 +163,7 @@ class MyRoutes extends Component {
                                     <div>Difficulty: {result.difficulty}</div>
                                 </Item.Description>
                                 <Item.Extra>
-                                    <Rating icon='star' defaultRating={result.avg_rating} maxRating={5} disabled/>
+                                    <Rating icon='star' rating={result.avg_rating} maxRating={5} disabled/>
                                     <Button floated='right' compact
                                             onClick={() => this.setState({confirmDelete: true, confirmDeleteId: result._id})}>
                                         Delete

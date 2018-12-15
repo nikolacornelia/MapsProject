@@ -45,7 +45,7 @@ class Search extends Component {
             sortBy: 1,
 
             searched: false,
-            showDetail: -1,
+            showDetail: null,
             reviewIsOpen: false,
             comments: [],
             files: [],
@@ -59,8 +59,13 @@ class Search extends Component {
         ShowRoute.onInit();
     };
 
-    // RadioButton Logik
-    handleChangeDifficulty = (e, {name, value, checked}) => {
+    /**
+     * Handles the change of a CheckBox control
+     * @param e - Event triggered from CheckBox control
+     * @param value - determines which CheckBox was pressed
+     * @param checked -  determines whether the new state is checked
+     */
+    handleChangeDifficulty = (e, {value, checked}) => {
         let difficulty = this.state.difficulty;
         if (checked) {
             difficulty.push(value);
@@ -76,8 +81,9 @@ class Search extends Component {
 
     /**
      * Sends a search for routes request
+     * {boolean} dontDisplay - Determines whether the search result shall be given to the leaflet map
      */
-    onSearch = () => {
+    onSearch = (dontDisplay) => {
         axios.get('/getRoutes', {
             params: {
                 search: this.state.searchText,
@@ -87,50 +93,56 @@ class Search extends Component {
                 sortBy: this.state.sortBy,
             }
         }).then((response) => {
-
             for (let i = 0; i < response.data.length; i++) {
                 if (response.data[i].distance && response.data[i].distance > 0)
                     response.data[i].distance = Math.round(response.data[i].distance * 100) / 100;
             }
 
+            // update details data in case details view is active
+            let detailData = this.state.showDetail && response.data.find((route) => route._id === this.state.showDetail._id);
+
+            if (detailData)
+                console.log("Updating detail with", detailData);
             this.setState({
                 searched: true,
-                routes: response.data
+                routes: response.data,
+                showDetail: detailData
             });
 
-            ShowRoute.displayRoutes(response.data);
+            if (!dontDisplay) {
+                ShowRoute.displayRoutes(response.data);
+            }
         });
 
     };
 
     /**
      * Navigates to the detail view of a route (or back)
-     * @param {string} id - the id of the route to be displayed (or -1 if back)
+     * @param {string} id - the id of the route to be displayed (or null if back)
      */
     onShowDetail = (id) => {
         // scroll to top
         document.getElementsByClassName('sidebar')[0].scrollTop = 0;
 
-        // request comments for selected route
-        if (id !== -1) {
-            axios.get('/getRatings', {
-                params: {
-                    route: id
-                }
-            }).then((response) => {
+        var detailData = this.state.routes.find((route) => route._id === id);
+
+        if (id) {
+            // request comments for selected route
+            axios.get('/getRatings',
+                {params: {route: id}}
+            ).then((response) => {
                 // returns object of all comments created
                 this.setState({comments: response.data});
             });
-            var routeData = this.state.routes.find((route) => route._id === id);
-            ShowRoute.displayOneRoute(routeData);
-        }
-        if (id == -1) {
+
+            ShowRoute.displayOneRoute(detailData);
+        } else {
             var routeData = this.state.routes;
             ShowRoute.displayRoutes(routeData);
         }
 
         // navigate internally to details view
-        this.setState({showDetail: id});
+        this.setState({showDetail: detailData});
     };
 
     /**
@@ -143,7 +155,7 @@ class Search extends Component {
         let _submitReview = (e) => {
             let image = e && e.target.result; // sends the image as base64
             axios.post('/saveRating', {
-                route: this.state.showDetail,
+                route: this.state.showDetail._id,
                 rating: this.state.rating,
                 comment: this.state.commentText,
                 image: image
@@ -152,14 +164,14 @@ class Search extends Component {
                 this.toggleReviewDialog();
                 axios.get('/getRatings', {
                     params: {
-                        route: this.state.showDetail
+                        route: this.state.showDetail._id
                     }
                 }).then((response) => {
                     // returns object of all comments created
                     this.setState({comments: response.data});
                 });
                 // todo nstelle von this.onSearch nur DetailRoute updaten? --> refresh DetailRoute
-                this.onSearch();
+                this.onSearch(true);
             });
         };
 
@@ -210,23 +222,18 @@ class Search extends Component {
         }
         // send request to toggle favorite
         axios.post('/favoriseRoute', {
-            route: this.state.showDetail,  // currently selected routeid
+            route: this.state.showDetail._id,
             isFavorised: isFavorised
         }).then((response) => {
             // refresh
-            this.onSearch();
+            this.onSearch(true);
         });
     };
 
 
     render() {
-        var detailRoute;
-        if (this.state.showDetail !== -1) {
-            detailRoute = this.state.routes.find((route) => route._id === this.state.showDetail);
-        }
-
         let images = [];
-        detailRoute && detailRoute.image && images.push(detailRoute.image);
+        this.state.showDetail && this.state.showDetail.image && images.push(this.state.showDetail.image);
         for (let i = 0; i < this.state.comments.length; i++) {
             let img = this.state.comments[i].image;
             img && images.push(img);
@@ -239,7 +246,7 @@ class Search extends Component {
                     <div id='map' style={{height: "100%"}}/>
                 </Grid.Column>
                 <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
-                    {this.state.showDetail === -1 ?
+                    {!this.state.showDetail ?
                         /* display search form*/
                         <div class='sidebar'>
                             <Form size='large'>
@@ -334,20 +341,21 @@ class Search extends Component {
 
                                 <Header as='h2' style={{width: "100%"}}>
                                     <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
-                                          onClick={() => this.onShowDetail(-1)}/>
+                                          onClick={() => this.onShowDetail(null)}/>
                                     <Header.Content style={{width: "100%"}}>
-                                        {detailRoute.title}
+                                        {this.state.showDetail.title}
                                         <span style={{float: 'right'}}>
                                         <Popup
-                                            trigger={<Icon name={detailRoute.isFavorised ? 'heart' : 'heart outline'}
-                                                           link color='red'
-                                                           onClick={() => this.toggleFavorite(!detailRoute.isFavorised)}/>}
-                                            content={detailRoute.isFavorised
+                                            trigger={<Icon
+                                                name={this.state.showDetail.isFavorised ? 'heart' : 'heart outline'}
+                                                link color='red'
+                                                onClick={() => this.toggleFavorite(!this.state.showDetail.isFavorised)}/>}
+                                            content={this.state.showDetail.isFavorised
                                                 ? 'Remove this route from your favorites.'
                                                 : 'Add this route to your favorites.'}
                                             size='tiny' position='bottom right'/>
                                     </span>
-                                        <Header.Subheader as='h4'>{detailRoute.location}</Header.Subheader>
+                                        <Header.Subheader as='h4'>{this.state.showDetail.location}</Header.Subheader>
                                     </Header.Content>
                                 </Header>
 
@@ -369,29 +377,28 @@ class Search extends Component {
                                         <Segment basic>
                                             <Statistic horizontal size='mini' label='km'>
                                                 <Statistic.Value>
-                                                    <Icon name='map'/> {detailRoute.distance} km
+                                                    <Icon name='map'/> {this.state.showDetail.distance} km
                                                 </Statistic.Value>
                                             </Statistic>
                                         </Segment>
                                         <Segment basic>
-                                            <Statistic horizontal size='mini' label={detailRoute.difficulty}/>
+                                            <Statistic horizontal size='mini' label={this.state.showDetail.difficulty}/>
                                         </Segment>
                                         <Segment basic>
-                                            <Rating basic icon='star' defaultRating={detailRoute.avg_rating}
-                                                    maxRating={5}
-                                                    disabled size='huge'/>
+                                            <Rating basic icon='star' rating={this.state.showDetail.avg_rating}
+                                                    maxRating={5} disabled size='huge'/>
                                         </Segment>
                                     </Segment.Group>
 
-                                    {detailRoute.features &&
+                                    {this.state.showDetail.features &&
                                     <Segment basic textAlign='center'>
-                                        {detailRoute.features.map((feature) => <Label>{feature}</Label>)}
+                                        {this.state.showDetail.features.map((feature) => <Label>{feature}</Label>)}
                                     </Segment>
                                     }
 
-                                    {detailRoute.description &&
+                                    {this.state.showDetail.description &&
                                     <Segment basic>
-                                        {detailRoute.description}
+                                        {this.state.showDetail.description}
                                     </Segment>
                                     }
 
@@ -405,7 +412,7 @@ class Search extends Component {
                                         {this.user &&
                                         <Modal open={this.state.reviewIsOpen} closeOnEscape={false}
                                                closeOnDimmerClick={false} size='small' centered>
-                                            <Modal.Header>New Review for {detailRoute.title}</Modal.Header>
+                                            <Modal.Header>New Review for {this.state.showDetail.title}</Modal.Header>
                                             <Modal.Content scrolling>
                                                 <Form>
                                                     <Comment.Group>
@@ -453,9 +460,10 @@ class Search extends Component {
                                                     <Comment.Metadata>
                                                         <span>{new Date(comment.created).toLocaleString()}</span>
                                                     </Comment.Metadata>
-                                                    <Comment.Text><p>{comment.comment ? comment.comment : <div>&nbsp;</div>}</p></Comment.Text>
+                                                    <Comment.Text><p>{comment.comment ? comment.comment :
+                                                        <div>&nbsp;</div>}</p></Comment.Text>
                                                     <Comment.Actions>
-                                                        <Rating as='a' icon='star' defaultRating={comment.rating}
+                                                        <Rating as='a' icon='star' rating={comment.rating}
                                                                 maxRating={5} disabled/>
                                                     </Comment.Actions>
                                                 </Comment.Content>

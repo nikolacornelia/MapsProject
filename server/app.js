@@ -206,6 +206,7 @@ app.delete('/LikedRoute', auth, function (req, res) {
 
 app.post('/saveRoute', auth, function (req, res, next) {
     let oRoute = req.body;
+    req.body.user = req.session.userid;
     //todo round distance
     // oRoute.distance = round(oRoute.distance,1);
     //console.log(oRoute.distance);
