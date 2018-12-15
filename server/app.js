@@ -264,7 +264,8 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.post('/saveRating', auth, function (req, res, next) {
-    if (req.body.route == undefined || req.body.user ==  undefined || req.body.user == null) {
+
+    if (req.body.route == undefined) {
         res.status(400).send("error while saving rating because route/user is undefined");
         return;
     }

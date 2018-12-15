@@ -49,7 +49,8 @@ class Search extends Component {
             reviewIsOpen: false,
             comments: [],
             files: [],
-            routes: []
+            routes: [],
+            userComment : null
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -230,6 +231,7 @@ class Search extends Component {
             let img = this.state.comments[i].image;
             img && images.push(img);
         }
+
 
         return (
             <Grid stackable columns={2} className='map' data-testid='siteSearch'>

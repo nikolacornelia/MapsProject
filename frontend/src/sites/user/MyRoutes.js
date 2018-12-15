@@ -177,7 +177,7 @@ class MyRoutes extends Component {
                 <Confirm open={this.state.confirmDelete}
                          onCancel={() => this.setState({confirmDelete: false})}
                          onConfirm={this.handleDelete}
-                         content='Are you sure you want to delete this Route?'/>
+                         content='Are you sure you want to delete this route?'/>
             </Container>
 
         )
