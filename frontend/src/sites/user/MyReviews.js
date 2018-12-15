@@ -76,7 +76,6 @@ class MyReviews extends Component {
     };
 
     handleChangeComment = (e, { name, value }) => {
-        console.log(this.state);
         this.setState({ [name]: value });
     };
     handleChangeRating = (e, { name, rating }) => {
@@ -91,22 +90,20 @@ class MyReviews extends Component {
         let route = this.state.routes[i];
         let ctext = route.comments[i].comment;
         let rating = route.comments[i].rating;
+        let date = new Date();
         if (this.state.commenttext && this.state.rating) {
             ctext = this.state.commenttext;
             rating = this.state.rating;
-            this.date = new Date();
         } else if (this.state.rating) {
             rating = this.state.rating;
-            this.date = new Date();
         } else if (this.state.commenttext) {
             ctext = this.state.commenttext;
-            this.date = new Date();
         }
         axios.post('/review', {
             commentId: route.comments[i]._id,
             review: ctext,
             rating: rating, 
-            date: this.date
+            date: date
         }).then(() => this.getMyReviews());
     };
 
@@ -154,14 +151,14 @@ class MyReviews extends Component {
                                                 </Comment.Metadata>
                                                 <Comment.Text>
                                                     {route.edit
-                                                        ? <TextArea style={{ width: "100%" }} name="commenttext"
+                                                        ? <TextArea style={{ width: "100%" }} name="commenttext" placeholder="Add a comment..."
                                                             onChange={this.handleChangeComment} defaultValue={route.comments[i].comment}></TextArea>
                                                         : (route.comments[i].comment)
                                                     }
                                                 </Comment.Text>
                                                 <Comment.Actions>
                                                     <Rating as='a' icon='star' name="rating" defaultRating={route.comments[i].rating}
-                                                        maxRating={5} disabled={!route.edit}
+                                                        maxRating={5} disabled={!route.edit} data-testid={'rating'+i}
                                                         onRate={this.handleChangeRating}
                                                     />
                                                 </Comment.Actions>

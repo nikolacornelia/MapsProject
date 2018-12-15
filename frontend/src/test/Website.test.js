@@ -11,9 +11,8 @@ describe("Website navigation", () => {
         expect(siteHome).toBeDefined();
     });
 
-    test("find login menu", () => {
-        const login = getByText("LogIn");
-
+    test("find user menu", () => {
+        const login = getByText("User");
         expect(login).toBeDefined();
     });
 
@@ -26,7 +25,7 @@ describe("Website navigation", () => {
         expect(siteSearch).toBeDefined();
     });
 /*
-    test("navigate to create does not work beecause not logged in", () => {
+    test("navigate to create does not work because not logged in", () => {
         const create = getByText("Create");
 
         fireEvent.click(create);

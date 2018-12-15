@@ -90,8 +90,7 @@ class MyRoutes extends Component {
     };
 
     /**
-     * Deletes a route
-     * @param id - route id to be deleted
+     * Deletes a route or a favorisation
      */
     handleDelete = () => {
         if(!this.state.confirmDeleteId)

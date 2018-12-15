@@ -141,7 +141,7 @@ class Create extends Component {
 
         return (
             <Grid stackable columns={2} className='map' data-testid='siteCreate'>
-                <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
+                <Grid.Column width={10} style={{paddingTop: '1.45rem', paddingRight: 0, paddingBottom: 0}}>
                     <div id='map' style={{height: "100%"}} data-testid='map'/>
                 </Grid.Column>
                 <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
@@ -150,13 +150,10 @@ class Create extends Component {
                         {this.state.routeCreated &&
                         <Message success header='The route has successfully been created!'/>}
                         {this.state.hasRouteError &&
-                        <Message attached error
-                                 header='Invalid route, please check your route consists of at least 2 points.'/>
-                        }
+                        <Message error header='Invalid route, please check your route consists of at least 2 points.'/>}
                         {this.state.hasRouteDistanceError &&
-                        <Message attached error
-                                 header='This route is too long, please only create routes up to a distance of 25 km.'/>
-                        }
+                        <Message error header='This route is too long, please only create routes up to a distance of 25 km.'/>}
+
                         <Form size='large' onSubmit={this.onSubmitRoute} data-testid='formCreate'>
                             <Header as='h2'>
                                 Create new route
