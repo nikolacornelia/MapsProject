@@ -24,6 +24,7 @@ class Create extends Component {
             hasRouteDistanceError: false,
             loading: false
         };
+        CreateMap.resetArrays();
     }
 
     /**

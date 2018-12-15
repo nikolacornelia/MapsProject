@@ -10,6 +10,7 @@ let Image = mongoose.model('Image', schemaImage);
 let schemaPoint = new Schema({
     name: String, description: String, category: String, latitude: Number, longitude: Number
 });
+//todo change name to Highlight
 let Point = mongoose.model("Point", schemaPoint);
 
 //User
