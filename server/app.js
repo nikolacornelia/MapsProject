@@ -30,63 +30,7 @@ let round = require('math-round');
 let lodash = require('lodash.sortby');
 let _ = require('underscore');
 
-/**
- let schemaImage = new mongoose.Schema({
-    created: {type: Date, default: Date.now}, imageData: String, imageType: String
-});
- let Image = mongoose.model('Image', schemaImage);
-
- let schemaPoint = new mongoose.Schema({
-    name: String, description: String, category: String, latitude: Number, longitude: Number
-});
- let Point = mongoose.model("Point", schemaPoint);
-
- //User
- let schemaUser = new mongoose.Schema({
-    email: {type: String, unique: true}, username: String, password: String
-});
- let User = mongoose.model("User", schemaUser);
-
- //ROUTE
- let schemaRoute = new mongoose.Schema({
-    title: String,
-    description: String,
-    difficulty: String,
-    points: [{lat: Number, lng: Number}],
-    highlights: [Number],
-    distance: [Number],
-    location: String,
-    created: {type: Date, default: Date.now},
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    features: [String],
-    image: {type: mongoose.Schema.Types.ObjectId, ref: 'Image'}
-    //image: Buffer
-});
- //let schemaRoute = new mongoose.Schema({title: String, description: String, difficulty: String});
- let Route = mongoose.model("Route", schemaRoute);
-
- //Rating
- let schemaRating = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    route: {type: mongoose.Schema.Types.ObjectId, ref: 'Route'},
-    created: {type: Date, default: Date.now},
-    comment: String,
-    image: {type: mongoose.Schema.Types.ObjectId, ref: 'Image'},
-    rating: Number,
-})
- let Rating = mongoose.model("Rating", schemaRating);
-
- //Favourites
- let schemaFavs = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    route: {type: mongoose.Schema.Types.ObjectId, ref: 'Route'},
-    created: {type: Date, default: Date.now},
-})
- let Favourite = mongoose.model("Favourite", schemaFavs); **/
-
-//app.use(bodyParser());
 app.use(bodyParser.json({ limit: '50mb' }));
-//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(methodOverride());
 
@@ -124,13 +68,6 @@ var auth = function (req, res, next) {
         return res.sendStatus(401);
     }
 };
-//connect for image upload (Grid creation)
-let conn = mongoose.createConnection('mongodb://localhost:27017/maps');
-conn.once('open', function () {
-    console.log('connected and created Grid for image upload');
-    gfs = new Grid(conn.db);
-});
-
 
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
@@ -171,7 +108,6 @@ app.post('/savePoint', auth, function (req, res) {
     let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
     let myData = new Schema.Point(aResult);
-    // myData =new Point({ name: "NameNew", description: "DescriptionNew", category: "CategoryNew", latitude: 4534, longitude: 2565});
     myData.save()
         .then(item => {
             res.send("point saved to database");
@@ -207,8 +143,6 @@ app.delete('/LikedRoute', auth, function (req, res) {
 app.post('/saveRoute', auth, function (req, res, next) {
     let oRoute = req.body;
     //todo round distance
-    // oRoute.distance = round(oRoute.distance,1);
-    //console.log(oRoute.distance);
     let url = "https://eu1.locationiq.com/v1/reverse.php?key=267f953f1517c5&lat=" + req.body.points[0].lat + "&lon=" + req.body.points[0].lng + "&format=json";
     request({
         url: url,
@@ -315,7 +249,6 @@ app.get('/getData', function (req, res) {
 
 app.get('/getRatings', function (req, res) {
     Schema.Rating.find({ route: req.query.route }).populate('user').exec(function (err, data) {
-        console.log(data);
         if (err) {
             res.status(404).send("unable to get ratings");
             throw err;
@@ -521,11 +454,9 @@ app.get('/logout', function (req, res) {
 });
 
 app.get('/Image', function (req, res, next) {
-    console.log('getMyRoutes');
     let routeQuery = {};
     routeQuery.user = req.session.userid;
     Schema.Image.findOne({ _id: req.query.id }).lean().exec(function (err, data) {
-        console.log(data);
         if (err) {
             console.log('error');
             //res.sendStatus(404).send("error while finding image");
@@ -548,7 +479,6 @@ app.get('/Image', function (req, res, next) {
 
 
 app.get('/getMyRoutes', auth, function (req, res, next) {
-    console.log('getMyRoutes');
     let routeQuery = {};
     routeQuery.user = req.session.userid;
     Schema.Route.find(routeQuery).lean().exec(function (err, data) {
