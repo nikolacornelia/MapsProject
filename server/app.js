@@ -230,7 +230,10 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.get('/getRoutes', function (req, res, next) {
-    
+    //important if method accessed via test
+    if(paramText === undefined) {
+        paramText ='';
+    }
     if (paramText === '' && paramDifficulty === undefined && req.query.features === undefined) {
         routeQuery = { distance: { $lt: paramDistance } };
     }
@@ -702,7 +705,6 @@ app.get('/reviewedRoutes', function (req, res, next) {
         }
     });
 
-
 app.listen(3001, function () {
     console.log("Working on port 3001");
 });
@@ -719,7 +721,6 @@ function sortRoutes(aRoutes, iSortBy) {
     }
     return aRoutes;
 }
-
 
 function sortByDate(aRoutes) {
     if (aRoutes.length <= 1) {
