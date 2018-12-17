@@ -227,7 +227,6 @@ class Search extends Component {
                 this.setState({fileError: true});
             } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
-                // todo: define max. file size & error routine...
                 alert("The file you tried to attach is too big. Images are limited to 1234mb.");
 
                 this.setState({files: []});
