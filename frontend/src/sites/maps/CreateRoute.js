@@ -205,7 +205,9 @@ function deleteFunction() {
         aPoly.splice(aPoly.length - 1, 1);
     }
     if (aHighlight[aHighlight.length - 1] == 0) {
-        map.removeLayer(aMarker[aMarker.length - 1]);
+        if (aMarker[aMarker.length - 1] != null){
+            map.removeLayer(aMarker[aMarker.length - 1]);
+        }
     }
     if (aMarker.length>0){
         aMarker.splice(aMarker.length - 1, 1);
