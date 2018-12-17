@@ -68,8 +68,8 @@ var auth = function (req, res, next) {
         return res.sendStatus(401);
     }
 };
-//todo change without test
-mongoose.connect('mongodb://localhost:27017/maps_test', function (err, db) {
+//change database to e.g. 'maps_test' to conduct test (without affect on productive database)
+mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
