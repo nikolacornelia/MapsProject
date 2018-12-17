@@ -120,6 +120,7 @@ function onMapClick(e) {
         }).addTo(map);
         if (aPoints.length > 1) {
             iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+            console.log(iDistance);
         }
     }
     else if (bHighlight){
@@ -178,6 +179,8 @@ function connectPoint(e) {
     }).addTo(map);
     if (aPoints.length > 1) {
         iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+
     }
 }
 
@@ -194,6 +197,8 @@ function connectHighlight(koordinaten) {
     }).addTo(map);
     if (aPoints.length > 1) {
         iDistance = iDistance + getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
+
     }
 }
 
@@ -201,6 +206,7 @@ function connectHighlight(koordinaten) {
 function deleteFunction() {
     if (aPoints.length > 1) {
         iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
+        console.log(iDistance);
         map.removeLayer(aPoly[aPoly.length - 1]);
         aPoly.splice(aPoly.length - 1, 1);
     }
@@ -312,4 +318,5 @@ export function resetArrays() {
     aMarker = [];
     aPoly = [];
     aHighlight = []; // Boolean
+    iDistance = 0;
 }
