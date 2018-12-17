@@ -31,7 +31,7 @@ class Website extends Component {
 
         this.state = {
             loggedIn: sessionStorage.getItem("user")
-        }
+        };
     };
 
     updateLoginStatus = () => {

@@ -56,9 +56,15 @@ class Search extends Component {
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
+    /** Injects leaflet functionality after React component was loaded */
     componentDidMount = () => {
         ShowRoute.onInit();
     };
+
+
+    /********************************
+     *  Functions on search list level
+     ********************************/
 
     /**
      * Handles the change of a CheckBox control
@@ -73,9 +79,15 @@ class Search extends Component {
         } else {
             difficulty.splice(difficulty.indexOf(value), 1);
         }
-        this.setState({difficulty: difficulty});
+        this.handleChange(e, { name: 'difficulty', value: difficulty});
     };
 
+    /**
+     * Handles the change from a user for one of the search/filter controls
+     * @param e - Event that is triggered from the browser
+     * @param name - name of the control that was changed
+     * @param value - new value that was changed
+     */
     handleChange = (e, {name, value}) => {
         this.setState({[name]: value});
     };
@@ -102,8 +114,6 @@ class Search extends Component {
             // update details data in case details view is active
             let detailData = this.state.showDetail && response.data.find((route) => route._id === this.state.showDetail._id);
 
-            if (detailData)
-                console.log("Updating detail with", detailData);
             this.setState({
                 searched: true,
                 routes: response.data,
@@ -152,6 +162,11 @@ class Search extends Component {
      */
     onChangeSort = (key) => this.setState({sortBy: key}, this.onSearch);
 
+    /********************************
+     *  Functions for review dialog
+     ********************************/
+
+    /** Handler for submitting a new review */
     onSubmitReview = () => {
         if (this.state.fileError) {
             alert('uploaded file  is not correct');
@@ -189,7 +204,7 @@ class Search extends Component {
         }
     };
 
-    /* Functions for review dialog */
+    /** Opens the Create new Review dialog */
     toggleReviewDialog = () => {
         if (this.user) {
             this.setState({reviewIsOpen: !this.state.reviewIsOpen});
@@ -214,6 +229,7 @@ class Search extends Component {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
                 alert("The file you tried to attach is too big. Images are limited to 1234mb.");
+
                 this.setState({files: []});
                 this.setState({fileError: true});
             } else {
@@ -224,8 +240,11 @@ class Search extends Component {
     };
 
 
+    /**
+     * Changes the favorisation of a route
+     * @param {boolean} isFavorised - determines the new state of favorization
+     */
     toggleFavorite = (isFavorised) => {
-        //isFavorised = new state
         if (this.user === null) {
             window.location = '/#/login';
             return;
@@ -252,7 +271,7 @@ class Search extends Component {
 
         return (
             <Grid stackable columns={2} className='map' data-testid='siteSearch'>
-                <Grid.Column width={10} style={{paddingRight: 0, paddingBottom: 0}}>
+                <Grid.Column width={10} style={{paddingTop: '1.45rem', paddingRight: 0, paddingBottom: 0}}>
                     <div id='map' style={{height: "100%"}}/>
                 </Grid.Column>
                 <Grid.Column width={6} as={Segment} style={{height: '100%'}}>
@@ -271,7 +290,7 @@ class Search extends Component {
                                 <Header as='h4' dividing icon='filter' content='Filter'/>
                                 <Form.Group inline>
                                     <label>Difficulty</label>
-                                    <Form.Checkbox label='easy' value='easy' name='difficulty'
+                                    <Form.Checkbox label='easy' value='easy' name='difficulty' data-testid='difficultyEasy'
                                                    onChange={this.handleChangeDifficulty}/>
                                     <Form.Checkbox label='moderate' value='moderate' name='difficulty'
                                                    onChange={this.handleChangeDifficulty}/>
@@ -322,8 +341,9 @@ class Search extends Component {
                                 </Grid>
 
                                 <Item.Group divided link>
-                                    {this.state.searched && this.state.routes.map((route) =>
-                                        <Item key={route._id} onClick={() => this.onShowDetail(route._id)}>
+                                    {this.state.searched && this.state.routes.map((route, i) =>
+                                        <Item key={route._id} onClick={() => this.onShowDetail(route._id)}
+                                              data-testid={'searchResult' + i}>
                                             <Item.Image size='small' rounded
                                                         src={route.image ? axios.defaults.baseURL + '/Image?id=' + route.image : '/static/media/route-noimage.png'}/>
                                             <Item.Content>
@@ -347,7 +367,7 @@ class Search extends Component {
                         </div>
                         : /*else display detail form*/
                         <div className='sidebar'>
-                            <Form size='large'>
+                            <Form size='large' data-testid='detailForm'>
 
                                 <Header as='h2' style={{width: "100%"}}>
                                     <Icon link name='arrow left' style={{verticalAlign: 'top', fontSize: '1em'}}
@@ -358,7 +378,7 @@ class Search extends Component {
                                         <Popup
                                             trigger={<Icon
                                                 name={this.state.showDetail.isFavorised ? 'heart' : 'heart outline'}
-                                                link color='red'
+                                                link color='red' data-testid='toggleFavorite'
                                                 onClick={() => this.toggleFavorite(!this.state.showDetail.isFavorised)}/>}
                                             content={this.state.showDetail.isFavorised
                                                 ? 'Remove this route from your favorites.'
@@ -368,7 +388,6 @@ class Search extends Component {
                                         <Header.Subheader as='h4'>{this.state.showDetail.location}</Header.Subheader>
                                     </Header.Content>
                                 </Header>
-
                                 <Segment.Group className='basic'>
                                     <Segment basic>
                                         <Carousel autoPlay showArrows infiniteLoop useKeyboardArrows showThumbs={false}>
@@ -382,7 +401,6 @@ class Search extends Component {
                                             }
                                         </Carousel>
                                     </Segment>
-
                                     <Segment.Group className='basic' horizontal textAlign='center'>
                                         <Segment basic>
                                             <Statistic horizontal size='mini' label='km'>
@@ -416,6 +434,7 @@ class Search extends Component {
 
                                         <Header as='h2' dividing>
                                             <Button color='blue' icon='heart' content='Add Review'
+                                                    data-testid='btnAddReview'
                                                     onClick={this.toggleReviewDialog} floated="right" compact/>
                                             <Header.Content>Reviews</Header.Content>
                                         </Header>
@@ -436,7 +455,8 @@ class Search extends Component {
                                                                     <Form.Field><Rating icon='star' size='huge'
                                                                                         name='rating' clearable
                                                                                         onRate={this.onChangeReviewRating}
-                                                                                        maxRating={5}/></Form.Field>
+                                                                                        maxRating={5}
+                                                                                        data-testid='newReviewRating'/></Form.Field>
                                                                     <Form.TextArea autoHeight
                                                                                    name='commentText'
                                                                                    onChange={this.onChangeReviewText}

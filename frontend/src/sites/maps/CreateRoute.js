@@ -44,7 +44,7 @@ var stateChangingButton = L.easyButton({
     states: [{
       stateName: 'ButtonOff',      
       icon:      'fa-star',               
-      title:     'Turn Button On', 
+      title:     'Add a highlight',
       onClick: function(btn, map) {
         bHighlight = true;
         btn.button.style.backgroundColor = 'grey';
@@ -53,7 +53,7 @@ var stateChangingButton = L.easyButton({
     }, {
       stateName: 'ButtonOn',
       icon:      'fa-star',
-      title:     'Turn Button Off',
+      title:     'Add a highlight',
       onClick: function(btn, map) {
         map.closePopup();
         bHighlight = false;
@@ -146,7 +146,7 @@ function newPoint(){
     oPoint.latitude = dLatH;
     oPoint.longitude = dLngH;
     var jsonPoint = JSON.stringify(oPoint);
-    axios.post('http://localhost:3001/savePoint', {
+    axios.post('/savePoint', {
         data: {point: jsonPoint}
     }).then(function (response) {
         console.log("success");
@@ -220,7 +220,7 @@ async function onMapLoad(e) {
 }
 function getPointsOfInterest() {
     //only get points that are in the bounds of the map
-    axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
+    axios.get('/getLocalPoints').then(function (response) {
         console.log("success");
         displayPoints(response.data);
     }).catch(function (err) {

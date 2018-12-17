@@ -457,7 +457,7 @@ app.get('/login', function (req, res) {
 app.get('/logout', function (req, res) {
     if (req.session)
         req.session.destroy();
-    res.send(200);
+    res.sendStatus(200);
 });
 
 app.get('/Image', function (req, res, next) {
@@ -697,7 +697,7 @@ app.get('/reviewedRoutes', function (req, res, next) {
     });
 
 app.post('/review', auth, function (req, res) {
-    Schema.Rating.findOneAndUpdate({ _id: req.body.commentId }, { comment: req.body.review, rating: req.body.rating }, { upsert: true }).then(item => { res.send() });
+    Schema.Rating.findOneAndUpdate({ _id: req.body.commentId }, { comment: req.body.review, rating: req.body.rating, created: req.body.date }, { upsert: true }).then(item => { res.send() });
 });
 
 

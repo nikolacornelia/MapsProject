@@ -53,7 +53,6 @@ class LogIn extends Component {
                 password: this.state.password
             }
         }).then((response) => {
-            console.log("SUCCESS route login");
             // success routine
             sessionStorage.setItem("user", JSON.stringify(response.data));
             let referrTo;
@@ -114,11 +113,11 @@ class LogIn extends Component {
                             <Message attached error header='Invalid login data!'
                                 content='Please check your email or password.' />
                         }
-                        {this.props.location.state &&
+                        {this.props.location && this.props.location.state &&
                             <Message attached warning header='You must login to access this page!'
                                 content='Please login first. You will then be redirected.' />
                         }
-                        <Form size='large' onSubmit={this.onSubmitLogin} className='attached fluid segment'>
+                        <Form size='large' onSubmit={this.onSubmitLogin} className='attached fluid segment' data-testid='formLogin'>
 
                             <Form.Input fluid icon='user' name='user' iconPosition='left'
                                 placeholder='Email address or user name' onChange={this.onChangeInput}
@@ -130,12 +129,12 @@ class LogIn extends Component {
                                 <a href='#' onClick={(e) => this.navigateInternally(e, 'forgotPassword')}>Forgot your
                                     password?</a>
                             </Form.Field>
-                            <Button color='blue' fluid size='large'>
+                            <Button color='blue' fluid size='large' data-testid='formLoginButton'>
                                 Login
                             </Button>
                         </Form>
                         <Message attached='bottom'>
-                            Don't have an account? <a href='#' onClick={(e) => this.navigateInternally(e, 'register')}>Sign
+                            Don't have an account? <a href='#' onClick={(e) => this.navigateInternally(e, 'register')} data-testid='signUp'>Sign
                             Up</a>
                         </Message>
                     </div>}
@@ -145,7 +144,7 @@ class LogIn extends Component {
                             Register a new account
                         </Header>
                         {this.state.registerSuccess &&
-                            <Message attached success header='Your account was successfully registered.'>
+                            <Message attached success header='Your account was successfully registered.' data-testid='msgRegisterSuccess'>
                                 You can now <a href='#' onClick={(e) => this.navigateInternally(e, 'login')}>login here</a>.
                         </Message>
                         }
@@ -161,7 +160,7 @@ class LogIn extends Component {
                             <Message attached error header='Your account was not created!'
                                 content='This user already exists.' />
                         }
-                        <Form size='large' onSubmit={this.onSubmitRegister} className='attached fluid segment'>
+                        <Form size='large' onSubmit={this.onSubmitRegister} className='attached fluid segment' data-testid='formRegister'>
 
                             <Form.Input fluid icon='mail' name='email' iconPosition='left'
                                 error={this.state.formErrors.find((error) => error.field === 'email')}
