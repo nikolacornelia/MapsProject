@@ -1,33 +1,16 @@
 require('express-async-errors');
-let multer = require('multer');
 let express = require('express');
-let http = require('http');
-let path = require('path');
 let mongoose = require('mongoose');
-let fs = require('fs');
 let app = express();
 let bodyParser = require('body-parser');
 let methodOverride = require('method-override');
 let Schema = require('./schema_model');
-let jQuery = require('jQuery');
-let assert = require('assert');
-let dbMongo;
-const { ObjectID } = require("mongodb");
-let mongodb = require("mongodb");
 let Grid = require('gridfs-stream');
 Grid.mongo = mongoose.mongo;
-let gfs;
 let bcrypt = require('bcrypt');
-let async = require('async');
 let request = require('request');
-let thenquest = require('then-request');
 let sortJson = require('sort-json-array');
-//let Buffer = require('buffer/').Buffer;
-var cors = require('cors');
 let session = require('express-session');
-let Binary = require('mongodb').Binary;
-let round = require('math-round');
-let lodash = require('lodash.sortby');
 let _ = require('underscore');
 
 var auth = function (req, res, next) {
@@ -81,7 +64,6 @@ var auth = function (req, res, next) {
 };
 
 //change database to e.g. 'maps_test' to conduct test (without affect on productive database)
-
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -94,7 +76,7 @@ mongoose.connection.once('open', function () {
     console.log('Connection open');
 });
 
-// Usermanagement
+// user management
 app.post('/register', function (req, res) {
     // todo: check if user already exists
     // todo: check if password length > 8
@@ -144,8 +126,7 @@ app.get('/logout', function (req, res) {
     res.sendStatus(200);
 });
 
-//Routenfunctions
-
+//route functionality
 app.post('/savePoint', auth, function (req, res) {
     let aResult = req.body.data.point;
     aResult = JSON.parse(aResult);
@@ -194,7 +175,6 @@ app.post('/saveRoute', auth, function (req, res, next) {
             throw err;
         }
         res.body = JSON.parse(res.body);
-
         try {
             if (res.body.address.city != undefined) {
                 oRoute.location = res.body.address.city;
@@ -243,7 +223,6 @@ app.get('/getRoutes', function (req, res, next) {
         let paramDifficulty = req.query.difficulty;
         let paramDistance = req.query.distance;
         let routeQuery;
-
     //important if method accessed via test
     if(paramText === undefined) {
         paramText ='';
@@ -281,7 +260,6 @@ app.get('/getRoutes', function (req, res, next) {
         }
         routeQuery.$and.push({ distance: { $lt: req.query.distance } });
     };
-
     Schema.Route.find(routeQuery).lean().then(function (data) {
         //no route was found for query
         if (data.length === 0) {
@@ -291,7 +269,6 @@ app.get('/getRoutes', function (req, res, next) {
         next();
     }).catch(function (error) {
         res.status(404).send(error.errmsg);
-
     });
 },
     function (req, res, next) {
@@ -321,7 +298,6 @@ app.get('/getRoutes', function (req, res, next) {
                 }
             }).catch(function (error) {
                 res.status(400).send("error while accessing rating");
-
             });
             ;
         }
@@ -380,8 +356,7 @@ app.get('/Image', function (req, res, next) {
     })
 });
 
-//Userinteraction
-
+// user interaction with routes
 app.get('/getMyRoutes', auth, function (req, res, next) {
     let routeQuery = {};
     routeQuery.user = req.session.userid;
@@ -594,7 +569,6 @@ app.post('/saveRating', auth, function (req, res, next) {
     }
 },
     function (req, res) {
-
         Schema.Rating.deleteMany({ user: req.session.userid, route: req.body.route })
             .then(item => {
                 let oDataRating = new Schema.Rating(req.body);
@@ -723,6 +697,7 @@ app.listen(3001, function () {
     console.log("Working on port 3001");
 });
 
+//functions
 function sortRoutes(aRoutes, iSortBy) {
     if (iSortBy == 1) {
         //Sort by name

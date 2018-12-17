@@ -31,77 +31,60 @@ class FAQ extends Component {
                 </Header>
                 <Accordion block fluid styled data-testid='faqAccordion'>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
-                        Most frequently asked quesion 1
+                        What are the requirements for a route?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 0}>
                         <p>
-                            Answer to Q1
+                            When you are logged in, you can create your own route. It needs to consist of at least two points.
+                            Another prerequisite is a route distance lower than 25 kilometers, as we are a website not only for trained athletes.
                         </p>
                     </Accordion.Content>
                     <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
-                        Most frequently asked quesion 2
+                        Why is one of my photos not uploading?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 1}>
                         <p>
-                            Answer to Q2
+                           Reassure that the type of your document is an image and that its size is not to large. Try it with a photo of lower quality.
                         </p>
                     </Accordion.Content>
                     <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
-                        Most frequently asked quesion 3
+                        In which countries can I create routes?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 2}>
                         <p>
-                            Answer to Q3. This is the following: Lorem ipsum dolor sit amet,
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                           At the moment our application is limited to countries in Europe because of the used Geocoding API.
                         </p>
                     </Accordion.Content>
                     <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClick}>
-                        Most frequently asked quesion 4
+                        How many photos can I upload for my created route?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 3}>
                         <p>
-                            Answer to Q4. This is the following: Lorem ipsum dolor sit amet,
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            We appreciate you want to offer other users more insights, but the moment the number of images is limited to one.
+                            Other users can share their photo in the comments of your route.
                         </p>
                     </Accordion.Content>
                     <Accordion.Title active={activeIndex === 4} index={4} onClick={this.handleClick}>
-                        Most frequently asked quesion 5
+                        How can I contact the team of this website when I have more questions?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 4}>
                         <p>
-                            Answer to Q5. This is the following: Lorem ipsum dolor sit amet,
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            Please don't hesitate to send us an email or to send us a direct message on Twitter.
+                            We are looking forward to hearing from you!
                         </p>
                     </Accordion.Content>
                     <Accordion.Title active={activeIndex === 5} index={5} onClick={this.handleClick}>
-                        Most frequently asked quesion 6
+                        Can I use this web application for free?
                         <Header as='h5' floated='right'> <Icon name='add'/> </Header>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 5}>
                         <p>
-                            Answer to Q6. This is the following: Lorem ipsum dolor sit amet,
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            There are no costs, because this started as a project at university.
                         </p>
                     </Accordion.Content>
                 </Accordion>
