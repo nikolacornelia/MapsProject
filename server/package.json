@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app",
     "debug": "node %NODE_DEBUG_OPTION% app.js",
-    "test": "nodemon --exec  './node_modules/.bin/mocha --reporter spec --no-timeouts'"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
     "math-round": "1.0.0",
     "method-override": "^3.0.0",
     "mocha": "^5.2.0",
-    "mongodb": "^3.1.6",
+    "mongodb": "^3.1.10",
     "mongoose": "^5.3.1",
     "moongoose": "0.0.5",
     "morgan": "^1.9.1",

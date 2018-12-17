@@ -71,16 +71,17 @@ app.use(session({
     saveUninitialized: true
 }));
 
+//change database to e.g. 'maps_test' to conduct test (without affect on productive database)
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
-        console.log('Connection established');
+        console.log('Connection to mongodb established');
     }
 }
 );
 mongoose.connection.once('open', function () {
-    console.log('connected');
+    console.log('Connection open');
 });
 
 // Usermanagement
@@ -229,18 +230,14 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.get('/getRoutes', function (req, res, next) {
-
-    let paramText = req.query.search;
-    let paramDifficulty = req.query.difficulty;
-    let paramDistance = req.query.distance;
-    let routeQuery;
-
+    
     if (paramText === '' && paramDifficulty === undefined && req.query.features === undefined) {
         routeQuery = { distance: { $lt: paramDistance } };
     }
     else {
         routeQuery = { $and: [] };
         if (paramText != '') {
+            console.log(paramText);
             routeQuery.$and.push({
                 $or: [{ title: { $regex: paramText, $options: "i" } }, {
                     description: {
@@ -276,7 +273,7 @@ app.get('/getRoutes', function (req, res, next) {
         req.routes = data;
         next();
     }).catch(function (error) {
-        res.status(404).send("unable to find route");
+        res.status(404).send(error.errmsg);
 
     });
 },
