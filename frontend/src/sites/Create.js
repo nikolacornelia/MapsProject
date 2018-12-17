@@ -58,7 +58,7 @@ class Create extends Component {
                 this.setState({fileError: true});
                 alert("file to big");
             } else {
-                this.set.state({fileError: false});
+                this.setState({fileError: false});
             }
         }
         this.setState({files: files});
