@@ -95,7 +95,6 @@ mongoose.connection.once('open', function () {
 });
 
 // Usermanagement
-
 app.post('/register', function (req, res) {
     // todo: check if user already exists
     // todo: check if password length > 8
@@ -240,6 +239,11 @@ app.post('/saveRoute', auth, function (req, res, next) {
     });
 
 app.get('/getRoutes', function (req, res, next) {
+        let paramText = req.query.search;
+        let paramDifficulty = req.query.difficulty;
+        let paramDistance = req.query.distance;
+        let routeQuery;
+
     //important if method accessed via test
     if(paramText === undefined) {
         paramText ='';
