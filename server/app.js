@@ -30,6 +30,16 @@ let round = require('math-round');
 let lodash = require('lodash.sortby');
 let _ = require('underscore');
 
+var auth = function (req, res, next) {
+    if (req.session && req.session.userid) {
+        return next();
+    } else {
+        return res.sendStatus(401);
+    }
+};
+
+var BCRYPT_SALT_ROUNDS = 12;
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(methodOverride());
@@ -61,14 +71,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-var auth = function (req, res, next) {
-    if (req.session && req.session.userid) {
-        return next();
-    } else {
-        return res.sendStatus(401);
-    }
-};
-
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -81,28 +83,58 @@ mongoose.connection.once('open', function () {
     console.log('connected');
 });
 
-app.post('/favoriseRoute', auth, function (req, res) {
-    let oFavourite = {};
-    oFavourite.route = req.body.route;
-    oFavourite.user = req.session.userid;
+// Usermanagement
 
-    if (req.body.isFavorised == false) {
-        //todo at the moment
-        Schema.Favourite.deleteMany(oFavourite, function (err) {
-            if (err) throw (err);
-            res.status(200).send();
+app.post('/register', function (req, res) {
+    // todo: check if user already exists
+    // todo: check if password length > 8
+    // todo: check if email is syntactically correct
+    let myData = new Schema.User(req.body);
+    bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
+        .then(function (hashedPassword) {
+            myData.password = hashedPassword;
+            return myData.save();
+        })
+        .then(function () {
+            res.send();
+        })
+        .catch(function (error) {
+            console.log("Error saving user ");
+            res.status(400).send("error saving user");
         });
-    } else {
-        let myData = new Schema.Favourite(oFavourite);
-        myData.save()
-            .then(item => {
-                res.send(item);
-            })
-            .catch(err => {
-                res.status(400).send("unable to save favourized route to database");
-            });
-    }
 });
+
+app.get('/login', function (req, res) {
+    let aResult = req.query;
+    Schema.User.findOne(
+        { $or: [{ email: aResult.user }, { username: aResult.user }] }
+    ).then(function (user) {
+        if (!user) {
+            console.log("User nicht vorhanden");
+            res.sendStatus(500);
+        } else {
+            bcrypt.compare(req.query.password, user.password, function (err, result) {
+                if (result == true) {
+                    req.session.userid = user._id;
+                    res.send(user);
+                } else {
+                    res.sendStatus(500);
+                }
+            });
+        }
+    }).catch(function (error) {
+        console.log("Error getting user ");
+        res.status(404).send("error while finding users");
+    });
+});
+
+app.get('/logout', function (req, res) {
+    if (req.session)
+        req.session.destroy();
+    res.sendStatus(200);
+});
+
+//Routenfunctions
 
 app.post('/savePoint', auth, function (req, res) {
     let aResult = req.body.data.point;
@@ -117,28 +149,26 @@ app.post('/savePoint', auth, function (req, res) {
         });
 });
 
-app.delete('/Route', auth, function (req, res) {
-    Schema.Route.findOneAndDelete(req.query).then(item => {
-        Schema.Favourite.deleteMany({ route: req.query._id }, function (err, data) {
-        }).then(item => {
-            Schema.Rating.deleteMany({ route: req.query._id }).then(item => { res.send(); })
-        })
-    });
-});
-
-app.delete('/LikedRoute', auth, function (req, res) {
-    let query = {};
-    query.route = req.query._id;
-    query.user = req.session.userid;
-    Schema.Favourite.findOneAndDelete(query, function (err, data) {
+app.get('/getData', function (req, res) {
+    Schema.Point.find({}, function (err, data) {
         if (err) {
-            res.status(404).send("unable to delete like of user for a route ");
+            res.status(404).send("unable to get data for points");
             throw err;
         }
-        res.send('deleted Fav for Route');
+        res.send(data);
     });
 });
 
+app.get('/getLocalPoints', function (req, res) {
+    Schema.Point.find({}, function (err, data) {
+        if (err) {
+            res.status(404).send("unable to get points");
+            throw err;
+        }
+        res.send(data);
+    });
+
+});
 
 app.post('/saveRoute', auth, function (req, res, next) {
     let oRoute = req.body;
@@ -197,70 +227,6 @@ app.post('/saveRoute', auth, function (req, res, next) {
                 res.status(400).send("unable to save route to database");
             });
     });
-
-app.post('/saveRating', auth, function (req, res, next) {
-
-    if (req.body.route == undefined) {
-        res.status(400).send("error while saving rating because route/user is undefined");
-        return;
-    }
-    req.body.user = req.session.userid;
-    if (req.body.image != undefined) {
-        let oImage = new Schema.Image();
-        oImage.imageData = req.body.image;
-        oImage.save()
-            .then(item => {
-                req.body.image = item._id;
-                next();
-            })
-            .catch(err => {
-                res.status(400).send("unable to save image");
-            })
-    } else {
-        next();
-    }
-},
-    function (req, res) {
-
-        Schema.Rating.deleteMany({ user: req.session.userid, route: req.body.route })
-            .then(item => {
-                let oDataRating = new Schema.Rating(req.body);
-                oDataRating.save()
-                    .then(item => {
-                        res.send('success saving new rating');
-                    }).catch(err => {
-                        res.status(400).send("unable to save rating to database");
-                    });
-            }).catch(err => {
-                res.status(400).send("unable to delete old comment in database");
-            });
-
-    });
-
-app.get('/getData', function (req, res) {
-    Schema.Point.find({}, function (err, data) {
-        if (err) {
-            res.status(404).send("unable to get data for points");
-            throw err;
-        }
-        res.send(data);
-    });
-});
-
-
-app.get('/getRatings', function (req, res) {
-    Schema.Rating.find({ route: req.query.route }).populate('user').exec(function (err, data) {
-        if (err) {
-            res.status(404).send("unable to get ratings");
-            throw err;
-        }
-        // don't send password to FrontEnd
-        data.forEach(function (element) {
-            element.user.password = null;
-        });
-        res.send(data);
-    });
-});
 
 app.get('/getRoutes', function (req, res, next) {
 
@@ -376,84 +342,6 @@ app.get('/getRoutes', function (req, res, next) {
         res.send(aResult);
     });
 
-app.get('/Favourite', function (req, res) {
-    Schema.Favourite.findOne({ $and: [{ route: req.query.id }, { user: req.session.userid }] }, function (err, obj) {
-        if (err) {
-            res.status(404).send("unable to find favourites");
-            throw err;
-        }
-        if (obj === null) {
-            res.send(false);
-        } else {
-            res.send(true);
-        }
-    });
-});
-
-
-app.get('/getLocalPoints', function (req, res) {
-    Schema.Point.find({}, function (err, data) {
-        if (err) {
-            res.status(404).send("unable to get points");
-            throw err;
-        }
-        res.send(data);
-    });
-
-});
-
-var BCRYPT_SALT_ROUNDS = 12;
-app.post('/register', function (req, res) {
-    //let aResult = req.body;
-    //aResult = JSON.parse(aResult);
-    // todo: check if user already exists
-    // todo: check if password length > 8
-    // todo: check if email is syntactically correct
-    let myData = new Schema.User(req.body);
-    bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
-        .then(function (hashedPassword) {
-            myData.password = hashedPassword;
-            return myData.save();
-        })
-        .then(function () {
-            res.send();
-        })
-        .catch(function (error) {
-            console.log("Error saving user ");
-            res.status(400).send("error saving user");
-        });
-});
-
-app.get('/login', function (req, res) {
-    let aResult = req.query;
-    Schema.User.findOne(
-        { $or: [{ email: aResult.user }, { username: aResult.user }] }
-    ).then(function (user) {
-        if (!user) {
-            console.log("User nicht vorhanden");
-            res.sendStatus(500);
-        } else {
-            bcrypt.compare(req.query.password, user.password, function (err, result) {
-                if (result == true) {
-                    req.session.userid = user._id;
-                    res.send(user);
-                } else {
-                    res.sendStatus(500);
-                }
-            });
-        }
-    }).catch(function (error) {
-        console.log("Error getting user ");
-        res.status(404).send("error while finding users");
-    });
-});
-
-app.get('/logout', function (req, res) {
-    if (req.session)
-        req.session.destroy();
-    res.sendStatus(200);
-});
-
 app.get('/Image', function (req, res, next) {
     let routeQuery = {};
     routeQuery.user = req.session.userid;
@@ -478,6 +366,7 @@ app.get('/Image', function (req, res, next) {
     })
 });
 
+//Userinteraction
 
 app.get('/getMyRoutes', auth, function (req, res, next) {
     let routeQuery = {};
@@ -530,6 +419,52 @@ app.get('/getMyRoutes', auth, function (req, res, next) {
             res.send(aResult);
         }
     });
+
+app.post('/favoriseRoute', auth, function (req, res) {
+    let oFavourite = {};
+    oFavourite.route = req.body.route;
+    oFavourite.user = req.session.userid;
+
+    if (req.body.isFavorised == false) {
+        //todo at the moment
+        Schema.Favourite.deleteMany(oFavourite, function (err) {
+            if (err) throw (err);
+            res.status(200).send();
+        });
+    } else {
+        let myData = new Schema.Favourite(oFavourite);
+        myData.save()
+            .then(item => {
+                res.send(item);
+            })
+            .catch(err => {
+                res.status(400).send("unable to save favourized route to database");
+            });
+    }
+});
+
+app.get('/Favourite', function (req, res) {
+    Schema.Favourite.findOne({ $and: [{ route: req.query.id }, { user: req.session.userid }] }, function (err, obj) {
+        if (err) {
+            res.status(404).send("unable to find favourites");
+            throw err;
+        }
+        if (obj === null) {
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+    });
+});
+
+app.delete('/Route', auth, function (req, res) {
+    Schema.Route.findOneAndDelete(req.query).then(item => {
+        Schema.Favourite.deleteMany({ route: req.query._id }, function (err, data) {
+        }).then(item => {
+            Schema.Rating.deleteMany({ route: req.query._id }).then(item => { res.send(); })
+        })
+    });
+});
 
 app.get('/getMyLikedRoutes', auth, function (req, res, next) {
     let routeQuery = {};
@@ -608,6 +543,86 @@ app.get('/getMyLikedRoutes', auth, function (req, res, next) {
             res.send(aResult);
         }
     });
+
+app.delete('/LikedRoute', auth, function (req, res) {
+    let query = {};
+    query.route = req.query._id;
+    query.user = req.session.userid;
+    Schema.Favourite.findOneAndDelete(query, function (err, data) {
+        if (err) {
+            res.status(404).send("unable to delete like of user for a route ");
+            throw err;
+        }
+        res.send('deleted Fav for Route');
+    });
+});
+
+app.post('/saveRating', auth, function (req, res, next) {
+
+    if (req.body.route == undefined) {
+        res.status(400).send("error while saving rating because route/user is undefined");
+        return;
+    }
+    req.body.user = req.session.userid;
+    if (req.body.image != undefined) {
+        let oImage = new Schema.Image();
+        oImage.imageData = req.body.image;
+        oImage.save()
+            .then(item => {
+                req.body.image = item._id;
+                next();
+            })
+            .catch(err => {
+                res.status(400).send("unable to save image");
+            })
+    } else {
+        next();
+    }
+},
+    function (req, res) {
+
+        Schema.Rating.deleteMany({ user: req.session.userid, route: req.body.route })
+            .then(item => {
+                let oDataRating = new Schema.Rating(req.body);
+                oDataRating.save()
+                    .then(item => {
+                        res.send('success saving new rating');
+                    }).catch(err => {
+                        res.status(400).send("unable to save rating to database");
+                    });
+            }).catch(err => {
+                res.status(400).send("unable to delete old comment in database");
+            });
+
+    });
+
+app.get('/getRatings', function (req, res) {
+    Schema.Rating.find({ route: req.query.route }).populate('user').exec(function (err, data) {
+        if (err) {
+            res.status(404).send("unable to get ratings");
+            throw err;
+        }
+        // don't send password to FrontEnd
+        data.forEach(function (element) {
+            element.user.password = null;
+        });
+        res.send(data);
+    });
+});
+
+app.delete('/Rating', auth, function (req, res) {
+    Schema.Rating.findOneAndDelete({ _id: req.query._id }, function (err, data) {
+        if (err) {
+            res.status(404).send("error while finding and deleting rating");
+            throw err;
+        }
+        res.send('deleted Rating for Route');
+    });
+});
+
+app.post('/review', auth, function (req, res) {
+    Schema.Rating.findOneAndUpdate({ _id: req.body.commentId }, { comment: req.body.review, rating: req.body.rating, created: req.body.date }, { upsert: true }).then(item => { res.send() });
+});
 
 app.get('/reviewedRoutes', function (req, res, next) {
     let routeQuery = {};
@@ -690,23 +705,9 @@ app.get('/reviewedRoutes', function (req, res, next) {
         }
     });
 
-app.post('/review', auth, function (req, res) {
-    Schema.Rating.findOneAndUpdate({ _id: req.body.commentId }, { comment: req.body.review, rating: req.body.rating, created: req.body.date }, { upsert: true }).then(item => { res.send() });
-});
-
 
 app.listen(3001, function () {
     console.log("Working on port 3001");
-});
-
-app.delete('/Rating', auth, function (req, res) {
-    Schema.Rating.findOneAndDelete({ _id: req.query._id }, function (err, data) {
-        if (err) {
-            res.status(404).send("error while finding and deleting rating");
-            throw err;
-        }
-        res.send('deleted Rating for Route');
-    });
 });
 
 function sortRoutes(aRoutes, iSortBy) {
