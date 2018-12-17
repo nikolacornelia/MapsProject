@@ -233,7 +233,7 @@ class Search extends Component {
                 this.setState({files: []});
                 this.setState({fileError: true});
             } else {
-                this.set.state({fileError: false});
+                this.setState({fileError: false});
             }
         }
         this.setState({files: files});

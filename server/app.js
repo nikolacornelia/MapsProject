@@ -54,14 +54,9 @@ app.use(session({
     saveUninitialized: true
 }));
 
-
-var auth = function (req, res, next) {
-    if (req.session && req.session.userid) {
-        return next();
-    } else {
-        return res.sendStatus(401);
-    }
-};
+app.listen(3001, function () {
+    console.log("Working on port 3001");
+});
 
 //change database to e.g. 'maps_test' to conduct test (without affect on productive database)
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
@@ -78,9 +73,6 @@ mongoose.connection.once('open', function () {
 
 // user management
 app.post('/register', function (req, res) {
-    // todo: check if user already exists
-    // todo: check if password length > 8
-    // todo: check if email is syntactically correct
     let myData = new Schema.User(req.body);
     bcrypt.hash(myData.password, BCRYPT_SALT_ROUNDS)
         .then(function (hashedPassword) {
@@ -693,9 +685,6 @@ app.get('/reviewedRoutes', function (req, res, next) {
         }
     });
 
-app.listen(3001, function () {
-    console.log("Working on port 3001");
-});
 
 //functions
 function sortRoutes(aRoutes, iSortBy) {
