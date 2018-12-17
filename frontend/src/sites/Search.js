@@ -50,7 +50,8 @@ class Search extends Component {
             comments: [],
             files: [],
             routes: [],
-            userComment : null
+            userComment : null,
+            fileError: false
         };
         this.user = JSON.parse(sessionStorage.getItem("user"));
     }
@@ -152,6 +153,10 @@ class Search extends Component {
     onChangeSort = (key) => this.setState({sortBy: key}, this.onSearch);
 
     onSubmitReview = () => {
+        if (this.state.fileError) {
+            alert('uploaded file  is not correct');
+            return;
+        }
         let _submitReview = (e) => {
             let image = e && e.target.result; // sends the image as base64
             axios.post('/saveRating', {
@@ -170,7 +175,6 @@ class Search extends Component {
                     // returns object of all comments created
                     this.setState({comments: response.data});
                 });
-                // todo nstelle von this.onSearch nur DetailRoute updaten? --> refresh DetailRoute
                 this.onSearch(true);
             });
         };
@@ -204,10 +208,16 @@ class Search extends Component {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
                 alert("The file you tried to attach is not an image!");
+                this.setState({files: []});
+                this.setState({fileError: true});
             } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
                 alert("The file you tried to attach is too big. Images are limited to 1234mb.");
+                this.setState({files: []});
+                this.setState({fileError: true});
+            } else {
+                this.set.state({fileError: false});
             }
         }
         this.setState({files: files});
@@ -433,6 +443,7 @@ class Search extends Component {
                                                                                    placeholder='Enter your review'/>
                                                                     <Form.Input type='file' fluid label='Image'
                                                                                 placeholder='Upload image file'
+                                                                                accept="image/*"
                                                                                 iconPosition='left'
                                                                                 onChange={this.onChangeReviewImage}
                                                                                 icon={<Icon name='add' link inverted

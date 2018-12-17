@@ -22,7 +22,8 @@ class Create extends Component {
 
             hasRouteError: false,
             hasRouteDistanceError: false,
-            loading: false
+            loading: false,
+            fileError: false
         };
         CreateMap.resetArrays();
     }
@@ -48,12 +49,16 @@ class Create extends Component {
         for (let i = 0; i < files.length; i++) {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
-                // todo: error routine...
                 alert("file is not an image");
+                this.setState({files: []});
+                this.setState({fileError: true});
             } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
+                this.setState({fileError: true});
                 alert("file to big");
+            } else {
+                this.set.state({fileError: false});
             }
         }
         this.setState({files: files});
@@ -64,6 +69,10 @@ class Create extends Component {
      * @param e - Event triggered by the form submit
      */
     onSubmitRoute = (e) => {
+        if (this.state.fileError) {
+            alert('uploaded file  is not correct');
+            return;
+        }
         this.setState({routeCreated: false});
 
         //get current leaflet route information

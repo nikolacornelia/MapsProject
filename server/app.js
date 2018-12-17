@@ -68,17 +68,17 @@ var auth = function (req, res, next) {
         return res.sendStatus(401);
     }
 };
-
-mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
+//todo change without test
+mongoose.connect('mongodb://localhost:27017/maps_test', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
-        console.log('Connection established');
+        console.log('Connection to mongodb established');
     }
 }
 );
 mongoose.connection.once('open', function () {
-    console.log('connected');
+    console.log('Connection open');
 });
 
 app.post('/favoriseRoute', auth, function (req, res) {
@@ -262,19 +262,25 @@ app.get('/getRatings', function (req, res) {
     });
 });
 
-app.get('/getRoutes', function (req, res, next) {
+    app.get('/getRoutes', function (req, res, next) {
 
-    let paramText = req.query.search;
-    let paramDifficulty = req.query.difficulty;
-    let paramDistance = req.query.distance;
-    let routeQuery;
+        let paramText = req.query.search;
+        let paramDifficulty = req.query.difficulty;
+        let paramDistance = req.query.distance;
+        let routeQuery;
 
+
+    //important if method accessed via test
+if(paramText === undefined) {
+    paramText ='';
+}
     if (paramText === '' && paramDifficulty === undefined && req.query.features === undefined) {
         routeQuery = { distance: { $lt: paramDistance } };
     }
     else {
         routeQuery = { $and: [] };
         if (paramText != '') {
+            console.log(paramText);
             routeQuery.$and.push({
                 $or: [{ title: { $regex: paramText, $options: "i" } }, {
                     description: {
@@ -310,7 +316,7 @@ app.get('/getRoutes', function (req, res, next) {
         req.routes = data;
         next();
     }).catch(function (error) {
-        res.status(404).send("unable to find route");
+        res.status(404).send(error.errmsg);
 
     });
 },
@@ -430,7 +436,7 @@ app.get('/login', function (req, res) {
         { $or: [{ email: aResult.user }, { username: aResult.user }] }
     ).then(function (user) {
         if (!user) {
-            console.log("User nicht vorhanden");
+            console.log("Status 500: User non-existent");
             res.sendStatus(500);
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
