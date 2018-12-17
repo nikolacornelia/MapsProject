@@ -18,7 +18,9 @@ chai.use(chaiHTTP);
     mocha.before((done) => {
         users.drop(() => {
             routes.drop(() => {
-                done();
+                favourites.drop(() => {
+                    done();
+                });
             });
         });
     });
@@ -87,7 +89,7 @@ mocha.describe('--MOCHA-- Test containing log in, registration, route creation a
                 'title': 'MochaRoute',
                 'description': 'A route for test purpose',
                 'difficulty': 'moderate',
-                'features': ['River'],
+                'features': ['River','Wineyard'],
                 'points':  [ { lat: 49.49328079713773, lng: 8.483843657115468 },
                          { lat: 49.495651756902404, lng: 8.474015519311555 },
                         { lat: 49.49127430311358, lng: 8.469630817088493 },
@@ -153,6 +155,99 @@ mocha.describe('--MOCHA-- Test containing log in, registration, route creation a
                 res.body.should.be.a('array');
                 expect(res.body).to.have.length(1);
                 res.body[0].title.should.be.equal('MochaRoute');
+                done();
+            });
+    });
+
+
+})
+
+mocha.describe('test: user interaction with route', function () {
+    let routeID;
+    let isFavorised;
+    mocha.it('GET Route, Favorit should be initial false', function (done) {
+        chai.request(url)
+            .get('/getRoutes?distance=5')
+            .set('Cookie', Cookies)
+            .end(function (err, res) {
+                //opposite because if isFavorised of a route is false the change is to true
+                isFavorised = !res.body[0].isFavorised;
+                res.body[0].isFavorised.should.be.equal(false);
+                routeID = res.body[0]._id;
+                done();
+            });
+    })
+
+    mocha.it('POST Favorit Route', function(done) {
+        chai.request(url)
+            .post('/favoriseRoute')
+            .send({
+                'route': routeID,
+                'isFavorised': isFavorised})
+            .set('Cookie', Cookies)
+            .end(function (err, res) {
+                res.status.should.be.equal(200);
+                done();
+            });
+    })
+
+    mocha.it('GET Route, Favorit should now be true', function (done) {
+        chai.request(url)
+            .get('/getRoutes?distance=5')
+            .set('Cookie', Cookies)
+            .end(function (err, res) {
+                isFavorised = !res.body[0].isFavorised;
+                res.body[0].isFavorised.should.be.equal(true);
+                res.body[0]._id.should.be.equal(routeID);
+                done();
+            });
+    })
+
+    mocha.it('POST Favorit Route (favorit should get deleted)', function(done) {
+        chai.request(url)
+            .post('/favoriseRoute')
+            .send({
+                'route': routeID,
+            'isFavorised': isFavorised })
+            .set('Cookie', Cookies)
+            .end(function (err, res) {
+                res.status.should.be.equal(200);
+                done();
+            });
+    })
+
+    mocha.it('GET Route, Favorit should now be false again', function (done) {
+        chai.request(url)
+            .get('/getRoutes?distance=5')
+            .set('Cookie', Cookies)
+            .end(function (err, res) {
+               res.body[0].isFavorised.should.be.equal(false);
+                res.body[0]._id.should.be.equal(routeID);
+                done();
+            });
+    })
+})
+
+mocha.describe('test: search parameter feature', function() {
+    mocha.it('GET route by filtering for features 1', (done) => {
+        chai.request(url)
+            .get('/getRoutes')
+            .query({distance: 25, features: ["Wineyard"]})
+            .end(function (err, res) {
+                res.body.should.be.a('array');
+                expect(res.body).to.have.length(1);
+                res.body[0].title.should.be.equal('MochaRoute');
+                done();
+            });
+    });
+
+    mocha.it('GET route by filtering for features 2', (done) => {
+        chai.request(url)
+            .get('/getRoutes')
+            .query({distance: 25, features: ["River"]})
+            .end(function (err, res) {
+                res.body.should.be.a('array');
+                expect(res.body).to.have.length(2);
                 done();
             });
     });

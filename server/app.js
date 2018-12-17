@@ -94,7 +94,7 @@ app.get('/login', function (req, res) {
         {$or: [{email: aResult.user}, {username: aResult.user}]}
     ).then(function (user) {
         if (!user) {
-            console.log("User nicht vorhanden");
+            console.log("User missing");
             res.sendStatus(500);
         } else {
             bcrypt.compare(req.query.password, user.password, function (err, result) {
