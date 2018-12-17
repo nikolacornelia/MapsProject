@@ -68,7 +68,7 @@ var auth = function (req, res, next) {
         return res.sendStatus(401);
     }
 };
-//change database to e.g. 'maps_test' to conduct test (without affect on productive database)
+//change database to e.g. 'maps_test' to 'maps'
 mongoose.connect('mongodb://localhost:27017/maps', function (err, db) {
     if (err) {
         console.log('Unable to connect to the mongoDB server. Error:', err);
