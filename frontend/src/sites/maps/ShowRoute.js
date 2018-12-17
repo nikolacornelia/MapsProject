@@ -75,7 +75,7 @@ function displayRoute (aPoint, aHighlight){
 //load highlights points from DB
 function getPointsOfInterest() {
     //only get points that are in the bounds of the map
-    axios.get('http://localhost:3001/getLocalPoints').then(function (response) {
+    axios.get('/getLocalPoints').then(function (response) {
         console.log("success");
         displayPoints(response.data);
         console.log(response.data);

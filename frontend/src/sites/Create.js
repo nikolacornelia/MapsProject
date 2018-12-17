@@ -49,14 +49,16 @@ class Create extends Component {
         for (let i = 0; i < files.length; i++) {
             if (!files[i].type.match('image.*')) {
                 // Error: file is not an image
-                alert("file is not an image");
+                alert("This file is not an image. Please only upload images.");
                 this.setState({files: []});
                 this.setState({fileError: true});
+                return;
             } else if (files[i].size >= 10 * 1024 * 1024) {
                 // Error: file is too large
                 // todo: define max. file size & error routine...
                 this.setState({fileError: true});
-                alert("file to big");
+                alert("The file you tried to attach is too big");
+                return;
             } else {
                 this.setState({fileError: false});
             }
@@ -69,10 +71,6 @@ class Create extends Component {
      * @param e - Event triggered by the form submit
      */
     onSubmitRoute = (e) => {
-        if (this.state.fileError) {
-            alert('uploaded file  is not correct');
-            return;
-        }
         this.setState({routeCreated: false});
 
         //get current leaflet route information

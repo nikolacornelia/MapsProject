@@ -29,11 +29,11 @@ var template =
 '<p>' +
 '<label for="sPName">Name:</label>' +
 '</br>' +
-'<input id="sPName" class="popup-input" type="text" required/>' +
+'<input id="sPName" placeholder="Enter highlight name" class="popup-input" type="text" required/>' +
 '<p>' +
 '<label for="sPDescription">Description:</label>' +
 '</br>' +
-'<textarea id="sPDescription" class="popup-textarea" type="text" required></textarea>' +
+'<textarea id="sPDescription" placeholder="Enter highlight description" class="popup-textarea" type="text" required></textarea>' +
 '<p>' +
 '<button id="button-submit" type="submit">Save</button>' +
 '<p>' +
@@ -206,8 +206,8 @@ function connectHighlight(koordinaten) {
 function deleteFunction() {
     if (aPoints.length > 1) {
         iDistance = iDistance - getDistance(aPoints[aPoints.length - 1], aPoints[aPoints.length - 2]);
-        console.log(iDistance);
-        map.removeLayer(aPoly[aPoly.length - 1]);
+        if(aPoly[aPoly.length - 1])
+            map.removeLayer(aPoly[aPoly.length - 1]);
         aPoly.splice(aPoly.length - 1, 1);
     }
     if (aHighlight[aHighlight.length - 1] == 0) {
