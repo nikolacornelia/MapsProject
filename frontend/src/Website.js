@@ -6,7 +6,6 @@ import FAQ from "./sites/FAQ";
 import Home from "./sites/Home";
 import MyRoutes from "./sites/user/MyRoutes";
 import MyReviews from "./sites/user/MyReviews";
-import Settings from "./sites/user/Settings";
 import axios from "axios";
 
 import {Button, Container, Image, Menu, Grid, Icon, Responsive, Segment, Dropdown, Label, Header} from "semantic-ui-react";
@@ -91,10 +90,9 @@ class Website extends Component {
                                 <Dropdown.Menu>
                                     <Dropdown.Item icon='map signs' text='My Routes' as={NavLink} exact to='/myroutes'/>
                                     <Dropdown.Item icon='globe' text='My Reviews' as={NavLink} exact to='/myreviews'/>
-                                    <Dropdown.Item icon='settings' text='Settings' as={NavLink} exact to='/settings'/>
                                     <Dropdown.Item icon='logout' text='Logout' as={NavLink} exact to='/login' active={false}
                                                    onClick={() => {
-                                                       axios.get("http://localhost:3001/logout");
+                                                       axios.get("/logout");
                                                        sessionStorage.clear();
                                                        this.updateLoginStatus();
                                                    }}/>
@@ -117,8 +115,7 @@ class Website extends Component {
 
                         <PrivateRoute path="/myroutes" component={MyRoutes}/>
                         <PrivateRoute path="/myreviews" component={MyReviews}/>
-                        <PrivateRoute path="/settings" component={Settings}/>
-                    </Segment>
+                        </Segment>
                 </div>
             </Router>
         )

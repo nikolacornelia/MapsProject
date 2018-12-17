@@ -284,7 +284,7 @@ class Search extends Component {
                                             onChange={this.handleChange}
                                             action={{
                                                 icon: 'search',
-                                                onClick: this.onSearch,
+                                                onClick: () => this.onSearch(),
                                                 placeholder: 'searchButton'
                                             }}/>
                                 <Header as='h4' dividing icon='filter' content='Filter'/>
@@ -292,7 +292,7 @@ class Search extends Component {
                                     <label>Difficulty</label>
                                     <Form.Checkbox label='easy' value='easy' name='difficulty' data-testid='difficultyEasy'
                                                    onChange={this.handleChangeDifficulty}/>
-                                    <Form.Checkbox label='moderate' value='moderate' name='difficulty'
+                                    <Form.Checkbox label='moderate' value='moderate' name='difficulty' data-testid='difficultyModerate'
                                                    onChange={this.handleChangeDifficulty}/>
                                     <Form.Checkbox label='difficult' value='difficult' name='difficulty'
                                                    onChange={this.handleChangeDifficulty}/>

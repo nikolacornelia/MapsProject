@@ -18,6 +18,10 @@ describe("Testing MyRoutes component", () => {
         const deleteButton = await waitForElement(() => getByText("Delete"));
         expect(deleteButton).toBeDefined();
         fireEvent.click(deleteButton);
+
+        const confirmButton = await waitForElement(() => getByText("OK"));
+        expect(confirmButton).toBeDefined();
+        fireEvent.click(confirmButton);
     });
 
     test("Change tab to Routes I liked", () => {
@@ -30,6 +34,10 @@ describe("Testing MyRoutes component", () => {
         const deleteButton = await waitForElement(() => getByText("Delete"));
         expect(deleteButton).toBeDefined();
         fireEvent.click(deleteButton);
+
+        const confirmButton = await waitForElement(() => getByText("OK"));
+        expect(confirmButton).toBeDefined();
+        fireEvent.click(confirmButton);
     });
 
 });

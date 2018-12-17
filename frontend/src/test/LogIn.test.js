@@ -57,11 +57,10 @@ describe("Testing LogIn component", () => {
         expect(inputPasswordRepeat).toBeDefined();
 
         // fill in the register fields
-        fireEvent.change(inputEmail, { target: { value: 'test@test.de' } });
+        fireEvent.change(inputEmail, { target: { value: 'incorrect email' } });
         fireEvent.change(inputUser, { target: { value: 'MyUsername' } });
-        fireEvent.change(inputPassword, { target: { value: 'MyPassword' } });
-        fireEvent.change(inputPasswordRepeat, { target: { value: 'MyPassword' } });
-
+        fireEvent.change(inputPassword, { target: { value: 'short' } });
+        fireEvent.change(inputPasswordRepeat, { target: { value: 'MyPassword Unequal' } });
 
         // mock the register request
         mock.onPost('/register/').reply(200);
@@ -69,6 +68,13 @@ describe("Testing LogIn component", () => {
         // submit the register form
         fireEvent.submit(formRegister);
 
+        // correct input values
+        fireEvent.change(inputEmail, { target: { value: 'test@test.de' } });
+        fireEvent.change(inputPassword, { target: { value: 'MyPassword' } });
+        fireEvent.change(inputPasswordRepeat, { target: { value: 'MyPassword' } });
+
+        // submit the register form again
+        fireEvent.submit(formRegister);
         // wait for success message to be displayed
         await waitForElement(() => getByTestId('msgRegisterSuccess'));
 
